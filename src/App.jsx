@@ -1,7 +1,7 @@
 // src/App.jsx
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import SideMenu from "./components/SideMenu";
-import Footer from "./components/Footer";
+import BrandIcon from "./components/BrandIcon.jsx";
 
 import Home from "./pages/Home.jsx";
 import FAQ from "./pages/FAQ.jsx";
@@ -12,13 +12,16 @@ import Individuals from "./pages/Individuals.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 export default function App() {
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
+
   return (
     <div className="min-h-screen flex flex-col dark-gradient">
-      {/* Hamburger + side drawer */}
+      <BrandIcon />
       <SideMenu />
 
-      {/* Page content grows and pushes footer down */}
-      <main className="flex-1">
+      {/* Flex only off-home so PagePanel can take full height */}
+      <main className={isHome ? "flex-1" : "flex-1 flex min-h-0"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/faq" element={<FAQ />} />
@@ -30,7 +33,7 @@ export default function App() {
         </Routes>
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

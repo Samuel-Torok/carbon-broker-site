@@ -3,262 +3,245 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "./components/ui/accordion";
 import { Badge } from "./components/ui/badge";
-import {
-  Check,
-  Leaf,
-  Shield,
-  Globe,
-  Mail,
-  Phone,
-  ChevronRight,
-} from "lucide-react";
+import { Leaf, Shield, Gift } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import Footer from "./components/Footer.jsx";
 
 const BRAND = "Zephyr";
 
-const Logo = () => (
-  <div className="flex items-center gap-2">
-    <div className="h-6 w-6 rounded-xl bg-emerald-500 dark:bg-emerald-400" />
-    <span className="font-semibold tracking-tight">{BRAND}</span>
-  </div>
-);
-
+/* ---- copy tuned for offsets (SME, individuals, gifts) ---- */
 const features = [
   {
     icon: Leaf,
-    title: "Verified credits",
-    desc: "Supply from Gold Standard & Verra projects with full traceability by vintage and serial.",
+    title: "Verified projects",
+    desc: "Curated supply from leading standards (e.g., Gold Standard, Verra) with traceable retirements.",
   },
   {
     icon: Shield,
-    title: "Compliance handled",
-    desc: "Contracts, custody, and retirement on registry — we manage the paperwork and risk checks.",
+    title: "Retirement handled",
+    desc: "We retire on registry for you and provide official certificates for reporting.",
   },
   {
-    icon: Globe,
-    title: "Best execution",
-    desc: "Global network of suppliers for liquidity and price discovery across geographies.",
+    icon: Gift,
+    title: "Flexible options",
+    desc: "Offset once, set a monthly plan, or gift carbon neutrality to someone you care about.",
   },
 ];
 
-const tiers = [
+/* ---- FULL-SCREEN SLIDES ---- */
+const slides = [
   {
-    name: "Buyer Desk",
-    price: "From 2% fee",
-    blurb: "For corporates offsetting Scope 1–3.",
-    perks: ["Sourcing & DD", "Retirement certificates", "Quarterly reporting"],
-    cta: "Request quote",
-    highlight: true,
+    label: "For SMEs",
+    title: "Offset your company’s footprint",
+    subtitle: "Simple bundles for Scope 1–3, verified and retired on registry.",
+    href: "/companies",
   },
   {
-    name: "Supplier Desk",
-    price: "Custom",
-    blurb: "For project developers & holders.",
-    perks: ["Mandated sell-side", "Book-building", "Settlement ops"],
-    cta: "List inventory",
-    highlight: false,
+    label: "For Individuals",
+    title: "Make your life carbon neutral",
+    subtitle: "Offset once or subscribe monthly. Certificates included.",
+    href: "/buy/individuals",
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    blurb: "For high volume or RFPs.",
-    perks: ["Hedging options", "Structured deals", "API / data room"],
-    cta: "Talk to sales",
-    highlight: false,
+    label: "Carbon Credits",
+    title: "Understand quality & traceability",
+    subtitle: "Standards, vintages, and retirement proof explained.",
+    href: "/credits",
+  },
+  {
+    label: "About us",
+    title: "Who we are",
+    subtitle: "Transparent sourcing and reporting, built for trust.",
+    href: "/about",
+  },
+  {
+    label: "FAQ",
+    title: "Common questions",
+    subtitle: "Pricing, standards, retirement, and certificates.",
+    href: "/faq",
   },
 ];
 
 export default function Site() {
   const year = useMemo(() => new Date().getFullYear(), []);
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
 
   return (
     <div className="dark">
-      {/* Make page a flex column so footer can sit at the bottom */}
-      <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
-
-        {/* ---------- HERO ---------- */}
-        <main className="flex-1">
-          <section className="relative overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_50%_at_50%_10%,black,transparent)]">
-              <div className="absolute -inset-[10%] bg-[radial-gradient(circle_at_20%_10%,rgba(16,185,129,.15),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,.15),transparent_30%)]" />
+      <div className="min-h-screen flex flex-col text-slate-100">
+        <main
+          className={
+            isHome
+              ? "relative z-10 snap-container h-[100svh] overflow-y-scroll snap-y snap-mandatory scroll-smooth overscroll-contain"
+              : "relative z-10 flex-1 flex min-h-0"
+          }
+        >
+          {/* Fixed hero background only on the homepage */}
+          {isHome && (
+            <div className="fixed inset-0 z-0 pointer-events-none">
+              <img
+                src="/images/hero-background.jpg"
+                alt="Background"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/10" />
             </div>
-            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-20 md:grid-cols-2 md:py-28">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Badge className="mb-4">New</Badge>
-                <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
-                  Broker carbon credits{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
-                    with confidence
-                  </span>
-                </h1>
-                <p className="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-                  We source, verify, and retire high-quality offsets so you can hit targets and report with confidence.
-                </p>
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <Button size="lg">
-                    Request quote <ChevronRight className="ml-1 h-4 w-4" />
-                  </Button>
-                  <Button size="lg" variant="outline">
-                    View inventory
-                  </Button>
-                </div>
-                <div className="mt-6 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" /> Registry retirement
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Leaf className="h-4 w-4" /> Verified supply
-                  </div>
-                </div>
-              </motion.div>
+          )}
 
-              {/* Lead form */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <Card className="border-emerald-200/20 bg-white/60 shadow-lg backdrop-blur dark:border-emerald-200/20 dark:bg-slate-900/60">
-                  <CardHeader>
-                    <CardTitle>Request a callback</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 gap-3">
-                      <Input placeholder="Company" />
-                      <Input placeholder="Work email" type="email" />
-                      <Input placeholder="Volume (tCO₂e)" />
-                      <Textarea
-                        placeholder="Project preferences (tech, region, vintage)"
-                        className="min-h-[100px]"
-                      />
-                      <Button className="w-full">Send</Button>
-                      <p className="text-xs text-slate-500 mt-1">
-                        We’ll reply within 1 business day.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-          </section>
+          {isHome && (
+            <>
+              {/* ---------- HERO ---------- */}
+              <section className="relative overflow-hidden h-[100svh] snap-start snap-always">
+                <div className="relative mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-12 gap-10 px-4 min-h-[100svh] items-center">
 
-          {/* ---------- FEATURES ---------- */}
-          <section id="features" className="mx-auto max-w-6xl px-4 py-16">
-            <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Everything you need</h2>
-              <p className="mt-2 text-slate-600 dark:text-slate-300">
-                Sourcing, compliance, settlement — handled end-to-end.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {features.map(({ icon: Icon, title, desc }) => (
-                <Card
-                  key={title}
-                  className="border-slate-200/60 dark:border-slate-700"
-                >
-                  <CardHeader className="flex flex-row items-center gap-3">
-                    <div className="rounded-2xl p-2 ring-1 ring-slate-200 dark:ring-slate-700">
-                      <Icon className="h-5 w-5 text-emerald-400" />
-                    </div>
-                    <CardTitle className="text-lg">{title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      {desc}
+                  <motion.div
+                    className="md:col-span-8"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Badge className="mb-4">Voluntary offsets</Badge>
+                    <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+                      Go{" "}
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
+                        carbon neutral
+                      </span>{" "}
+                      with clarity
+                    </h1>
+                    <p className="mt-4 text-lg leading-relaxed text-white/85">
+                      Simple, verified carbon offsets for small businesses,
+                      individuals, and organizations. Offset once, subscribe
+                      monthly, or gift carbon neutrality — we retire credits
+                      and deliver certificates you can trust.
                     </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          {/* ---------- PRICING ---------- */}
-          <section id="pricing" className="mx-auto max-w-6xl px-4 py-16">
-            <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Simple pricing</h2>
-              <p className="mt-2 text-slate-600 dark:text-slate-300">
-                Transparent fees. No surprises.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {tiers.map((t) => (
-                <Card
-                  key={t.name}
-                  className={`${t.highlight ? "ring-2 ring-emerald-400" : ""} border-slate-200/60 dark:border-slate-700`}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle>{t.name}</CardTitle>
-                      {t.highlight && <Badge>Popular</Badge>}
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <Link to="/companies">
+                        <Button size="lg">See options</Button>
+                      </Link>
+                      <Link to="/credits">
+                        <Button size="lg" variant="outline">
+                          How it works
+                        </Button>
+                      </Link>
                     </div>
-                    <div className="mt-2 text-2xl font-extrabold">{t.price}</div>
-                    <p className="text-sm text-slate-500">{t.blurb}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm">
-                      {t.perks.map((p) => (
-                        <li key={p} className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-emerald-400" /> {p}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button className="mt-6 w-full">{t.cta}</Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          
-          {/* ---------- CONTACT ---------- */}
-          <section id="contact" className="mx-auto max-w-4xl px-4 py-16">
-            <div className="mb-6 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Contact</h2>
-              <p className="mt-2 text-slate-600 dark:text-slate-300">
-                Ready to transact or list inventory?
-              </p>
-            </div>
-            <Card className="border-slate-200/60 dark:border-slate-700">
-              <CardContent className="grid grid-cols-1 gap-4 p-6 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Input placeholder="Your name" />
-                  <Input placeholder="Email address" type="email" />
-                  <Input placeholder="Company" />
+                    <div className="mt-6 flex items-center gap-5 text-sm text-white/70">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" /> Registry retirement
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Leaf className="h-4 w-4" /> Verified supply
+                      </div>
+                    </div>
+                  </motion.div>
+                  <div className="md:col-span-4" />
                 </div>
-                <div className="space-y-3">
-                  <Textarea
-                    placeholder="Tell us about your needs (volumes, tech, vintage)"
-                    className="min-h-[120px]"
-                  />
-                  <div className="flex gap-3">
-                    <Button className="flex-1">Send</Button>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" /> Email
-                    </Button>
-                  </div>
-                  <p className="flex items-center gap-2 text-sm text-slate-500">
-                    <Phone className="h-4 w-4" /> +352 000 000
+              </section>
+
+              {/* ---------- FULL-SCREEN SLIDES ---------- */}
+              <section aria-label="Quick paths" className="w-full">
+                {slides.map((s, i) => (
+                  <MotionSlide key={s.href} slide={s} alignRight={i % 2 === 1} />
+                ))}
+              </section>
+
+              {/* ---------- FEATURES ---------- */}
+              <section id="features" className="mx-auto max-w-6xl px-4 py-8">
+                <div className="mb-8 text-center">
+                  <h2 className="text-3xl font-bold">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
+                      Everything you need
+                    </span>
+                  </h2>
+                  <p className="mt-2 text-white/75">
+                    Sourcing, retirement, and proof — handled end-to-end.
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          </section>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  {features.map(({ icon: Icon, title, desc }) => (
+                    <Card key={title} className="border-white/10 bg-white/5">
+                      <CardHeader className="flex flex-row items-center gap-3">
+                        <div className="rounded-2xl p-2 ring-1 ring-white/10">
+                          <Icon className="h-5 w-5 text-emerald-400" />
+                        </div>
+                        <CardTitle className="text-lg">{title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-white/80">{desc}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+
+              {/* ---------- CONTACT ---------- */}
+              <section id="contact" className="mx-auto max-w-4xl px-4 py-12">
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
+                      Questions?
+                    </span>
+                  </h2>
+                  <p className="mt-2 text-white/75">
+                    Email us and we’ll reply within 1 business day.
+                  </p>
+                  <a href="mailto:hello@example.com" className="inline-block mt-4">
+                    <Button>Email us</Button>
+                  </a>
+                </div>
+              </section>
+            </>
+          )}
         </main>
 
-        
+        <Footer />
       </div>
     </div>
+  );
+}
+
+/* --- Full-screen slide component --- */
+function MotionSlide({ slide, alignRight }) {
+  return (
+    <section className="relative h-[100svh] w-full overflow-hidden snap-start snap-always">
+      <motion.div
+        className={`absolute bottom-14 ${alignRight ? "right-10" : "left-10"} max-w-[36rem]`}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ amount: 0.75 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm backdrop-blur">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-semibold">
+            {slide.label}
+          </span>
+        </div>
+
+        <h3 className="mt-4 text-3xl md:text-4xl font-extrabold leading-tight">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
+            {slide.title}
+          </span>
+        </h3>
+
+        <p className="mt-3 text-white/85 text-base md:text-lg">{slide.subtitle}</p>
+
+        <Link
+          to={slide.href}
+          className="group mt-6 inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur hover:bg-white/15 transition"
+        >
+          <span className="font-medium">Explore</span>
+          <svg
+            className="h-5 w-5 translate-x-0 transition group-hover:translate-x-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </motion.div>
+    </section>
   );
 }

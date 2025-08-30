@@ -26,3 +26,13 @@
 .title-gradient {
   @apply text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400;
 }
+/* dark scrim over images for readable overlay text */
+.scrim::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(10,15,26,0.35) 0%, rgba(10,15,26,0.65) 100%);
+  pointer-events:none;
+}
+.snap-container { scrollbar-width: none; }
+.snap-container::-webkit-scrollbar { display: none; }
+
