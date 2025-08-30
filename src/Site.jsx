@@ -221,33 +221,7 @@ export default function Site() {
             </div>
           </section>
 
-          {/* ---------- FAQ ---------- */}
-          <section id="faq" className="mx-auto max-w-3xl px-4 py-16">
-            <div className="mb-6 text-center">
-              <h2 className="text-3xl font-bold tracking-tight">FAQ</h2>
-            </div>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="1">
-                <AccordionTrigger>Which standards do you support?</AccordionTrigger>
-                <AccordionContent>
-                  Verra (VCS), Gold Standard, ACR and other leading registries. We’ll match projects to your policy and claims.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="2">
-                <AccordionTrigger>Can you retire credits on our behalf?</AccordionTrigger>
-                <AccordionContent>
-                  Yes. We manage custody and retirements, then issue official certificates and monthly/quarterly reports.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="3">
-                <AccordionTrigger>How do fees work?</AccordionTrigger>
-                <AccordionContent>
-                  Buyer desk typically charges a small brokerage fee (from 2%) included in quotes; enterprise & RFQs are custom.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </section>
-
+          
           {/* ---------- CONTACT ---------- */}
           <section id="contact" className="mx-auto max-w-4xl px-4 py-16">
             <div className="mb-6 text-center">
@@ -283,18 +257,7 @@ export default function Site() {
           </section>
         </main>
 
-        {/* ---------- FOOTER ---------- */}
-        <footer className="mt-auto border-t border-slate-200/60 bg-white/50 px-4 py-8 text-sm dark:border-slate-800 dark:bg-slate-900/50">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
-            <Logo />
-            <div className="text-slate-500">© {year} {BRAND}. All rights reserved.</div>
-            <div className="flex items-center gap-4">
-              <a className="hover:underline" href="#">Privacy</a>
-              <a className="hover:underline" href="#">Terms</a>
-              <a className="hover:underline" href="#">Imprint</a>
-            </div>
-          </div>
-        </footer>
+        
       </div>
     </div>
   );

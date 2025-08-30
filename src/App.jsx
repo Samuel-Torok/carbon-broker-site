@@ -13,7 +13,7 @@ import NotFound from "./pages/NotFound.jsx";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
+    <div className="min-h-screen flex flex-col dark-gradient">
       {/* Hamburger + side drawer */}
       <SideMenu />
 

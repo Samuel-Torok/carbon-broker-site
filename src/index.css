@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Accent helpers */
+.accent-text {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400;
+}
+.accent-bg {
+  @apply bg-gradient-to-r from-indigo-500 to-emerald-400 text-white;
+}
+/* ---- Global dark gradient surface used site-wide ---- */
+.dark-gradient {
+  background:
+    radial-gradient(1200px 500px at -10% -10%, rgba(99, 102, 241, 0.06), transparent 60%),
+    radial-gradient(1000px 420px at 110% 0%, rgba(16, 185, 129, 0.07), transparent 55%),
+    radial-gradient(700px 320px at 50% 125%, rgba(168, 85, 247, 0.05), transparent 60%),
+    linear-gradient(180deg, #0b1220 0%, #0a0f1a 35%, #0b1220 100%);
+  color: #e5e7eb; /* slate-200/100 */
+}
+/* Page body text = white */
+.page {
+  @apply text-slate-100;
+}
+
+/* Blue→green title gradient like the home hero */
+.title-gradient {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400;
+}
