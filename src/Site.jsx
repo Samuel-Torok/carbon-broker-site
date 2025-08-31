@@ -1,6 +1,6 @@
 // src/Site.jsx
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
@@ -10,15 +10,69 @@ import { useI18n } from "./i18n";
 import { GText } from "./lib/i18n-helpers";
 
 const ICONS = { Leaf, Shield, Gift };
+const LANG_KEY = "langChoiceSession"; // module scope
 
 export default function Site() {
-  const { t } = useI18n();
+  // ---- Core hooks
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  const { t, setLang } = useI18n();
 
-  const slides = t("home.slides");     // from en.json/fr.json
-  const features = t("home.features"); // from en.json/fr.json
-  const slideCta = t("home.slideCta"); // new key below
+  // ---- UI state
+  const [contactOpen, setContactOpen] = useState(false);
+  const [qIndex, setQIndex] = useState(0);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const [langPromptOpen, setLangPromptOpen] = useState(false);
+
+  // ---- Derived i18n content
+  const quotes   = t("home.quotes");
+  const slides   = t("home.slides");
+  const features = t("home.features");
+  const slideCta = t("home.slideCta");
+
+  // ---- Effects
+  React.useEffect(() => {
+    if (!quotes?.length) return;
+    const id = setInterval(() => setQIndex(i => (i + 1) % quotes.length), 7000);
+    return () => clearInterval(id);
+  }, [quotes?.length]);
+
+  React.useEffect(() => {
+    let timer;
+    const reset = () => {
+      setShowScrollHint(false);
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (window.scrollY < window.innerHeight * 0.15) setShowScrollHint(true);
+      }, 8000);
+    };
+    reset();
+    const events = ["scroll","mousemove","keydown","touchstart"];
+    events.forEach(ev => window.addEventListener(ev, reset, { passive: true }));
+    return () => {
+      clearTimeout(timer);
+      events.forEach(ev => window.removeEventListener(ev, reset));
+    };
+  }, []);
+
+  // Show language prompt once per session on homepage
+  React.useEffect(() => {
+    if (!isHome) return;
+    if (sessionStorage.getItem(LANG_KEY) === "1") return;
+    const id = setTimeout(() => setLangPromptOpen(true), 3000);
+    return () => clearTimeout(id);
+  }, [isHome]);
+
+  // ---- Handlers
+  const chooseLang = (lng) => {
+    setLang(lng);
+    sessionStorage.setItem(LANG_KEY, "1");
+    setLangPromptOpen(false);
+  };
+
+  // --- JSX continues unchanged below ---
+
+
 
   return (
     <div className="dark">
@@ -41,7 +95,7 @@ export default function Site() {
           {isHome && (
             <>
               {/* ---------- HERO ---------- */}
-              <section className="relative overflow-hidden h-[100svh] snap-start snap-always">
+              <section className="relative overflow-visible h-[100svh] snap-start snap-always">
                 <div className="relative mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-12 gap-10 px-4 min-h-[100svh] items-center">
                   <motion.div
                     className="md:col-span-8"
@@ -59,10 +113,44 @@ export default function Site() {
                       {t("home.heroSubtitle")}
                     </p>
 
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
-                      <Link to="/companies"><Button size="lg">{t("home.ctaPrimary")}</Button></Link>
-                      <Link to="/credits"><Button size="lg" variant="outline">{t("home.ctaSecondary")}</Button></Link>
-                    </div>
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    {/* See options */}
+                    <Link to="/start" className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaPrimary")}
+                        </span>
+                      </span>
+                    </Link>
+
+                    {/* How it works */}
+                    <Link to="/credits" className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaSecondary")}
+                        </span>
+                      </span>
+                    </Link>
+
+                    {/* Marketplace */}
+                    <Link to="/marketplace" className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaMarketplace")}
+                        </span>
+                      </span>
+                    </Link>
+
+                    {/* Contact */}
+                    <button type="button" onClick={() => setContactOpen(true)} className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaContact")}
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+
 
                     <div className="mt-6 flex items-center gap-5 text-sm text-white/70">
                       <div className="flex items-center gap-2">
@@ -72,13 +160,217 @@ export default function Site() {
                         <Leaf className="h-4 w-4" /> {t("home.badges.verified")}
                       </div>
                     </div>
+
+                    {Array.isArray(quotes) && quotes.length > 0 && (
+                      <div className="mt-8 pt-6 border-t border-white/10">
+                        {/* Fixed-height stage prevents layout shift */}
+                        <div className="relative overflow-hidden h-[120px] sm:h-[140px] md:h-[160px]">
+                          <AnimatePresence mode="wait">
+                            <motion.div
+                              key={qIndex}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -6 }}
+                              transition={{ duration: 0.35, ease: "easeOut" }}
+                              className="absolute inset-0"
+                            >
+                              <blockquote className="text-xl sm:text-2xl md:text-3xl italic leading-relaxed text-white/90">
+                                <span className="text-white/60">“</span>
+                                {quotes[qIndex].text}
+                                <span className="text-white/60">”</span>
+                              </blockquote>
+                              <div className="mt-2 text-white/60 text-base">— {quotes[qIndex].author}</div>
+                            </motion.div>
+                          </AnimatePresence>
+                        </div>
+                      </div>
+                    )}
+
+
                   </motion.div>
                   <div className="md:col-span-4" />
                 </div>
+                {showScrollHint && (
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById("quickpaths")?.scrollIntoView({ behavior: "smooth" })}
+                    className="absolute left-1/2 bottom-6 -translate-x-1/2 flex flex-col items-center text-white/80 hover:text-white transition-opacity"
+                    aria-label={t("home.scroll")}
+                  >
+                    <span className="text-[11px] mb-1 tracking-widest uppercase opacity-80">
+                      {t("home.scroll")}
+                    </span>
+                    <svg
+                      className="h-7 w-7 animate-bounce-slow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                )}
+
+
               </section>
 
+              {contactOpen && (
+              <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="w-full max-w-lg rounded-2xl bg-slate-950/90 ring-1 ring-white/10 p-6 text-slate-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold">{t("home.contactModal.title")}</h3>
+                    <button
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/5"
+                      onClick={() => setContactOpen(false)}
+                      aria-label={t("home.contactModal.close")}
+                    >
+                      ✕
+                    </button>
+
+                  </div>
+
+                  <form onSubmit={(e) => { e.preventDefault(); alert(t("home.contactModal.sent")); setContactOpen(false); }}>
+                    <div className="grid gap-3">
+                      <label className="grid gap-1">
+                        <span className="text-sm opacity-80">{t("home.contactModal.name")}</span>
+                        <input className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2" required />
+                      </label>
+
+                      <label className="grid gap-1">
+                        <span className="text-sm opacity-80">{t("home.contactModal.email")}</span>
+                        <input type="email" className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2" required />
+                      </label>
+
+                      <label className="grid gap-1">
+                        <span className="text-sm opacity-80">{t("home.contactModal.who")}</span>
+                        <div className="relative">
+                          <select
+                            className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                          >
+                            <option>{t("home.contactModal.optCompany")}</option>
+                            <option>{t("home.contactModal.optIndividual")}</option>
+                            <option>{t("home.contactModal.optOther")}</option>
+                          </select>
+                          <svg
+                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                          >
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </div>
+                      </label>
+
+
+                      <label className="grid gap-1">
+                        <span className="text-sm opacity-80">{t("home.contactModal.need")}</span>
+                        <div className="relative">
+                          <select
+                            className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                          >
+                            <option>{t("home.contactModal.needOffsets")}</option>
+                            <option>{t("home.contactModal.needAdvice")}</option>
+                            <option>{t("home.contactModal.needOther")}</option>
+                          </select>
+                          <svg
+                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                          >
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </div>
+                      </label>
+
+
+                      <label className="grid gap-1">
+                        <span className="text-sm opacity-80">{t("home.contactModal.message")}</span>
+                        <textarea className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2 min-h-[100px]" placeholder={t("home.contactModal.optional")} />
+                      </label>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-end gap-2">
+                      <button type="button" onClick={() => setContactOpen(false)} className="btn-outline-neutral">
+                        <span className="pill">
+                          <span className="text-slate-200">
+                            {t("home.contactModal.cancel")}
+                          </span>
+                        </span>
+                      </button>
+
+                      <button type="submit" className="btn-outline-gradient">
+                        <span className="pill">
+                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                            {t("home.contactModal.submit")}
+                          </span>
+                        </span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+            )}
+
+            {langPromptOpen && (
+              <div className="fixed inset-0 z-[220] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="w-full max-w-2xl rounded-3xl bg-slate-950/90 ring-1 ring-white/10 p-8 text-slate-100 relative">
+                  <button
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 hover:bg-white/5 absolute right-5 top-5"
+                    onClick={() => setLangPromptOpen(false)}
+                    aria-label={t("home.contactModal.close")}
+                  >
+                    ✕
+                  </button>
+
+                  <div className="flex items-start gap-4">
+                    <div className="shrink-0 h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
+                      <span className="text-xl">🌐</span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-semibold">{t("home.langPrompt.title")}</h3>
+                      <p className="mt-2 text-white/85">{t("home.langPrompt.body")}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    {/* English */}
+                    <button onClick={() => chooseLang("en")} className="btn-outline-neutral">
+                      <span className="pill">
+                        <span className="inline-flex items-center gap-2 text-slate-200">
+                          <span className="inline-flex h-5 w-7 items-center justify-center rounded overflow-hidden">
+                            <span className="leading-none text-base">🇬🇧</span>
+                          </span>
+                          {t("home.langPrompt.english")}
+                        </span>
+                      </span>
+                    </button>
+
+                    {/* Français */}
+                    <button onClick={() => chooseLang("fr")} className="btn-outline-neutral">
+                      <span className="pill">
+                        <span className="inline-flex items-center gap-2 text-slate-200">
+                          <span className="inline-flex h-5 w-7 items-center justify-center rounded overflow-hidden">
+                            <span className="leading-none text-base">🇫🇷</span>
+                          </span>
+                          {t("home.langPrompt.french")}
+                        </span>
+                      </span>
+                    </button>
+
+                    <button onClick={() => setLangPromptOpen(false)} className="btn-outline-neutral ml-auto">
+                      <span className="pill">
+                        <span className="text-slate-200">{t("home.langPrompt.later")}</span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
+
               {/* ---------- FULL-SCREEN SLIDES ---------- */}
-              <section aria-label="Quick paths" className="w-full">
+              <section id="quickpaths" aria-label="Quick paths" className="w-full">
                 {slides.map((s, i) => (
                   <MotionSlide key={s.href} slide={s} alignRight={i % 2 === 1} ctaLabel={slideCta} />
                 ))}
@@ -138,6 +430,11 @@ export default function Site() {
 
 /* --- Full-screen slide component --- */
 function MotionSlide({ slide, alignRight, ctaLabel }) {
+  const targetHref =
+    slide.href === "/companies" || slide.href === "/buy/individuals"
+      ? `/start?next=${encodeURIComponent(slide.href)}`
+      : slide.href;
+
   return (
     <section className="relative h-[100svh] w-full overflow-hidden snap-start snap-always">
       <motion.div
@@ -162,7 +459,7 @@ function MotionSlide({ slide, alignRight, ctaLabel }) {
         <p className="mt-3 text-white/85 text-base md:text-lg">{slide.subtitle}</p>
 
         <Link
-          to={slide.href}
+          to={targetHref}
           className="group mt-6 inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur hover:bg-white/15 transition"
         >
           <span className="font-medium">{ctaLabel}</span>

@@ -23,6 +23,37 @@
     "heroSubtitle": "Des compensations vérifiées pour PME, particuliers et organisations. Achat unique, abonnement mensuel ou cadeau — nous retirons les crédits au registre et fournissons les certificats.",
     "ctaPrimary": "Voir les options",
     "ctaSecondary": "Comment ça marche",
+    "ctaMarketplace": "Voir le marché",
+    "ctaContact": "Nous contacter",
+    "contactModal": {
+      "title": "Dites-nous votre besoin",
+      "close": "Fermer",
+      "name": "Votre nom",
+      "email": "E-mail",
+      "who": "Qui êtes-vous ?",
+      "optCompany": "Entreprise",
+      "optIndividual": "Particulier",
+      "optOther": "Autre",
+      "need": "Que souhaitez-vous ?",
+      "needOffsets": "Acheter des crédits carbone",
+      "needAdvice": "Conseils / questions",
+      "needOther": "Autre",
+      "message": "Message",
+      "optional": "Optionnel",
+      "cancel": "Annuler",
+      "submit": "Envoyer",
+      "sent": "Merci ! Nous revenons vers vous rapidement."
+    },
+
+     "quotes": [
+      { "text": "La plus grande menace pour notre planète est de croire que quelqu’un d’autre la sauvera.", "author": "Robert Swan" },
+      { "text": "Ce sont les petites actions des citoyens qui feront la différence.", "author": "Wangari Maathai" },
+      { "text": "Nous sommes la première génération à ressentir les effets du changement climatique et la dernière à pouvoir y faire quelque chose.", "author": "Barack Obama" },
+      { "text": "La terre est ce que nous avons tous en commun.", "author": "Wendell Berry" },
+      { "text": "Chaque individu compte. Chaque individu a un rôle à jouer.", "author": "Jane Goodall" }
+    ],
+
+
 
     "slides": [
       { "label": "PME", "title": "Compenser l’empreinte de votre entreprise", "subtitle": "Formules simples pour les scopes 1–3, vérifiées et retirées au registre.", "href": "/companies" },
@@ -46,7 +77,19 @@
     "contactSubtitle": "Écrivez-nous et nous répondrons sous 1 jour ouvré.",
     "contactButton": "Nous écrire",
 
-    "slideCta": "Explorer"
+    "slideCta": "Explorer",
+
+    "scroll": "Faire défiler",
+
+    "langPrompt": {
+      "title": "Choisissez votre langue",
+      "body": "Nous pouvons afficher le site en français ou en anglais.",
+      "english": "English",
+      "french": "Français",
+      "later": "Plus tard"
+    }
+
+
   },
 
   "companies": {
@@ -119,5 +162,101 @@
     "title": "404",
     "subtitle": "Nous n’avons pas trouvé cette page.",
     "back": "Retour à l’accueil"
+  },
+  
+  "start": {
+    "title": "Pour qui est-ce ?",
+    "subtitle": "Choisissez une option pour voir des offres adaptées.",
+    "company": { "title": "Entreprise", "desc": "Lots de compensations avec facture et retrait sur registre." },
+    "individual": { "title": "Particulier", "desc": "Compensations personnelles et certificats cadeaux." },
+    "continue": "Continuer"
+  },
+
+
+  "creditsPage": {
+    "intro": {
+      "title": "Crédits carbone volontaires — en clair",
+      "p1": "Un crédit carbone volontaire représente 1 tonne de CO₂e soit évitée (non émise) soit retirée de l’atmosphère par un projet certifié. Entreprises et particuliers achètent des crédits pour compenser leurs propres émissions.",
+      "facts": [
+        "1 crédit = 1 tCO₂e.",
+        "Deux familles : évitements (ex. foyers propres) et retraits (ex. reboisement).",
+        "Nous fournissons des certificats de retrait pour votre reporting."
+      ]
+    },
+    "quality": {
+      "title": "Qualité & intégrité",
+      "intro": "Des crédits de qualité sont prudents, traçables et vérifiés par des tiers. Voici nos critères clés :",
+      "features": {
+        "verification": {
+          "title": "Vérification & MRV",
+          "body": "Des auditeurs indépendants valident le projet et contrôlent régulièrement les réductions d’émissions (MRV)."
+        },
+        "additionality": {
+          "title": "Additionnalité",
+          "body": "L’impact climatique n’aurait pas lieu sans le projet ou son financement carbone."
+        },
+        "doubleCounting": {
+          "title": "Pas de double comptage",
+          "body": "Des registres robustes empêchent qu’une même tonne soit revendiquée deux fois ; comptabilités projet et pays séparées."
+        },
+        "permanence": {
+          "title": "Permanence & fuites",
+          "body": "Mesures contre les risques de renversement (incendie, coupe) et les fuites ; tampons/assurances possibles."
+        }
+      },
+      "typesTitle": "Types de projets (exemples)",
+      "typesBody": "Solutions fondées sur la nature (re/boisement, mangroves), foyers propres, renouvelables dans les régions peu servies, retraits technologiques (DAC/biomasse), etc. Nous privilégions les co-bénéfices et les millésimes récents."
+    },
+    "products": {
+      "title": "Nos produits",
+      "body": "Lots pour entreprises ou paquets plus petits pour particuliers. Tarification transparente, projets vérifiés, retrait géré par nos soins.",
+      "cta": "Voir le marché",
+      "previewTag": "Aperçu",
+      "previewNote": "Annonces temporaires en attendant l’inventaire final."
+    }
+  },
+  "market": {
+    "title": "Marché",
+    "subtitle": "Annonces de démonstration. Tarifs et disponibilités sur demande.",
+    "enquire": "Demander",
+    "placeholderNote": "Images/textes provisoires. Ajoutez vos images dans /public/images/marketplace/.",
+    "items": [
+      {
+        "id": "gs-stoves-ke",
+        "title": "Foyers propres — Kenya",
+        "standard": "Gold Standard",
+        "type": "Évitement / énergie domestique",
+        "origin": "Kenya",
+        "vintage": "2022–2024",
+        "priceEur": 12,
+        "image": "/images/marketplace/stoves.jpg",
+        "summary": "Des foyers efficaces réduisent l’usage de bois et la pollution intérieure ; les économies de combustible sont vérifiées."
+      },
+      {
+        "id": "vcs-reforestation-br",
+        "title": "Reboisement — Forêt atlantique",
+        "standard": "Verra (VCS)",
+        "type": "Retrait / naturel",
+        "origin": "Brésil",
+        "vintage": "2021–2023",
+        "priceEur": 15,
+        "image": "/images/marketplace/reforestation.jpg",
+        "summary": "Restauration d’espèces natives, biodiversité et emplois locaux ; modèles de croissance prudents."
+      },
+      {
+        "id": "acr-landfill-mx",
+        "title": "Captage de gaz de décharge",
+        "standard": "ACR",
+        "type": "Évitement / méthane",
+        "origin": "Mexique",
+        "vintage": "2020–2022",
+        "priceEur": 9,
+        "image": "/images/marketplace/landfill.jpg",
+        "summary": "Le captage et le torchage transforment le méthane en CO₂, réduisant ~28× l’impact par tonne."
+      }
+    ]
   }
+
+
+
 }

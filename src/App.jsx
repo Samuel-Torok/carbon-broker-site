@@ -12,6 +12,8 @@ import Individuals from "./pages/Individuals.jsx";
 import Contact from "./pages/Contact.jsx";
 import Assistant from "./pages/Assistant.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import GetStarted from "./pages/GetStarted.jsx";
+import Marketplace from "./pages/Marketplace.jsx";
 
 export default function App() {
   const { pathname } = useLocation();
@@ -33,6 +35,8 @@ export default function App() {
             <Route path="/buy/individuals" element={<Individuals />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/assistant" element={<Assistant />} />
+            <Route path="/start" element={<GetStarted />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

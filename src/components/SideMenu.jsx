@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { useI18n } from "../i18n/i18n";
+import { useI18n } from "../i18n";
 
 const linkBase =
   "block rounded-lg px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/60";
@@ -99,7 +99,7 @@ export default function SideMenu() {
 
         <div className="mt-4 px-4 pb-4">
           <Link
-            to="/companies"
+            to="/start"
             onClick={() => setOpen(false)}
             className="block w-full rounded-xl px-4 py-2 text-center font-medium text-white
                        bg-gradient-to-r from-indigo-500 to-emerald-400 hover:opacity-95"
