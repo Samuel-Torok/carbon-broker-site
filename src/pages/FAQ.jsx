@@ -1,24 +1,32 @@
+// src/pages/FAQ.jsx
 import PagePanel from "../components/PagePanel.jsx";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "../components/ui/accordion";
+import { useI18n } from "../i18n";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../components/ui/accordion";
 
 export default function FAQ() {
+  const { t } = useI18n();
+  const items = [
+    { q: t("faq.q1"), a: t("faq.a1") },
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
+  ];
+
   return (
     <PagePanel maxWidth="max-w-3xl">
       <main className="py-12">
-        <h1 className="mb-6 text-3xl font-bold title-gradient">FAQ</h1>
+        <h1 className="mb-6 text-3xl font-bold title-gradient">{t("faq.title")}</h1>
         <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="1">
-            <AccordionTrigger>Which standards do you support?</AccordionTrigger>
-            <AccordionContent>Verra (VCS), Gold Standard, ACR and others. We match to your policy and claims.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="2">
-            <AccordionTrigger>Do you retire credits?</AccordionTrigger>
-            <AccordionContent>Yes—custody, retirement, and certificates included.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="3">
-            <AccordionTrigger>How are prices set?</AccordionTrigger>
-            <AccordionContent>By technology, region, vintage and liquidity. We quote best execution from our network.</AccordionContent>
-          </AccordionItem>
+          {items.map((it, i) => (
+            <AccordionItem key={i} value={`${i + 1}`}>
+              <AccordionTrigger>{it.q}</AccordionTrigger>
+              <AccordionContent>{it.a}</AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </main>
     </PagePanel>

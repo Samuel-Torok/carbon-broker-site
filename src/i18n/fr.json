@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "credits": "Crédits carbone",
+    "companies": "Entreprises",
+    "individuals": "Particuliers",
+    "faq": "FAQ",
+    "about": "À propos",
+    "contact": "Contact",
+    "assistant": "Assistant IA",
+    "getStarted": "Commencer",
+    "language": "Langue",
+    "english": "Anglais",
+    "french": "Français",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "imprint": "Mentions légales"
+  },
+
+  "home": {
+    "heroBadge": "Compensation volontaire",
+    "heroTitle": "Devenez <g>neutre en carbone</g> en toute clarté",
+    "heroSubtitle": "Des compensations vérifiées pour PME, particuliers et organisations. Achat unique, abonnement mensuel ou cadeau — nous retirons les crédits au registre et fournissons les certificats.",
+    "ctaPrimary": "Voir les options",
+    "ctaSecondary": "Comment ça marche",
+
+    "slides": [
+      { "label": "PME", "title": "Compenser l’empreinte de votre entreprise", "subtitle": "Formules simples pour les scopes 1–3, vérifiées et retirées au registre.", "href": "/companies" },
+      { "label": "Particuliers", "title": "Rendre votre vie neutre en carbone", "subtitle": "Achat unique ou abonnement mensuel. Certificats inclus.", "href": "/buy/individuals" },
+      { "label": "Crédits carbone", "title": "Qualité et traçabilité", "subtitle": "Standards, millésimes et preuve de retrait expliqués.", "href": "/credits" },
+      { "label": "À propos", "title": "Qui nous sommes", "subtitle": "Approvisionnement et reporting transparents, conçus pour la confiance.", "href": "/about" },
+      { "label": "FAQ", "title": "Questions fréquentes", "subtitle": "Tarifs, standards, retrait et certificats.", "href": "/faq" }
+    ],
+
+    "featuresTitle": "Tout ce qu’il faut",
+    "featuresSubtitle": "Approvisionnement, retrait et preuve — gérés de bout en bout.",
+    "features": [
+      { "icon": "Leaf", "title": "Projets vérifiés", "desc": "Approvisionnement certifié (Gold Standard, Verra…) avec retraits traçables." },
+      { "icon": "Shield", "title": "Retrait géré", "desc": "Retrait au registre pour vous et certificats officiels pour le reporting." },
+      { "icon": "Gift",  "title": "Options flexibles", "desc": "Achat unique, abonnement mensuel, ou cadeau de neutralité carbone." }
+    ],
+
+    "badges": { "retirement": "Retrait au registre", "verified": "Approvisionnement vérifié" },
+
+    "contactTitle": "Des questions ?",
+    "contactSubtitle": "Écrivez-nous et nous répondrons sous 1 jour ouvré.",
+    "contactButton": "Nous écrire",
+
+    "slideCta": "Explorer"
+  },
+
+  "companies": {
+    "title": "Pour les entreprises (PME)",
+    "intro": "Formules adaptées aux scopes 1–3. Nous confirmons le mix de projets et effectuons le retrait au registre."
+  },
+
+  "individuals": {
+    "title": "Pour les particuliers",
+    "intro": "Compenser ses émissions avec des formules vérifiées et des retraits certifiés."
+  },
+
+  "credits": {
+    "title": "Crédits carbone & qualité",
+    "bullets": [
+      "Standards : Verra (VCS), Gold Standard, ACR, etc.",
+      "Qualité : additionnalité, permanence, fuites, double comptage, robustesse MRV.",
+      "Types : solutions naturelles, foyers propres, renouvelables, captation/stockage.",
+      "Traçabilité : numéros par millésime ; certificats de retrait fournis."
+    ]
+  },
+
+  "faq": {
+    "title": "FAQ",
+    "q1": "Quels standards supportez-vous ?",
+    "a1": "Verra (VCS), Gold Standard, ACR et autres. Nous alignons selon votre politique et vos déclarations.",
+    "q2": "Retirez-vous les crédits ?",
+    "a2": "Oui — garde, retrait et certificats inclus.",
+    "q3": "Comment les prix sont-ils fixés ?",
+    "a3": "Par technologie, région, millésime et liquidité. Nous sourçons la meilleure exécution."
+  },
+
+  "about": {
+    "title": "À propos",
+    "p1": "Courtier en crédits carbone axé sur la qualité, la transparence et l’exécution. Nous sourçons des volumes vérifiés, gérons les retraits au registre et fournissons un reporting clair.",
+    "p2": "Équipe : trading, développement de projets et reporting extra-financier."
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Nous serions ravis d’échanger avec vous.",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "instagram": "Instagram",
+    "note": "Vous préférez un autre canal ? Dites-le nous et nous l’ajouterons."
+  },
+
+  "assistant": {
+    "title": "Assistant IA",
+    "subtitle": "Interface de chat bientôt disponible.",
+    "body": "Dites-nous votre besoin et nous vous aiderons à choisir les compensations."
+  },
+
+  "packages": {
+    "titleCompany": "Acheter des forfaits pour entreprises",
+    "titleIndividuals": "Acheter des forfaits pour particuliers",
+    "sizeLabel": "Taille (tCO₂e)",
+    "qualityLabel": "Qualité",
+    "qualities": {
+      "standard": "Standard",
+      "premium": "Premium (naturel, récent)",
+      "elite": "Elite (fours propres/REDD+, plus récent)"
+    },
+    "estimatedTotal": "Total estimé",
+    "proceed": "Continuer",
+    "disclaimer": "Le prix final dépend du projet, du millésime et de la disponibilité. Confirmation par e-mail."
+  },
+
+  "notFound": {
+    "title": "404",
+    "subtitle": "Nous n’avons pas trouvé cette page.",
+    "back": "Retour à l’accueil"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "home": "Home",
+    "credits": "Carbon Credits",
+    "companies": "For Companies",
+    "individuals": "For Individuals",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact",
+    "assistant": "AI Assistant",
+    "getStarted": "Get started",
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "imprint": "Imprint"
+  },
+
+  "home": {
+    "heroBadge": "Voluntary offsets",
+    "heroTitle": "Go <g>carbon neutral</g> with clarity",
+    "heroSubtitle": "Simple, verified carbon offsets for small businesses, individuals, and organizations. Offset once, subscribe monthly, or gift carbon neutrality — we retire credits and deliver certificates you can trust.",
+    "ctaPrimary": "See options",
+    "ctaSecondary": "How it works",
+
+    "slides": [
+      { "label": "For SMEs", "title": "Offset your company’s footprint", "subtitle": "Simple bundles for Scope 1–3, verified and retired on registry.", "href": "/companies" },
+      { "label": "For Individuals", "title": "Make your life carbon neutral", "subtitle": "Offset once or subscribe monthly. Certificates included.", "href": "/buy/individuals" },
+      { "label": "Carbon Credits", "title": "Understand quality & traceability", "subtitle": "Standards, vintages, and retirement proof explained.", "href": "/credits" },
+      { "label": "About us", "title": "Who we are", "subtitle": "Transparent sourcing and reporting, built for trust.", "href": "/about" },
+      { "label": "FAQ", "title": "Common questions", "subtitle": "Pricing, standards, retirement, and certificates.", "href": "/faq" }
+    ],
+
+    "featuresTitle": "Everything you need",
+    "featuresSubtitle": "Sourcing, retirement, and proof — handled end-to-end.",
+    "features": [
+      { "icon": "Leaf", "title": "Verified projects", "desc": "Curated supply from leading standards (e.g., Gold Standard, Verra) with traceable retirements." },
+      { "icon": "Shield", "title": "Retirement handled", "desc": "We retire on registry for you and provide official certificates for reporting." },
+      { "icon": "Gift",  "title": "Flexible options", "desc": "Offset once, set a monthly plan, or gift carbon neutrality to someone you care about." }
+    ],
+
+    "badges": { "retirement": "Registry retirement", "verified": "Verified supply" },
+
+    "contactTitle": "Questions?",
+    "contactSubtitle": "Email us and we’ll reply within 1 business day.",
+    "contactButton": "Email us",
+
+    "slideCta": "Explore"
+  },
+
+  "companies": {
+    "title": "For companies (SME)",
+    "intro": "Buy bundles suitable for Scope 1–3 offsetting. We’ll confirm project mix and retire on registry."
+  },
+
+  "individuals": {
+    "title": "For individuals",
+    "intro": "Offset personal emissions with curated packages and verified retirements."
+  },
+
+  "credits": {
+    "title": "Carbon credits & quality",
+    "bullets": [
+      "Standards: Verra (VCS), Gold Standard, ACR, others.",
+      "Quality checks: additionality, permanence, leakage, double-counting, MRV robustness.",
+      "Project types: nature-based, cookstoves, renewable energy, engineered removals.",
+      "Traceability: serials by vintage; retirement certificates provided."
+    ]
+  },
+
+  "faq": {
+    "title": "FAQ",
+    "q1": "Which standards do you support?",
+    "a1": "Verra (VCS), Gold Standard, ACR and others. We match to your policy and claims.",
+    "q2": "Do you retire credits?",
+    "a2": "Yes—custody, retirement, and certificates included.",
+    "q3": "How are prices set?",
+    "a3": "By technology, region, vintage and liquidity. We quote best execution from our network."
+  },
+
+  "about": {
+    "title": "About us",
+    "p1": "We’re a carbon credit brokerage focused on quality, transparency and execution. We source verified supply, handle registry retirements, and provide clear reporting for auditors and stakeholders.",
+    "p2": "Team: ex-trading, project development, and sustainability reporting."
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "We’d love to hear from you.",
+    "email": "Email",
+    "phone": "Phone",
+    "instagram": "Instagram",
+    "note": "Prefer another channel? Tell us and we’ll add it."
+  },
+
+  "assistant": {
+    "title": "AI Assistant",
+    "subtitle": "Chat interface coming soon.",
+    "body": "Tell us what you need and we’ll help you choose offsets."
+  },
+
+  "packages": {
+    "titleCompany": "Buy packages for companies",
+    "titleIndividuals": "Buy packages for individuals",
+    "sizeLabel": "Size (tCO₂e)",
+    "qualityLabel": "Quality",
+    "qualities": {
+      "standard": "Standard",
+      "premium": "Premium (nature-based, recent)",
+      "elite": "Elite (cookstoves/REDD+, newest)"
+    },
+    "estimatedTotal": "Estimated total",
+    "proceed": "Proceed",
+    "disclaimer": "Final pricing depends on project, vintage and availability. We’ll confirm by email."
+  },
+
+  "notFound": {
+    "title": "404",
+    "subtitle": "We couldn’t find that page.",
+    "back": "Back home"
+  }
+}

@@ -1,72 +1,24 @@
 // src/Site.jsx
-import React, { useMemo } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
 import { Leaf, Shield, Gift } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import Footer from "./components/Footer.jsx";
+import { useI18n } from "./i18n";
+import { GText } from "./lib/i18n-helpers";
 
-const BRAND = "Zephyr";
-
-/* ---- copy tuned for offsets (SME, individuals, gifts) ---- */
-const features = [
-  {
-    icon: Leaf,
-    title: "Verified projects",
-    desc: "Curated supply from leading standards (e.g., Gold Standard, Verra) with traceable retirements.",
-  },
-  {
-    icon: Shield,
-    title: "Retirement handled",
-    desc: "We retire on registry for you and provide official certificates for reporting.",
-  },
-  {
-    icon: Gift,
-    title: "Flexible options",
-    desc: "Offset once, set a monthly plan, or gift carbon neutrality to someone you care about.",
-  },
-];
-
-/* ---- FULL-SCREEN SLIDES ---- */
-const slides = [
-  {
-    label: "For SMEs",
-    title: "Offset your company’s footprint",
-    subtitle: "Simple bundles for Scope 1–3, verified and retired on registry.",
-    href: "/companies",
-  },
-  {
-    label: "For Individuals",
-    title: "Make your life carbon neutral",
-    subtitle: "Offset once or subscribe monthly. Certificates included.",
-    href: "/buy/individuals",
-  },
-  {
-    label: "Carbon Credits",
-    title: "Understand quality & traceability",
-    subtitle: "Standards, vintages, and retirement proof explained.",
-    href: "/credits",
-  },
-  {
-    label: "About us",
-    title: "Who we are",
-    subtitle: "Transparent sourcing and reporting, built for trust.",
-    href: "/about",
-  },
-  {
-    label: "FAQ",
-    title: "Common questions",
-    subtitle: "Pricing, standards, retirement, and certificates.",
-    href: "/faq",
-  },
-];
+const ICONS = { Leaf, Shield, Gift };
 
 export default function Site() {
-  const year = useMemo(() => new Date().getFullYear(), []);
+  const { t } = useI18n();
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+
+  const slides = t("home.slides");     // from en.json/fr.json
+  const features = t("home.features"); // from en.json/fr.json
+  const slideCta = t("home.slideCta"); // new key below
 
   return (
     <div className="dark">
@@ -81,11 +33,7 @@ export default function Site() {
           {/* Fixed hero background only on the homepage */}
           {isHome && (
             <div className="fixed inset-0 z-0 pointer-events-none">
-              <img
-                src="/images/hero-background.jpg"
-                alt="Background"
-                className="h-full w-full object-cover"
-              />
+              <img src="/images/hero-background.jpg" alt="" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-black/10" />
             </div>
           )}
@@ -95,43 +43,33 @@ export default function Site() {
               {/* ---------- HERO ---------- */}
               <section className="relative overflow-hidden h-[100svh] snap-start snap-always">
                 <div className="relative mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-12 gap-10 px-4 min-h-[100svh] items-center">
-
                   <motion.div
                     className="md:col-span-8"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Badge className="mb-4">Voluntary offsets</Badge>
+                    <Badge className="mb-4">{t("home.heroBadge")}</Badge>
+
                     <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
-                      Go{" "}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
-                        carbon neutral
-                      </span>{" "}
-                      with clarity
+                      <GText text={t("home.heroTitle")} />
                     </h1>
+
                     <p className="mt-4 text-lg leading-relaxed text-white/85">
-                      Simple, verified carbon offsets for small businesses,
-                      individuals, and organizations. Offset once, subscribe
-                      monthly, or gift carbon neutrality — we retire credits
-                      and deliver certificates you can trust.
+                      {t("home.heroSubtitle")}
                     </p>
+
                     <div className="mt-6 flex flex-wrap items-center gap-3">
-                      <Link to="/companies">
-                        <Button size="lg">See options</Button>
-                      </Link>
-                      <Link to="/credits">
-                        <Button size="lg" variant="outline">
-                          How it works
-                        </Button>
-                      </Link>
+                      <Link to="/companies"><Button size="lg">{t("home.ctaPrimary")}</Button></Link>
+                      <Link to="/credits"><Button size="lg" variant="outline">{t("home.ctaSecondary")}</Button></Link>
                     </div>
+
                     <div className="mt-6 flex items-center gap-5 text-sm text-white/70">
                       <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4" /> Registry retirement
+                        <Shield className="h-4 w-4" /> {t("home.badges.retirement")}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4" /> Verified supply
+                        <Leaf className="h-4 w-4" /> {t("home.badges.verified")}
                       </div>
                     </div>
                   </motion.div>
@@ -142,7 +80,7 @@ export default function Site() {
               {/* ---------- FULL-SCREEN SLIDES ---------- */}
               <section aria-label="Quick paths" className="w-full">
                 {slides.map((s, i) => (
-                  <MotionSlide key={s.href} slide={s} alignRight={i % 2 === 1} />
+                  <MotionSlide key={s.href} slide={s} alignRight={i % 2 === 1} ctaLabel={slideCta} />
                 ))}
               </section>
 
@@ -151,27 +89,28 @@ export default function Site() {
                 <div className="mb-8 text-center">
                   <h2 className="text-3xl font-bold">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
-                      Everything you need
+                      {t("home.featuresTitle")}
                     </span>
                   </h2>
-                  <p className="mt-2 text-white/75">
-                    Sourcing, retirement, and proof — handled end-to-end.
-                  </p>
+                  <p className="mt-2 text-white/75">{t("home.featuresSubtitle")}</p>
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                  {features.map(({ icon: Icon, title, desc }) => (
-                    <Card key={title} className="border-white/10 bg-white/5">
-                      <CardHeader className="flex flex-row items-center gap-3">
-                        <div className="rounded-2xl p-2 ring-1 ring-white/10">
-                          <Icon className="h-5 w-5 text-emerald-400" />
-                        </div>
-                        <CardTitle className="text-lg">{title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-white/80">{desc}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {features.map(({ icon, title, desc }) => {
+                    const Icon = ICONS[icon] ?? Leaf;
+                    return (
+                      <Card key={title} className="border-white/10 bg-white/5">
+                        <CardHeader className="flex flex-row items-center gap-3">
+                          <div className="rounded-2xl p-2 ring-1 ring-white/10">
+                            <Icon className="h-5 w-5 text-emerald-400" />
+                          </div>
+                          <CardTitle className="text-lg">{title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-white/80">{desc}</p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </section>
 
@@ -180,29 +119,25 @@ export default function Site() {
                 <div className="text-center">
                   <h2 className="text-3xl font-bold">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">
-                      Questions?
+                      {t("home.contactTitle")}
                     </span>
                   </h2>
-                  <p className="mt-2 text-white/75">
-                    Email us and we’ll reply within 1 business day.
-                  </p>
-                  <a href="mailto:hello@example.com" className="inline-block mt-4">
-                    <Button>Email us</Button>
-                  </a>
+                  <p className="mt-2 text-white/75">{t("home.contactSubtitle")}</p>
+                  <Link to="/contact" className="inline-block mt-4">
+                    <Button>{t("home.contactButton")}</Button>
+                  </Link>
                 </div>
               </section>
             </>
           )}
         </main>
-
-        <Footer />
       </div>
     </div>
   );
 }
 
 /* --- Full-screen slide component --- */
-function MotionSlide({ slide, alignRight }) {
+function MotionSlide({ slide, alignRight, ctaLabel }) {
   return (
     <section className="relative h-[100svh] w-full overflow-hidden snap-start snap-always">
       <motion.div
@@ -230,7 +165,7 @@ function MotionSlide({ slide, alignRight }) {
           to={slide.href}
           className="group mt-6 inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur hover:bg-white/15 transition"
         >
-          <span className="font-medium">Explore</span>
+          <span className="font-medium">{ctaLabel}</span>
           <svg
             className="h-5 w-5 translate-x-0 transition group-hover:translate-x-1"
             viewBox="0 0 24 24"
