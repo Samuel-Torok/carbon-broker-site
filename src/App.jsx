@@ -1,5 +1,5 @@
-// src/App.jsx
 import { Routes, Route, useLocation } from "react-router-dom";
+import { I18nProvider } from "./i18n";
 import SideMenu from "./components/SideMenu";
 import BrandIcon from "./components/BrandIcon.jsx";
 
@@ -9,31 +9,38 @@ import About from "./pages/About.jsx";
 import Credits from "./pages/Credits.jsx";
 import Companies from "./pages/Companies.jsx";
 import Individuals from "./pages/Individuals.jsx";
+import Contact from "./pages/Contact.jsx";
+import Assistant from "./pages/Assistant.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import GetStarted from "./pages/GetStarted.jsx";
+import Marketplace from "./pages/Marketplace.jsx";
 
 export default function App() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
 
   return (
-    <div className="min-h-screen flex flex-col dark-gradient">
-      <BrandIcon />
-      <SideMenu />
+    <I18nProvider>
+      <div className="min-h-screen flex flex-col dark-gradient">
+        <BrandIcon />
+        <SideMenu />
 
-      {/* Flex only off-home so PagePanel can take full height */}
-      <main className={isHome ? "flex-1" : "flex-1 flex min-h-0"}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/credits" element={<Credits />} />
-          <Route path="/companies" element={<Companies />} />
-          <Route path="/buy/individuals" element={<Individuals />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-
-      
-    </div>
+        <main className={isHome ? "flex-1" : "flex-1 flex min-h-0"}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/credits" element={<Credits />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/buy/individuals" element={<Individuals />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/assistant" element={<Assistant />} />
+            <Route path="/start" element={<GetStarted />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
+    </I18nProvider>
   );
 }

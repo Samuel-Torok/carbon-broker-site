@@ -36,3 +36,78 @@
 .snap-container { scrollbar-width: none; }
 .snap-container::-webkit-scrollbar { display: none; }
 
+/* Gradient outline pill — transparent fill */
+.btn-outline-gradient {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px; /* full pill */
+  background: transparent;
+}
+
+.btn-outline-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* border thickness */
+  background: linear-gradient(90deg, #34D399, #818CF8);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; /* Safari */
+          mask-composite: exclude; /* FF/Chromium */
+  pointer-events: none;
+}
+
+.btn-outline-gradient > .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  padding: 0.5rem 1rem;          /* px-4 py-2 */
+}
+
+@media (min-width: 768px) {
+  .btn-outline-gradient > .pill { padding: 0.625rem 1.25rem; } /* md:px-5 md:py-2.5 */
+}
+/* Neutral outline pill — transparent fill */
+.btn-outline-neutral {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.btn-outline-neutral::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* border thickness */
+  background: linear-gradient(#ffffff33, #ffffff33); /* subtle neutral */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; /* Safari */
+          mask-composite: exclude; /* FF/Chromium */
+  pointer-events: none;
+}
+
+.btn-outline-neutral > .pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  padding: 0.5rem 1rem;          /* px-4 py-2 */
+}
+
+@media (min-width: 768px) {
+  .btn-outline-neutral > .pill { padding: 0.625rem 1.25rem; } /* md:px-5 md:py-2.5 */
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+.animate-bounce-slow {
+  animation: floatY 1.6s ease-in-out infinite;
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useI18n } from "../i18n";
 
 const linkBase =
   "block rounded-lg px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/60";
@@ -10,6 +11,7 @@ const active =
 export default function SideMenu() {
   const [open, setOpen] = useState(false);
   const [byHover, setByHover] = useState(false);
+  const { lang, setLang, t } = useI18n();
   const year = new Date().getFullYear();
 
   const NavItem = ({ to, children }) => (
@@ -62,26 +64,50 @@ export default function SideMenu() {
         </div>
 
         <nav className="px-2 py-2 space-y-1 overflow-auto">
-          <NavItem to="/">Home</NavItem>
-          <NavItem to="/credits">Carbon Credits</NavItem>
-          <NavItem to="/companies">For Companies</NavItem>
-          <NavItem to="/buy/individuals">For Individuals</NavItem>
-          <NavItem to="/faq">FAQ</NavItem>
-          <NavItem to="/about">About</NavItem>
+          <NavItem to="/">{t("nav.home")}</NavItem>
+          <NavItem to="/credits">{t("nav.credits")}</NavItem>
+          <NavItem to="/companies">{t("nav.companies")}</NavItem>
+          <NavItem to="/buy/individuals">{t("nav.individuals")}</NavItem>
+          <NavItem to="/faq">{t("nav.faq")}</NavItem>
+          <NavItem to="/about">{t("nav.about")}</NavItem>
+          <NavItem to="/contact">{t("nav.contact")}</NavItem>
+          <NavItem to="/assistant">{t("nav.assistant")}</NavItem>
         </nav>
+
+        {/* Language switch */}
+        <div className="mt-3 px-4">
+          <label className="block text-xs text-slate-400 mb-2">{t("nav.language")}</label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setLang("en")}
+              className={`px-3 py-1.5 rounded-lg ring-1 ring-white/10 ${
+                lang === "en" ? "bg-white/15 text-white" : "bg-white/5 text-slate-300 hover:bg-white/10"
+              }`}
+            >
+              {t("nav.english")}
+            </button>
+            <button
+              onClick={() => setLang("fr")}
+              className={`px-3 py-1.5 rounded-lg ring-1 ring-white/10 ${
+                lang === "fr" ? "bg-white/15 text-white" : "bg-white/5 text-slate-300 hover:bg-white/10"
+              }`}
+            >
+              {t("nav.french")}
+            </button>
+          </div>
+        </div>
 
         <div className="mt-4 px-4 pb-4">
           <Link
-            to="/companies"
+            to="/start"
             onClick={() => setOpen(false)}
             className="block w-full rounded-xl px-4 py-2 text-center font-medium text-white
                        bg-gradient-to-r from-indigo-500 to-emerald-400 hover:opacity-95"
           >
-            Get started
+            {t("nav.getStarted")}
           </Link>
         </div>
 
-        {/* Footer-info moved into sidebar */}
         <div className="mt-auto border-t border-white/10 px-4 py-3 text-xs text-slate-400">
           <div className="flex items-center justify-between">
             <span>© {year} Zephyr Carbon</span>

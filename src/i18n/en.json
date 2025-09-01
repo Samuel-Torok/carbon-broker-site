@@ -1,0 +1,260 @@
+{
+  "nav": {
+    "home": "Home",
+    "credits": "Carbon Credits",
+    "companies": "For Companies",
+    "individuals": "For Individuals",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact",
+    "assistant": "AI Assistant",
+    "getStarted": "Get started",
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "imprint": "Imprint"
+  },
+
+  "home": {
+    "heroBadge": "Voluntary offsets",
+    "heroTitle": "Go <g>carbon neutral</g> with clarity",
+    "heroSubtitle": "Simple, verified carbon offsets for small businesses, individuals, and organizations. Offset once, subscribe monthly, or gift carbon neutrality — we retire credits and deliver certificates you can trust.",
+    "ctaPrimary": "See options",
+    "ctaSecondary": "How it works",
+    "ctaMarketplace": "Browse marketplace",
+    "ctaContact": "Contact us",
+    "contactModal": {
+      "title": "Tell us what you need",
+      "close": "Close",
+      "name": "Your name",
+      "email": "Email",
+      "who": "Who are you?",
+      "optCompany": "Company",
+      "optIndividual": "Individual",
+      "optOther": "Other",
+      "need": "What do you need?",
+      "needOffsets": "Buy carbon credits",
+      "needAdvice": "Advice / questions",
+      "needOther": "Other",
+      "message": "Message",
+      "optional": "Optional",
+      "cancel": "Cancel",
+      "submit": "Send",
+      "sent": "Thanks! We’ll get back to you shortly."
+    },
+    "quotes": [
+      { "text": "The greatest threat to our planet is the belief that someone else will save it.", "author": "Robert Swan" },
+      { "text": "It is the little things citizens do. That’s what will make the difference.", "author": "Wangari Maathai" },
+      { "text": "We are the first generation to feel the effect of climate change and the last generation who can do something about it.", "author": "Barack Obama" },
+      { "text": "The earth is what we all have in common.", "author": "Wendell Berry" },
+      { "text": "Every individual matters. Every individual has a role to play.", "author": "Jane Goodall" }
+    ],
+
+    "slides": [
+      { "label": "For SMEs", "title": "Offset your company’s footprint", "subtitle": "Simple bundles for Scope 1–3, verified and retired on registry.", "href": "/companies" },
+      { "label": "For Individuals", "title": "Make your life carbon neutral", "subtitle": "Offset once or subscribe monthly. Certificates included.", "href": "/buy/individuals" },
+      { "label": "Carbon Credits", "title": "Understand quality & traceability", "subtitle": "Standards, vintages, and retirement proof explained.", "href": "/credits" },
+      { "label": "About us", "title": "Who we are", "subtitle": "Transparent sourcing and reporting, built for trust.", "href": "/about" },
+      { "label": "FAQ", "title": "Common questions", "subtitle": "Pricing, standards, retirement, and certificates.", "href": "/faq" }
+    ],
+
+    "featuresTitle": "Everything you need",
+    "featuresSubtitle": "Sourcing, retirement, and proof — handled end-to-end.",
+    "features": [
+      { "icon": "Leaf", "title": "Verified projects", "desc": "Curated supply from leading standards (e.g., Gold Standard, Verra) with traceable retirements." },
+      { "icon": "Shield", "title": "Retirement handled", "desc": "We retire on registry for you and provide official certificates for reporting." },
+      { "icon": "Gift",  "title": "Flexible options", "desc": "Offset once, set a monthly plan, or gift carbon neutrality to someone you care about." }
+    ],
+
+    "badges": { "retirement": "Registry retirement", "verified": "Verified supply" },
+
+    "contactTitle": "Questions?",
+    "contactSubtitle": "Email us and we’ll reply within 1 business day.",
+    "contactButton": "Email us",
+
+    "slideCta": "Explore",
+    
+    "scroll": "Scroll",
+    "langPrompt": {
+      "title": "Choose your language",
+      "body": "We can show the site in English or French.",
+      "english": "English",
+      "french": "Français",
+      "later": "Not now"
+    }
+
+
+
+  },
+
+  "companies": {
+    "title": "For companies (SME)",
+    "intro": "Buy bundles suitable for Scope 1–3 offsetting. We’ll confirm project mix and retire on registry."
+  },
+
+  "individuals": {
+    "title": "For individuals",
+    "intro": "Offset personal emissions with curated packages and verified retirements."
+  },
+
+  "credits": {
+    "title": "Carbon credits & quality",
+    "bullets": [
+      "Standards: Verra (VCS), Gold Standard, ACR, others.",
+      "Quality checks: additionality, permanence, leakage, double-counting, MRV robustness.",
+      "Project types: nature-based, cookstoves, renewable energy, engineered removals.",
+      "Traceability: serials by vintage; retirement certificates provided."
+    ]
+  },
+
+  "faq": {
+    "title": "FAQ",
+    "q1": "Which standards do you support?",
+    "a1": "Verra (VCS), Gold Standard, ACR and others. We match to your policy and claims.",
+    "q2": "Do you retire credits?",
+    "a2": "Yes—custody, retirement, and certificates included.",
+    "q3": "How are prices set?",
+    "a3": "By technology, region, vintage and liquidity. We quote best execution from our network."
+  },
+
+  "about": {
+    "title": "About us",
+    "p1": "We’re a carbon credit brokerage focused on quality, transparency and execution. We source verified supply, handle registry retirements, and provide clear reporting for auditors and stakeholders.",
+    "p2": "Team: ex-trading, project development, and sustainability reporting."
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "We’d love to hear from you.",
+    "email": "Email",
+    "phone": "Phone",
+    "instagram": "Instagram",
+    "note": "Prefer another channel? Tell us and we’ll add it."
+  },
+
+  "assistant": {
+    "title": "AI Assistant",
+    "subtitle": "Chat interface coming soon.",
+    "body": "Tell us what you need and we’ll help you choose offsets."
+  },
+
+  "packages": {
+    "titleCompany": "Buy packages for companies",
+    "titleIndividuals": "Buy packages for individuals",
+    "sizeLabel": "Size (tCO₂e)",
+    "qualityLabel": "Quality",
+    "qualities": {
+      "standard": "Standard",
+      "premium": "Premium (nature-based, recent)",
+      "elite": "Elite (cookstoves/REDD+, newest)"
+    },
+    "estimatedTotal": "Estimated total",
+    "proceed": "Proceed",
+    "disclaimer": "Final pricing depends on project, vintage and availability. We’ll confirm by email."
+  },
+
+  "notFound": {
+    "title": "404",
+    "subtitle": "We couldn’t find that page.",
+    "back": "Back home"
+  },
+  
+  "start": {
+    "title": "Who is this for?",
+    "subtitle": "Choose an option to see tailored packages.",
+    "company": { "title": "Company", "desc": "Bulk offset packages with invoices and registry retirement." },
+    "individual": { "title": "Individual", "desc": "Personal offsets and gift certificates." },
+    "continue": "Continue"
+  },
+
+  
+  "creditsPage": {
+    "intro": {
+      "title": "Voluntary carbon credits — in plain words",
+      "p1": "A voluntary carbon credit represents 1 tonne of CO₂e either avoided (not emitted) or removed (taken out of the atmosphere) by a certified project. Companies and individuals buy credits to balance their own emissions.",
+      "facts": [
+        "1 credit = 1 tCO₂e.",
+        "Two families: avoidance (e.g., clean cookstoves) and removals (e.g., reforestation).",
+        "We provide retirement certificates for your reporting."
+      ]
+  },
+  "quality": {
+    "title": "Quality & integrity checks",
+    "intro": "Quality credits are conservative, traceable and independently verified. Here’s what we look for:",
+    "features": {
+      "verification": {
+        "title": "Verification & MRV",
+        "body": "Third-party auditors validate the project and monitor, report, and verify (MRV) emission reductions regularly."
+      },
+      "additionality": {
+        "title": "Additionality",
+        "body": "The climate impact wouldn’t happen without the project or its carbon finance."
+      },
+      "doubleCounting": {
+        "title": "No double counting",
+        "body": "Robust registries prevent the same tonne from being claimed twice; project and national accounting are kept clear."
+      },
+      "permanence": {
+        "title": "Permanence & leakage",
+        "body": "Measures limit reversal risk (fire, logging) and avoid shifting emissions elsewhere; buffers or insurance may apply."
+      }
+    },
+    "typesTitle": "Project types (examples)",
+    "typesBody": "Nature-based (re/afforestation, mangroves), clean cookstoves, renewable energy in least-served regions, engineered removals (DAC/biomass), and more. We prioritize projects with strong co-benefits and recent vintages."
+  },
+  "products": {
+    "title": "Our products",
+    "body": "Choose bulk packages for companies or smaller bundles for individuals. Transparent pricing, verified projects, retirement handled by us.",
+    "cta": "Browse marketplace",
+    "previewTag": "Preview",
+    "previewNote": "Listings are placeholders while we finalize inventory."
+  }
+},
+
+  "market": {
+    "title": "Marketplace",
+    "subtitle": "Sample listings for demonstration. Pricing and availability on request.",
+    "enquire": "Enquire",
+    "placeholderNote": "Images/text are placeholders. Put your images in /public/images/marketplace/.",
+    "items": [
+      {
+        "id": "gs-stoves-ke",
+        "title": "Clean cookstoves – Kenya",
+        "standard": "Gold Standard",
+        "type": "Avoidance / household energy",
+        "origin": "Kenya",
+        "vintage": "2022–2024",
+        "priceEur": 12,
+        "image": "/images/marketplace/stoves.jpg",
+        "summary": "Efficient stoves reduce wood use and indoor air pollution; monitored fuel savings deliver verified CO₂e cuts."
+      },
+      {
+        "id": "vcs-reforestation-br",
+        "title": "Reforestation – Atlantic Forest",
+        "standard": "Verra (VCS)",
+        "type": "Removal / nature-based",
+        "origin": "Brazil",
+        "vintage": "2021–2023",
+        "priceEur": 15,
+        "image": "/images/marketplace/reforestation.jpg",
+        "summary": "Native species restoration with biodiversity benefits and community jobs; conservative growth models."
+      },
+      {
+        "id": "acr-landfill-mx",
+        "title": "Landfill gas capture",
+        "standard": "ACR",
+        "type": "Avoidance / methane",
+        "origin": "Mexico",
+        "vintage": "2020–2022",
+        "priceEur": 9,
+        "image": "/images/marketplace/landfill.jpg",
+        "summary": "Methane collection and flaring turn a potent greenhouse gas into CO₂, cutting climate impact ~28× per tonne."
+      }
+    ]
+  }
+
+
+
+}
