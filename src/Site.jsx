@@ -443,10 +443,8 @@ export default function Site() {
 
 /* --- Full-screen slide component --- */
 function MotionSlide({ slide, alignRight, ctaLabel }) {
-  const targetHref =
-    slide.href === "/companies" || slide.href === "/buy/individuals"
-      ? `/start?next=${encodeURIComponent(slide.href)}`
-      : slide.href;
+  const targetHref = slide.href;
+
 
   return (
     <section className="relative h-[100svh] w-full overflow-hidden snap-start snap-always">

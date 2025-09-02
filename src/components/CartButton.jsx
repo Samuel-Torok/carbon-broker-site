@@ -8,7 +8,11 @@ export default function CartButton() {
   return (
     <button
       onClick={() => navigate("/cart-review")}
-      className="fixed top-4 right-16 z-[70] rounded-full bg-white/10 p-2 ring-1 ring-white/20 backdrop-blur hover:bg-white/15"
+      className="fixed bottom-5 right-5 md:bottom-6 md:right-6 z-[70] rounded-full bg-white/10 p-3 ring-1 ring-white/20 backdrop-blur hover:bg-white/15 shadow-lg"
+      style={{
+        insetInlineEnd: "max(env(safe-area-inset-right), 1.25rem)",
+        insetBlockEnd: "max(env(safe-area-inset-bottom), 1.25rem)",
+      }}
       aria-label="Cart"
       title="Cart"
     >
