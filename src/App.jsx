@@ -14,10 +14,13 @@ import Assistant from "./pages/Assistant.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import GetStarted from "./pages/GetStarted.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
+import CartReview from "./pages/CartReview.jsx";
+import Checkout from "./pages/Checkout.jsx";
+
 
 export default function App() {
-  const { pathname } = useLocation();
-  const isHome = pathname === "/";
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   return (
     <I18nProvider>
@@ -25,8 +28,9 @@ export default function App() {
         <BrandIcon />
         <SideMenu />
 
-        <main className={isHome ? "flex-1" : "flex-1 flex min-h-0"}>
-          <Routes>
+        {/* Force remount on every path change to avoid stale tree */}
+        <main key={location.key} className={isHome ? "flex-1" : "flex-1 flex min-h-0"}>
+          <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Home />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/about" element={<About />} />
@@ -37,6 +41,8 @@ export default function App() {
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/start" element={<GetStarted />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/cart-review" element={<CartReview />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

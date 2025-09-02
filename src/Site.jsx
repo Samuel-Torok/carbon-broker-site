@@ -8,6 +8,8 @@ import { Leaf, Shield, Gift } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useI18n } from "./i18n";
 import { GText } from "./lib/i18n-helpers";
+import HelpNudge from "./components/HelpNudge.jsx";
+
 
 const ICONS = { Leaf, Shield, Gift };
 const LANG_KEY = "langChoiceSession"; // module scope
@@ -149,6 +151,15 @@ export default function Site() {
                         </span>
                       </span>
                     </button>
+
+                    <Link to="/assistant" className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaAssistant")}
+                        </span>
+                      </span>
+                    </Link>
+
                   </div>
 
 
@@ -423,6 +434,8 @@ export default function Site() {
             </>
           )}
         </main>
+        {/* AI help popup (bottom-right). Shows after a delay, once per user) */}
+        <HelpNudge delay={3500} />
       </div>
     </div>
   );

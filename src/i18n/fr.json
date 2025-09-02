@@ -87,15 +87,90 @@
       "english": "English",
       "french": "Français",
       "later": "Plus tard"
-    }
-
+    },
+    "ctaAssistant": "Assistance IA"
 
   },
 
   "companies": {
     "title": "Pour les entreprises (PME)",
-    "intro": "Formules adaptées aux scopes 1–3. Nous confirmons le mix de projets et effectuons le retrait au registre."
+    "heroAlt": "Surface de l’océan",
+    "blurb1": "Les crédits carbone volontaires peuvent aider à traiter les émissions résiduelles pendant que vous décarbonisez. Nous sourçons des projets vérifiés et retirons les crédits sur un registre public.",
+    "benefits": {
+      "list1": "Traiter les émissions résiduelles des scopes 1–3 (après vos propres réductions).",
+      "list2": "Soutenir des projets climatiques vérifiés de manière indépendante, avec des retraits transparents.",
+      "list3": "Renforcer la RSE, les achats et la communication avec des preuves solides."
+    },
+    "imageCaption": "Cadre d’entreprise illustratif.",
+    "csr": {
+      "title": "Accompagnement RSE (optionnel)",
+      "body": "Sur demande, nous préparons des textes conformes et des visuels pour le site et les réseaux sociaux (comment communiquer correctement et légalement votre action climatique).",
+      "deliverablesTitle": "Ce que vous recevez",
+      "deliverables": {
+        "copy": "Rédaction conforme des allégations + textes web et réseaux sociaux",
+        "assets": "Modèles visuels adaptés à LinkedIn/Instagram",
+        "claims": "Relecture des allégations et mentions avant publication",
+        "report": "Dossier de preuves : liens de registre et identifiants de retrait"
+      },
+      "guardrailTitle": "Garde-fous de conformité",
+      "guardrails": {
+        "residual": "Concentration sur les émissions résiduelles après vos propres réductions",
+        "frameworks": "Alignement sur des cadres reconnus (ex. PAS 2060 / ISO 14068-1)",
+        "evidence": "Justifier les déclarations publiques par des preuves vérifiables"
+      },
+      "none": "Non merci",
+      "noneDesc": "Continuer sans accompagnement marketing RSE.",
+      "free": "0 €"
+    },
+    "meeting": {
+      "title": "Demande de rendez-vous",
+      "name": "Nom complet",
+      "email": "E-mail",
+      "company": "Entreprise",
+      "role": "Fonction",
+      "phone": "Téléphone (optionnel)",
+      "note": "Note (optionnelle)",
+      "submit": "Envoyer la demande",
+      "cancel": "Annuler"
+    },
+    "disclaimerClaims": "Les allégations doivent être exactes et spécifiques. Évitez « neutralité carbone » sans respecter un cadre reconnu (ex. PAS 2060 / ISO 14068-1) et ne visez que les émissions résiduelles. Nous fournissons un guide de formulation avec chaque commande."
   },
+
+  "order": {
+    "summary": "Récapitulatif",
+    "summaryLine": "{size} tCO₂e · {quality} · Total estimé €{total}",
+    "addons": {
+      "title": "Modules complémentaires (marketing RSE)",
+      "items": {
+        "starter": { "title": "Starter", "desc": "Revue des allégations + textes pour le site et 3 posts, visuels de base." },
+        "plus": { "title": "Plus", "desc": "Starter + étude de cas 1 page et pack d’images." },
+        "pro": { "title": "Pro", "desc": "Plus + script vidéo court et conseils de campagne." }
+      },
+      "total": "Total modules"
+    },
+    "buttons": {
+      "requestMeeting": "Demander un rendez-vous en personne",
+      "confirmOrder": "Confirmer / me contacter",
+      "proceed": "Continuer"
+    },
+    "back": "Retour aux forfaits"
+  },
+
+  "cart": {
+    "title": "Revue de commande",
+    "empty": "Votre panier est vide. Choisissez d’abord un forfait.",
+    "csrLine": "Module RSE : {plan} ({price} €)",
+    "total": "Total général",
+    "checkout": "Passer au paiement",
+    "edit": "Revenir modifier"
+  },
+  "checkout": {
+    "title": "Paiement",
+    "body": "Les options de paiement s’afficheront ici. Nous enverrons une offre et une facture une fois terminé.",
+    "back": "Retour au panier"
+  },
+
+
 
   "individuals": {
     "title": "Pour les particuliers",
@@ -139,13 +214,21 @@
 
   "assistant": {
     "title": "Assistant IA",
-    "subtitle": "Interface de chat bientôt disponible.",
-    "body": "Dites-nous votre besoin et nous vous aiderons à choisir les compensations."
+    "subtitle": "Aide enrichie par l’IA pour comprendre nos projets, nos tarifs et le fonctionnement du service.",
+    "greeting": "Bonjour ! Posez-moi vos questions sur les projets, les tarifs ou les certificats.",
+    "placeholder": "Écrivez votre question…",
+    "send": "Envoyer",
+    "you": "Vous",
+    "assistant": "Assistant",
+    "error": "Erreur lors de la connexion à l’IA. Réessayez.",
+    "disclaimer": "Remarque : l’IA peut se tromper. Vérifiez les informations importantes. Aucune responsabilité n’est acceptée pour les réponses générées par l’IA.",
+    "powered": "Propulsé par OpenAI."
   },
 
   "packages": {
     "titleCompany": "Acheter des forfaits pour entreprises",
     "titleIndividuals": "Acheter des forfaits pour particuliers",
+    "configure": "Configurez votre forfait",
     "sizeLabel": "Taille (tCO₂e)",
     "qualityLabel": "Qualité",
     "qualities": {
@@ -153,7 +236,7 @@
       "premium": "Premium (naturel, récent)",
       "elite": "Elite (fours propres/REDD+, plus récent)"
     },
-    "estimatedTotal": "Total estimé",
+    "estimatedTotal": "Aperçu du prix",
     "proceed": "Continuer",
     "disclaimer": "Le prix final dépend du projet, du millésime et de la disponibilité. Confirmation par e-mail."
   },
@@ -255,8 +338,14 @@
         "summary": "Le captage et le torchage transforment le méthane en CO₂, réduisant ~28× l’impact par tonne."
       }
     ]
-  }
-
+  },
+  "nudge": {
+    "title": "Besoin d’aide ?",
+    "body": "L’Assistant IA peut vous guider sur les projets, les tarifs et les certificats.",
+    "cta": "Parler à l’assistant",
+    "dismiss": "Plus tard"
+  },
+  "aiFab": { "label": "Assistance IA" }
 
 
 }

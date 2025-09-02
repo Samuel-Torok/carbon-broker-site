@@ -83,7 +83,8 @@
       "english": "English",
       "french": "Français",
       "later": "Not now"
-    }
+    },
+    "ctaAssistant": "AI support"
 
 
 
@@ -91,7 +92,80 @@
 
   "companies": {
     "title": "For companies (SME)",
-    "intro": "Buy bundles suitable for Scope 1–3 offsetting. We’ll confirm project mix and retire on registry."
+    "heroAlt": "Ocean surface",
+    "blurb1": "Voluntary carbon credits can help address residual emissions while you decarbonise. We source verified projects and retire credits on a public registry.",
+    "benefits": {
+      "list1": "Address residual Scope 1–3 emissions (after your own reductions).",
+      "list2": "Support independently verified climate projects with transparent retirements.",
+      "list3": "Strengthen CSR, procurement and stakeholder communications with evidence."
+    },
+    "imageCaption": "Illustrative corporate setting.",
+    "csr": {
+      "title": "Optional CSR marketing support",
+      "body": "On request, we prepare compliant copy and assets for website and social media (how to communicate your climate action correctly and legally).",
+      "deliverablesTitle": "What you get",
+      "deliverables": {
+        "copy": "Compliant claim wording + website and social copy",
+        "assets": "Visual templates sized for LinkedIn/Instagram",
+        "claims": "Review of claims and disclaimers before posting",
+        "report": "Short proof pack: registry links and retirement IDs"
+      },
+      "guardrailTitle": "Compliance guardrails",
+      "guardrails": {
+        "residual": "Focus on residual emissions only, after your own reductions",
+        "frameworks": "Alignment with recognised frameworks (e.g., PAS 2060 / ISO 14068-1)",
+        "evidence": "Back up public statements with verifiable evidence"
+      },
+      "none": "No thanks",
+      "noneDesc": "Proceed without CSR marketing support.",
+      "free": "€0"
+    },
+    "meeting": {
+      "title": "Request a meeting",
+      "name": "Full name",
+      "email": "Email",
+      "company": "Company",
+      "role": "Role",
+      "phone": "Phone (optional)",
+      "note": "Note (optional)",
+      "submit": "Send request",
+      "cancel": "Cancel"
+    },
+    "disclaimerClaims": "Claims should be accurate and specific. Avoid blanket 'carbon neutral' unless you comply with recognised frameworks (e.g., PAS 2060 / ISO 14068-1) and cover residual emissions only. We’ll provide wording guidance with each order."
+  },
+
+  "order": {
+    "summary": "Order summary",
+    "summaryLine": "{size} tCO₂e · {quality} · Estimated total €{total}",
+    "addons": {
+      "title": "Add-ons (CSR marketing)",
+      "items": {
+        "starter": { "title": "Starter", "desc": "Claims review + copy for website & 3 social posts, basic visuals." },
+        "plus": { "title": "Plus", "desc": "Starter + 1-page case study and image pack." },
+        "pro": { "title": "Pro", "desc": "Plus + short video script & campaign guidance." }
+      },
+      "total": "Add-ons total"
+    },
+    "buttons": {
+      "requestMeeting": "Ask for a meeting in person",
+      "confirmOrder": "Confirm order / contact me",
+      "proceed": "Proceed"
+    },
+    "back": "Back to packages"
+  },
+
+  "cart": {
+    "title": "Order review",
+    "empty": "Your cart is empty. Please choose a package first.",
+    "csrLine": "CSR add-on: {plan} (€{price})",
+    "total": "Grand total",
+    "checkout": "Go to checkout",
+    "edit": "Back to edit"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "body": "Payment options will appear here. We’ll email a formal offer and invoice once completed.",
+    "back": "Back to cart"
   },
 
   "individuals": {
@@ -136,13 +210,21 @@
 
   "assistant": {
     "title": "AI Assistant",
-    "subtitle": "Chat interface coming soon.",
-    "body": "Tell us what you need and we’ll help you choose offsets."
+    "subtitle": "AI-enhanced help to understand our projects, pricing, and how everything works.",
+    "greeting": "Hi! Ask me about projects, pricing, or certificates.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "you": "You",
+    "assistant": "Assistant",
+    "error": "Error contacting AI. Try again.",
+    "disclaimer": "Note: AI can make mistakes. Please verify important information. We take no responsibility for AI-generated responses.",
+    "powered": "Powered by OpenAI."
   },
 
   "packages": {
     "titleCompany": "Buy packages for companies",
     "titleIndividuals": "Buy packages for individuals",
+    "configure": "Configure your package",
     "sizeLabel": "Size (tCO₂e)",
     "qualityLabel": "Quality",
     "qualities": {
@@ -150,7 +232,7 @@
       "premium": "Premium (nature-based, recent)",
       "elite": "Elite (cookstoves/REDD+, newest)"
     },
-    "estimatedTotal": "Estimated total",
+    "estimatedTotal": "Price preview",
     "proceed": "Proceed",
     "disclaimer": "Final pricing depends on project, vintage and availability. We’ll confirm by email."
   },
@@ -253,8 +335,14 @@
         "summary": "Methane collection and flaring turn a potent greenhouse gas into CO₂, cutting climate impact ~28× per tonne."
       }
     ]
+  },
+  
+  "nudge": {
+    "title": "Need help?",
+    "body": "Let our AI assistant guide you through projects, pricing, and certificates.",
+    "cta": "Ask the assistant",
+    "dismiss": "Not now"
   }
-
 
 
 }
