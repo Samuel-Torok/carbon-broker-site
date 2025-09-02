@@ -14,7 +14,8 @@
     "french": "Français",
     "privacy": "Privacy",
     "terms": "Terms",
-    "imprint": "Imprint"
+    "imprint": "Imprint",
+    "csr": "CSR & VCM"
   },
 
   "home": {
@@ -101,6 +102,14 @@
     },
     "imageCaption": "Illustrative corporate setting.",
     "csr": {
+      "info": {
+        "title": "About CSR support",
+        "body1": "CSR = Corporate Social Responsibility. We help CSR and marketing teams communicate carbon actions correctly and credibly.",
+        "point1": "Guidance to use carbon terminology legally and accurately (VCM, scopes, retirements).",
+        "point2": "Ready-to-use templates for Instagram & LinkedIn posts, claims, and FAQs.",
+        "point3": "Custom campaign assets and reviews on request.",
+        "learnBtn": "Learn more about CSR"
+      },
       "title": "Optional CSR marketing support",
       "body": "On request, we prepare compliant copy and assets for website and social media (how to communicate your climate action correctly and legally).",
       "deliverablesTitle": "What you get",
@@ -149,7 +158,7 @@
     "buttons": {
       "requestMeeting": "Ask for a meeting in person",
       "confirmOrder": "Confirm order / contact me",
-      "proceed": "Proceed"
+      "proceed": "Select package (add to cart)"
     },
     "back": "Back to packages"
   },
@@ -231,6 +240,11 @@
     "titleCompany": "Buy packages for companies",
     "titleIndividuals": "Buy packages for individuals",
     "configure": "Configure your package",
+    "info": {
+      "title": "How this works",
+      "explainer1": "Enter the quantity of tCO₂e you want and choose a quality level.",
+      "explainer2": "For details on project types, provenance and technology (we work to order and may not always hold stock), visit the Marketplace.",
+      "marketplaceBtn": "Visit Marketplace"},
     "sizeLabel": "Size (tCO₂e)",
     "qualityLabel": "Quality",
     "qualities": {
@@ -239,9 +253,11 @@
       "elite": "Elite (cookstoves/REDD+, newest)"
     },
     "estimatedTotal": "Price preview",
-    "proceed": "Proceed",
+    "proceed": "Select package (add to cart)",
     "disclaimer": "Final pricing depends on project, vintage and availability. We’ll confirm by email."
   },
+  
+
 
   "notFound": {
     "title": "404",

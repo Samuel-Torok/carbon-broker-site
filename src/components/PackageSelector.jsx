@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { useI18n } from "../i18n";
+import { Info } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function PackageSelector({ audience = "company", onChange }) {
   const { t, lang } = useI18n();
   const isCompany = audience === "company";
+  const MAX_SIZE = 100000;
+
 
   // popular suggestions
   const sizes = isCompany ? [100, 500, 1000, 5000, 10000] : [1, 5, 10, 20, 50];
@@ -18,6 +22,7 @@ export default function PackageSelector({ audience = "company", onChange }) {
 
   const [size, setSize] = useState(sizes[0]);
   const [quality, setQuality] = useState(qualities[0].id);
+  const [openHelp, setOpenHelp] = useState(false);
   
   const total = useMemo(() => {
     const q = qualities.find(q => q.id === quality)?.x ?? 1;
@@ -35,8 +40,34 @@ export default function PackageSelector({ audience = "company", onChange }) {
   return (
     <Card className="border-white/10 bg-white/5 text-white">
       <CardHeader>
-        <CardTitle>{t("packages.configure")}</CardTitle>
+        <div className="relative flex items-center gap-2">
+          <CardTitle>{t("packages.configure")}</CardTitle>
+          <button
+            type="button"
+            aria-label={t("packages.info.title")}
+            onClick={() => setOpenHelp(v => !v)}
+            onMouseEnter={() => setOpenHelp(true)}
+            onMouseLeave={() => setOpenHelp(false)}
+            className="rounded-md p-1 hover:bg-white/10"
+          >
+            <Info className="h-4 w-4 text-white/70" />
+          </button>
+
+          {openHelp && (
+            <div className="absolute right-0 top-full z-50 mt-2 w-[22rem] rounded-xl border border-white/10 bg-slate-900/95 p-3 text-sm shadow-xl">
+              <p className="text-white/80">{t("packages.info.explainer1")}</p>
+              <p className="mt-2 text-white/70">{t("packages.info.explainer2")}</p>
+              <Link
+                to="/marketplace"
+                className="mt-3 inline-flex items-center rounded-lg bg-emerald-500 px-3 py-1.5 text-emerald-950 hover:bg-emerald-400"
+              >
+                {t("packages.info.marketplaceBtn")}
+              </Link>
+            </div>
+          )}
+        </div>
       </CardHeader>
+
 
       <CardContent className="grid gap-4 sm:grid-cols-2">
         {/* Quantity (custom number + suggestions) */}
@@ -44,14 +75,19 @@ export default function PackageSelector({ audience = "company", onChange }) {
           <span className="text-sm text-white/80">{t("packages.sizeLabel")}</span>
           <input
             type="number"
-            min={isCompany ? 1 : 1}
+            min={1}
+            max={MAX_SIZE}
             step={isCompany ? 10 : 1}
             list={listId}
             value={size}
-            onChange={(e) => setSize(e.target.value)}
+            onChange={(e) => {
+              const v = Number(e.target.value || 1);
+              setSize(Math.min(MAX_SIZE, Math.max(1, v))); // clamp 1..100000
+            }}
             className="rounded-md border border-white/10 bg-white/10 p-2 text-white placeholder-white/60
-                       focus:outline-none focus:ring-0 focus:border-white/20"
+                      focus:outline-none focus:ring-0 focus:border-white/20"
           />
+
           <datalist id={listId}>
             {sizes.map((s) => <option key={s} value={s} />)}
           </datalist>

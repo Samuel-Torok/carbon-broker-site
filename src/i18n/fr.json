@@ -14,7 +14,8 @@
     "french": "Français",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "imprint": "Mentions légales"
+    "imprint": "Mentions légales",
+    "csr": "RSE & VCM"
   },
 
   "home": {
@@ -103,6 +104,14 @@
     },
     "imageCaption": "Cadre d’entreprise illustratif.",
     "csr": {
+      "info": {
+        "title": "À propos du soutien RSE",
+        "body1": "RSE = Responsabilité sociétale des entreprises. Nous aidons les équipes RSE et marketing à communiquer correctement et avec crédibilité.",
+        "point1": "Conseils pour employer une terminologie carbone légale et précise (VCM, scopes, retraits).",
+        "point2": "Modèles prêts à l’emploi pour Instagram & LinkedIn, mentions et FAQ.",
+        "point3": "Créations personnalisées et relectures sur demande.",
+        "learnBtn": "En savoir plus sur la RSE"
+      },
       "title": "Accompagnement RSE (optionnel)",
       "body": "Sur demande, nous préparons des textes conformes et des visuels pour le site et les réseaux sociaux (comment communiquer correctement et légalement votre action climatique).",
       "deliverablesTitle": "Ce que vous recevez",
@@ -235,6 +244,11 @@
     "titleCompany": "Acheter des forfaits pour entreprises",
     "titleIndividuals": "Acheter des forfaits pour particuliers",
     "configure": "Configurez votre forfait",
+    "info": {
+      "title": "Comment ça marche",
+      "explainer1": "Saisissez la quantité de tCO₂e souhaitée et choisissez un niveau de qualité.",
+      "explainer2": "Pour en savoir plus sur les types de projets, leur provenance et les technologies (nous travaillons à la commande et n’avons pas toujours du stock), rendez-vous au Marché.",
+      "marketplaceBtn": "Aller au Marché"},
     "sizeLabel": "Taille (tCO₂e)",
     "qualityLabel": "Qualité",
     "qualities": {
@@ -243,7 +257,7 @@
       "elite": "Elite (fours propres/REDD+, plus récent)"
     },
     "estimatedTotal": "Aperçu du prix",
-    "proceed": "Continuer",
+    "proceed": "Sélectionner le forfait (ajouter au panier)",
     "disclaimer": "Le prix final dépend du projet, du millésime et de la disponibilité. Confirmation par e-mail."
   },
 

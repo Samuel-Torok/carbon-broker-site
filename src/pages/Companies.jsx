@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
@@ -11,6 +11,21 @@ export default function Companies() {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { t, lang } = useI18n();
+  const HOVER_CLOSE_DELAY = 180; // ms
+  const configTimer = useRef(null);
+  const csrTimer = useRef(null);
+
+  const openNow = (setter, ref) => {
+    if (ref.current) clearTimeout(ref.current);
+    setter(true);
+  };
+  const closeSoon = (setter, ref) => {
+    if (ref.current) clearTimeout(ref.current);
+    ref.current = setTimeout(() => setter(false), HOVER_CLOSE_DELAY);
+  };
+
+  const MAX_SIZE = 100000;
+
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
   const [size, setSize] = useState(100);
@@ -24,6 +39,8 @@ export default function Companies() {
     { id: "pro", title: t("order.addons.items.pro.title"), desc: t("order.addons.items.pro.desc"), price: 2490 },
   ];
   const [csr, setCsr] = useState(CSR_OPTIONS[0]);
+  const [configHelp, setConfigHelp] = useState(false);
+  const [csrHelp, setCsrHelp] = useState(false); // keep, but we'll change its usage
 
   const basePrice = useMemo(() => size * (PRICE_PER_TON[quality] ?? 12), [size, quality]);
   const total = basePrice + csr.price;
@@ -42,9 +59,19 @@ export default function Companies() {
 
         {/* Hero */}
         <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div className="rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5">
-            <img src="/images/corporate.jpg" alt={t("companies.imageCaption")} className="h-64 w-full object-cover" />
-            <div className="px-4 pb-3 pt-1 text-xs text-white/60">{t("companies.imageCaption")}</div>
+          <div>
+            <div className="rounded-2xl overflow-hidden ring-1 ring-white/10 bg-black/20">
+              <img
+                src="/images/corporate.jpg"
+                alt=""                  // decorative; caption provides the text
+                className="block w-full object-cover"
+                style={{ aspectRatio: "16 / 9" }}   // keeps a clean 16:9 box
+                loading="lazy"
+              />
+            </div>
+            <p className="mt-2 text-xs italic text-white/60">
+              {t("companies.imageCaption")}
+            </p>
           </div>
 
           <ul className="space-y-3 text-white/80 leading-relaxed">
@@ -56,16 +83,67 @@ export default function Companies() {
 
         {/* Configure package */}
         <div className="mt-10 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-          <h3 className="mb-4 text-white/90 font-semibold">{t("packages.configure")}</h3>
+          <div className="mb-4 relative inline-flex items-center gap-2">
+            <h3 className="text-white/90 font-semibold">{t("packages.configure")}</h3>
+
+            <button
+              type="button"
+              aria-label={t("packages.info.title")}
+              aria-expanded={configHelp}
+              onMouseEnter={() => openNow(setConfigHelp, configTimer)}
+              onMouseLeave={() => closeSoon(setConfigHelp, configTimer)}
+              onClick={() => setConfigHelp(v => !v)}
+              className="rounded-md p-1 hover:bg-white/10"
+            >
+              <Info className="h-4 w-4 text-emerald-400" />
+            </button>
+
+            {configHelp && (
+              <div
+                className="absolute left-0 top-full z-50 mt-1 w-80 rounded-xl border border-white/10 bg-slate-900/95 p-3 text-sm shadow-xl"
+                onMouseEnter={() => openNow(setConfigHelp, configTimer)}
+                onMouseLeave={() => closeSoon(setConfigHelp, configTimer)}
+                role="tooltip"
+              >
+                <p className="text-white/80">{t("packages.info.explainer1")}</p>
+                <p className="mt-2 text-white/70">{t("packages.info.explainer2")}</p>
+                <Link
+                  to="/marketplace"
+                  className="mt-3 inline-flex items-center rounded-lg bg-emerald-500 px-3 py-1.5 text-emerald-950 hover:bg-emerald-400"
+                >
+                  {t("packages.info.marketplaceBtn")}
+                </Link>
+              </div>
+            )}
+          </div>
+
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <label className="col-span-1 text-sm text-white/70">
               <div className="mb-2">{t("packages.sizeLabel")}</div>
               <input
-                type="number" min={1} step={1} value={size}
-                onChange={(e) => setSize(Math.max(1, Number(e.target.value || 1)))}
+                type="number"
+                min={1}
+                max={MAX_SIZE}
+                step={1}
+                inputMode="numeric"
+                value={size}
+                onChange={(e) => {
+                  const v = Number(e.target.value || 1);
+                  setSize(Math.min(MAX_SIZE, Math.max(1, v))); // clamp 1..100000
+                }}
+                onFocus={(e) => {
+                  // put cursor at end of the prefilled "100"
+                  const len = e.target.value.length;
+                  e.target.setSelectionRange(len, len);
+                }}
+                onMouseUp={(e) => {
+                  // keep cursor at end on first click (Safari quirk)
+                  e.preventDefault();
+                }}
                 className="w-full rounded-lg bg-white/10 px-3 py-2 text-white placeholder-white/40 ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
               />
+
             </label>
 
             <label className="col-span-1 md:col-span-2 text-sm text-white/70">
@@ -97,7 +175,46 @@ export default function Companies() {
 
         {/* CSR add-ons */}
         <div className="mt-8">
-          <h3 className="mb-3 text-white/90 font-semibold">{t("order.addons.title")}</h3>
+          <div className="mb-3 relative inline-flex items-center gap-2">
+            <h3 className="text-white/90 font-semibold">{t("order.addons.title")}</h3>
+
+            <button
+              type="button"
+              aria-label={t("companies.csr.info.title")}
+              aria-expanded={csrHelp}
+              onMouseEnter={() => openNow(setCsrHelp, csrTimer)}
+              onMouseLeave={() => closeSoon(setCsrHelp, csrTimer)}
+              onClick={() => setCsrHelp(v => !v)}
+              className="rounded-md p-1 hover:bg-white/10"
+            >
+              <Info className="h-4 w-4 text-emerald-400" />
+            </button>
+
+            {csrHelp && (
+              <div
+                className="absolute left-0 top-full z-50 mt-1 w-96 rounded-xl border border-white/10 bg-slate-900/95 p-3 text-sm shadow-xl"
+                onMouseEnter={() => openNow(setCsrHelp, csrTimer)}
+                onMouseLeave={() => closeSoon(setCsrHelp, csrTimer)}
+                role="tooltip"
+              >
+                <p className="text-white/80">{t("companies.csr.info.body1")}</p>
+                <ul className="mt-2 list-disc pl-5 text-white/70 space-y-1">
+                  <li>{t("companies.csr.info.point1")}</li>
+                  <li>{t("companies.csr.info.point2")}</li>
+                  <li>{t("companies.csr.info.point3")}</li>
+                </ul>
+                <Link
+                  to="/csr"
+                  className="mt-3 inline-flex items-center rounded-lg bg-white/10 px-3 py-1.5 text-white ring-1 ring-white/20 hover:bg-white/20"
+                >
+                  {t("companies.csr.info.learnBtn")}
+                </Link>
+              </div>
+            )}
+          </div>
+
+
+
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {CSR_OPTIONS.map((opt) => {

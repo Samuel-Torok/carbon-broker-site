@@ -68,6 +68,7 @@ export default function SideMenu() {
           <NavItem to="/credits">{t("nav.credits")}</NavItem>
           <NavItem to="/companies">{t("nav.companies")}</NavItem>
           <NavItem to="/buy/individuals">{t("nav.individuals")}</NavItem>
+          <NavItem to="/csr">{t("nav.csr")}</NavItem>
           <NavItem to="/faq">{t("nav.faq")}</NavItem>
           <NavItem to="/about">{t("nav.about")}</NavItem>
           <NavItem to="/contact">{t("nav.contact")}</NavItem>
@@ -112,9 +113,9 @@ export default function SideMenu() {
           <div className="flex items-center justify-between">
             <span>© {year} Zephyr Carbon</span>
             <div className="space-x-3">
-              <Link to="/privacy" className="hover:text-slate-200">Privacy</Link>
-              <Link to="/terms" className="hover:text-slate-200">Terms</Link>
-              <Link to="/imprint" className="hover:text-slate-200">Imprint</Link>
+              <Link to="/privacy" className="hover:text-slate-200">{t("nav.privacy")}</Link>
+              <Link to="/terms" className="hover:text-slate-200">{t("nav.terms")}</Link>
+              <Link to="/imprint" className="hover:text-slate-200">{t("nav.imprint")}</Link>
             </div>
           </div>
         </div>

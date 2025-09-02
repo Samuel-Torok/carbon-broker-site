@@ -18,6 +18,10 @@ import GetStarted from "./pages/GetStarted.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import CartReview from "./pages/CartReview.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
+import Imprint from "./pages/Imprint.jsx";
+import CSR from "./pages/CSR.jsx";
 
 
 export default function App() {
@@ -46,6 +50,10 @@ export default function App() {
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/cart-review" element={<CartReview />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/imprint" element={<Imprint />} />
+              <Route path="/csr" element={<CSR />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
