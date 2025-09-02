@@ -15,7 +15,8 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "imprint": "Imprint",
-    "csr": "CSR & VCM"
+    "csr": "CSR & VCM",
+    "marketplace": "Marketplace"
   },
 
   "home": {
@@ -90,6 +91,32 @@
 
 
   },
+
+  "indiv": {
+    "hero": {
+      "title": "Hi there! Looking to reduce your footprint or gift real climate impact?",
+      "sub": "Offset for yourself or surprise someone who cares — verified projects, clear certificates.",
+      "image": "[Place for a beautiful image]"
+    },
+    "self": {
+      "title": "Offset for myself",
+      "lede": "Pick how much and the quality you prefer. If you don’t choose projects, we’ll assemble a convenient, high-quality mix for you."
+    },
+    "gift": {
+      "title": "Gift a carbon offset",
+      "lede": "If you buy for yourself, credits are retired to you (not transferable). For gifts, we retire them in the recipient’s name and send a certificate."
+    },
+    "amount": "Amount (tCO₂e)",
+    "quality": "Quality tier",
+    "qualityNote": "Premium reflects scarcer, often newer projects.",
+    "projects": "Project selection",
+    "chooseProjects": "I want to choose the projects myself",
+    "priceNote": "Note: prices may be higher when you choose projects yourself.",
+    "toMarketplace": "Choose projects in marketplace",
+    "addCart": "Add to cart",
+    "disclaimer": "Equivalences are indicative; actual footprints vary by route, vehicle and habits."
+  },
+
 
   "companies": {
     "title": "For companies (SME)",

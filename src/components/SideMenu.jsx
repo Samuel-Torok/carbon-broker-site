@@ -69,6 +69,7 @@ export default function SideMenu() {
           <NavItem to="/companies">{t("nav.companies")}</NavItem>
           <NavItem to="/buy/individuals">{t("nav.individuals")}</NavItem>
           <NavItem to="/csr">{t("nav.csr")}</NavItem>
+          <NavItem to="/marketplace">{t("nav.marketplace")}</NavItem>
           <NavItem to="/faq">{t("nav.faq")}</NavItem>
           <NavItem to="/about">{t("nav.about")}</NavItem>
           <NavItem to="/contact">{t("nav.contact")}</NavItem>

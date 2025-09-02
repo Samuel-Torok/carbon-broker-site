@@ -1,16 +1,27 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
 import { Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import InfoModal from "../components/InfoModal.jsx";
 
 export default function CartReview() {
   const { t, lang } = useI18n();
+  const { search } = useLocation();
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [infoType, setInfoType] = useState("self");
+  useEffect(() => {
+    const p = new URLSearchParams(search);
+    const mode = p.get("info");
+    if (mode) { setInfoType(mode); setInfoOpen(true); }
+  }, [search]);
+
   const locale = lang === "fr" ? "fr-FR" : "en-US";
   const navigate = useNavigate();
   const { items, removeItem, total } = useCart();
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <PagePanel maxWidth="max-w-3xl">
         <div className="mx-auto w-full py-10 text-white/90">
@@ -30,7 +41,7 @@ export default function CartReview() {
 
         <div className="mt-6 space-y-4">
           {items.map((it, i) => (
-            <div key={it.id} className="relative rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+            <div key={it.id ?? i} className="relative rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
               <button
                 onClick={() => removeItem(it.id)}
                 className="absolute right-3 top-3 rounded-full bg-white/10 p-1.5 ring-1 ring-white/20 hover:bg-white/15"
@@ -42,15 +53,17 @@ export default function CartReview() {
 
               <div className="text-sm font-medium text-white/70">{t("cart.itemTitle", { index: i + 1 })}</div>
               <div className="mt-1 text-white/90">
-                {it.size} tCO₂e • {it.qualityLabel}
+                {(it.size ?? it.meta?.qty ?? "—")} tCO₂e • {(it.qualityLabel ?? it.meta?.quality ?? "—")}
               </div>
-              <div className="mt-1 text-white/70">
-                {t("cart.csrLine", { plan: it.csr.title, price: it.csr.price.toLocaleString(locale) })}
-              </div>
+              {it.csr && (
+                <div className="mt-1 text-white/70">
+                  {t("cart.csrLine", { plan: it.csr.title, price: (it.csr.price ?? 0).toLocaleString(locale) })}
+                </div>
+              )}
 
               <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
                 <div className="text-sm text-white/60">{t("cart.subtotal")}</div>
-                <div className="text-base font-semibold text-white">€{it.total.toLocaleString(locale)}</div>
+                <div className="text-base font-semibold text-white">€{(it.total ?? 0).toLocaleString(locale)}</div>
               </div>
             </div>
           ))}
@@ -58,7 +71,7 @@ export default function CartReview() {
 
         <div className="mt-6 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
           <div className="text-sm text-white/60">{t("cart.grandTotal")}</div>
-          <div className="text-lg font-semibold text-white">€{total.toLocaleString(locale)}</div>
+          <div className="text-lg font-semibold text-white">€{(total ?? 0).toLocaleString(locale)}</div>
         </div>
 
         <div className="mt-6 flex gap-3">
@@ -75,6 +88,8 @@ export default function CartReview() {
             {t("cart.continue")}
           </Link>
         </div>
+
+        {infoOpen && <InfoModal type={infoType} onClose={()=>setInfoOpen(false)} />}
       </div>
     </PagePanel>
   );

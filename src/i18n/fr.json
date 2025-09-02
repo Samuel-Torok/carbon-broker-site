@@ -15,7 +15,8 @@
     "privacy": "Confidentialité",
     "terms": "Conditions",
     "imprint": "Mentions légales",
-    "csr": "RSE & VCM"
+    "csr": "RSE & VCM",
+    "marketplace": "Marché"
   },
 
   "home": {
@@ -92,6 +93,32 @@
     "ctaAssistant": "Assistance IA"
 
   },
+
+  "indiv": {
+    "hero": {
+      "title": "Envie de réduire votre empreinte ou d’offrir un vrai impact climat ?",
+      "sub": "Compensez pour vous-même ou faites un cadeau — projets vérifiés, certificats clairs.",
+      "image": "[Espace pour une belle image]"
+    },
+    "self": {
+      "title": "Compenser pour moi",
+      "lede": "Choisissez la quantité et le niveau de qualité. Si vous ne sélectionnez pas de projets, nous composerons un mix pratique et de qualité."
+    },
+    "gift": {
+      "title": "Offrir une compensation carbone",
+      "lede": "Pour vous-même, les crédits sont retirés à votre nom (non transférables). Pour un cadeau, nous les retirons au nom du destinataire et envoyons un certificat."
+    },
+    "amount": "Quantité (tCO₂e)",
+    "quality": "Niveau de qualité",
+    "qualityNote": "Premium reflète des projets plus rares et souvent récents.",
+    "projects": "Sélection de projets",
+    "chooseProjects": "Je veux choisir les projets moi-même",
+    "priceNote": "Remarque : les prix peuvent être plus élevés si vous choisissez vous-même.",
+    "toMarketplace": "Choisir des projets sur le Marché",
+    "addCart": "Ajouter au panier",
+    "disclaimer": "Les équivalences sont indicatives ; l’empreinte réelle varie selon les trajets et habitudes."
+  },
+
 
   "companies": {
     "title": "Pour les entreprises (PME)",

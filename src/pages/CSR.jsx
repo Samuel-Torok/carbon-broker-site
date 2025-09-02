@@ -14,15 +14,35 @@ export default function CSR() {
     </section>
   );
 
+  const RangeBar = ({ label, low, high, max = 50 }) => {
+    const wLow = Math.min(100, (low / max) * 100);
+    const wHigh = Math.min(100, (high / max) * 100);
+    return (
+      <div className="grid grid-cols-[90px_1fr_90px] items-center gap-3">
+        <div className="text-xs text-slate-400">{label}</div>
+        <div className="relative h-3 rounded-full bg-white/5 ring-1 ring-white/10 overflow-hidden">
+          <div className="absolute inset-y-0 left-0 bg-emerald-500/30" style={{ width: `${wHigh}%` }} />
+          <div className="absolute inset-y-0 left-0 bg-emerald-500" style={{ width: `${wLow}%` }} />
+        </div>
+        <div className="text-xs text-slate-300 tabular-nums">~${low}–{high}B</div>
+      </div>
+    );
+  };
+
   return (
     <PagePanel>
       <div className="py-10 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white">{L.title}</h1>
         <p className="text-slate-300">{L.subtitle}</p>
 
-        <Section title={L.vcmTitle}>
-          <p>{L.vcmP1}</p>
-          <p>{L.vcmP2}</p>
+        <Section title={L.csrTitle}>
+          <p>{L.csrP1}</p>
+          <ul className="list-disc pl-6">
+            <li>{L.csrBul1}</li>
+            <li>{L.csrBul2}</li>
+            <li>{L.csrBul3}</li>
+            <li>{L.csrBul4}</li>
+          </ul>
         </Section>
 
         <Section title={L.howTitle}>
@@ -33,84 +53,97 @@ export default function CSR() {
           </ul>
         </Section>
 
-        <Section title={L.benefitsTitle}>
-          <ul className="list-disc pl-6">
-            <li>{L.stat1}</li>
-            <li>{L.stat2}</li>
-            <li>{L.stat3}</li>
-          </ul>
-          {/* simple trend bars (illustrative) */}
-          <div className="mt-4 space-y-2">
-            <div className="text-xs text-slate-400">{L.chartCaption}</div>
-            <div className="h-2 w-full bg-white/10 rounded">
-              <div className="h-2 bg-emerald-500 rounded" style={{ width: "15%" }} />
+        <Section title={L.vcmTitle}>
+          <p>{L.vcmP1}</p>
+          <p>{L.vcmP2}</p>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-sm font-medium text-white/90 mb-2">{L.chartTitle}</div>
+            <div className="space-y-3">
+              <RangeBar label="2021" low={1} high={2} />
+              <RangeBar label="2025*" low={2.5} high={10} />
+              <RangeBar label="2030*" low={5} high={50} />
             </div>
-            <div className="h-2 w-full bg-white/10 rounded">
-              <div className="h-2 bg-emerald-500 rounded" style={{ width: "60%" }} />
-            </div>
+            <div className="mt-3 text-[11px] text-slate-400">{L.chartNote}</div>
           </div>
         </Section>
 
-        <Section title={L.sourcesTitle}>
-          <ul className="list-disc pl-6 text-slate-300">
+        <div className="mt-8 flex gap-3">
+          <Link
+            to="/companies"
+            className="rounded-lg bg-emerald-500 text-emerald-950 px-4 py-2 font-medium hover:bg-emerald-400"
+          >
+            {L.buttons.buyCompanies}
+          </Link>
+        </div>
+
+        <section className="mt-10">
+          <h2 className="sr-only">Sources</h2>
+          <ul className="list-disc pl-6 text-[11px] leading-relaxed text-slate-400/80">
             <li>{L.src1}</li>
             <li>{L.src2}</li>
             <li>{L.src3}</li>
             <li>{L.src4}</li>
           </ul>
-        </Section>
-
-        <div className="mt-8 flex gap-3">
-          <Link to="/companies" className="rounded-lg bg-white/10 px-4 py-2 ring-1 ring-white/15 hover:bg-white/20">{L.buttons.companies}</Link>
-          <Link to="/marketplace" className="rounded-lg bg-emerald-500 text-emerald-950 px-4 py-2 hover:bg-emerald-400">{L.buttons.marketplace}</Link>
-        </div>
+        </section>
       </div>
     </PagePanel>
   );
 }
 
 const en = {
-  title: "CSR & the Voluntary Carbon Market (VCM)",
-  subtitle: "How we support your CSR and marketing teams with credible carbon communications.",
-  vcmTitle: "We operate on the VCM",
-  vcmP1: "We source verified credits and retire them transparently on your behalf. The VCM is distinct from compliance schemes; procurement focuses on integrity (methodology, permanence, additionality) and disclosure.",
-  vcmP2: "Supply and demand have been volatile recently, but reputable analyses still project long-term growth if integrity improves.",
-  howTitle: "What we do for teams",
-  how1: "Legal/accurate carbon terminology (scopes, claims, retirements) and review of your messaging.",
-  how2: "Templates for Instagram & LinkedIn posts, website copy and FAQs—plus custom assets on request.",
-  how3: "Evidence packs: retirement IDs, project summaries, and guidance on certificate use.",
-  benefitsTitle: "Why this matters",
-  stat1: "Consumers say CSR influences purchasing decisions; strong social-impact communication can lift brand preference.",
-  stat2: "Companies report willingness to pay premiums for higher-quality credits when climate impact is clear.",
-  stat3: "Analysts have projected the VCM could reach tens of billions of USD by 2030 under high-integrity scenarios.",
-  chartCaption: "Illustrative: current market vs. 2030 high-integrity scenarios (not to scale).",
-  sourcesTitle: "Sources (see our site policy for links)",
-  src1: "Ecosystem Marketplace, State of the Voluntary Carbon Market 2024 (market status).",
-  src2: "McKinsey/TSVCM (2021): scenarios up to ~$50B by 2030.",
-  src3: "BCG (2023): buyers pay more for quality.",
-  src4: "Harvard Business School Online (2021): CSR stats on consumer preference.",
-  buttons: { companies: "Back to Companies", marketplace: "Visit Marketplace" },
+  title: "Corporate Social Responsibility (CSR) & the Voluntary Carbon Market (VCM)",
+  subtitle: "How we help your CSR and marketing teams deliver credible, compliant climate claims.",
+  csrTitle: "What CSR is — and why it matters now",
+  csrP1:
+    "CSR integrates environmental and social impact into business strategy. Strong, evidence-based CSR improves trust, wins tenders with ESG criteria, attracts talent and supports access to capital.",
+  csrBul1: "Brand & customers: clear climate action and proof points build trust and preference.",
+  csrBul2: "Talent & culture: purpose-driven initiatives help attract and retain employees.",
+  csrBul3: "Procurement: many RFPs include ESG clauses; credible CSR gives a scoring edge.",
+  csrBul4: "Finance: investors increasingly evaluate climate risk, targets and disclosures.",
+  howTitle: "How we help",
+  how1: "Carbon-claims guidance: use terminology correctly (scopes, VCM, retirements) and legally.",
+  how2: "Ready templates for Instagram & LinkedIn + website copy; custom assets on request.",
+  how3: "Evidence packs: project summaries, retirement IDs and certificate usage guidance.",
+  vcmTitle: "Where carbon credits fit (the VCM)",
+  vcmP1:
+    "We operate on the VCM: sourcing verified credits (e.g., Gold Standard, Verra) and retiring them transparently on your behalf. We prioritize integrity (methodology, permanence, additionality) and disclosure.",
+  vcmP2:
+    "Analysts project substantial long-term growth if market integrity strengthens. Below is an illustrative range assembled from well-known studies.",
+  chartTitle: "Projected VCM market value (illustrative ranges)",
+  chartNote:
+    "* Ranges reflect widely cited scenarios (e.g., Ecosystem Marketplace 2024; McKinsey/TSVCM 2021; BCG 2023). Exact outcomes depend on integrity, policy and demand.",
+  buttons: { buyCompanies: "Purchase for companies" },
+  src1: "Ecosystem Marketplace (2024) – State of the Voluntary Carbon Market: recent volumes/values and integrity trends.",
+  src2: "McKinsey/TSVCM (2021) – scenarios suggesting ~$5–50B by 2030 under high-integrity assumptions.",
+  src3: "BCG (2023) – evidence that buyers pay premiums for higher-quality credits.",
+  src4: "Harvard Business School Online (2021) – consumer preference & CSR studies summarised.",
 };
 
 const fr = {
-  title: "RSE & Marché volontaire du carbone (VCM)",
-  subtitle: "Comment nous aidons vos équipes RSE et marketing à communiquer de façon crédible.",
-  vcmTitle: "Nous opérons sur le VCM",
-  vcmP1: "Nous sourçons des crédits vérifiés et les retirons de manière transparente en votre nom. Le VCM est distinct des marchés de conformité ; l’achat privilégie l’intégrité (méthodologie, permanence, additionnalité) et la transparence.",
-  vcmP2: "L’offre et la demande ont été volatiles récemment, mais les analyses sérieuses prévoient une croissance à long terme si l’intégrité progresse.",
-  howTitle: "Ce que nous faisons pour vous",
-  how1: "Terminologie carbone légale/précise (scopes, allégations, retraits) et relecture de vos messages.",
-  how2: "Modèles de posts Instagram & LinkedIn, textes web et FAQ — avec créations sur mesure si besoin.",
-  how3: "Dossiers de preuves : IDs de retrait, fiches projets, et bonnes pratiques pour les certificats.",
-  benefitsTitle: "Pourquoi c’est important",
-  stat1: "Les consommateurs déclarent que la RSE influence leurs achats ; une communication claire renforce la préférence de marque.",
-  stat2: "Les entreprises paient davantage pour des crédits de haute qualité lorsque l’impact climatique est démontré.",
-  stat3: "Des scénarios estiment que le VCM pourrait atteindre plusieurs dizaines de milliards USD d’ici 2030, sous fortes exigences d’intégrité.",
-  chartCaption: "Illustration : marché actuel vs. scénarios 2030 (non à l’échelle).",
-  sourcesTitle: "Sources (voir notre politique pour les liens)",
-  src1: "Ecosystem Marketplace, State of the Voluntary Carbon Market 2024 (état du marché).",
-  src2: "McKinsey/TSVCM (2021) : scénarios jusqu’à ~50 Md$ en 2030.",
-  src3: "BCG (2023) : les acheteurs paient plus pour la qualité.",
-  src4: "Harvard Business School Online (2021) : statistiques RSE et préférence consommateur.",
-  buttons: { companies: "Retour Entreprises", marketplace: "Aller au Marché" },
+  title: "Responsabilité sociétale des entreprises (RSE) & Marché volontaire du carbone (VCM)",
+  subtitle: "Comment nous aidons vos équipes RSE et marketing à formuler des messages climatiques fiables et conformes.",
+  csrTitle: "Ce qu’est la RSE — et pourquoi c’est essentiel",
+  csrP1:
+    "La RSE intègre l’impact environnemental et social dans la stratégie. Une RSE solide et étayée renforce la confiance, aide à gagner des appels d’offres intégrant l’ESG, attire les talents et facilite l’accès aux capitaux.",
+  csrBul1: "Marque & clients : des actions climatiques claires avec preuves renforcent la confiance.",
+  csrBul2: "Talents & culture : une raison d’être crédible améliore l’attraction et la rétention.",
+  csrBul3: "Achats : de nombreux marchés publics/privés incluent des critères ESG.",
+  csrBul4: "Financement : les investisseurs évaluent de plus en plus le risque climatique et la transparence.",
+  howTitle: "Notre accompagnement",
+  how1: "Conseils sur les allégations carbone : terminologie correcte (scopes, VCM, retraits) et conformité.",
+  how2: "Modèles prêts à l’emploi pour Instagram & LinkedIn + textes web ; créations sur mesure possibles.",
+  how3: "Dossiers de preuves : fiches projets, IDs de retrait et bonnes pratiques d’utilisation des certificats.",
+  vcmTitle: "La place des crédits carbone (VCM)",
+  vcmP1:
+    "Nous opérons sur le VCM : approvisionnement en crédits vérifiés (ex. Gold Standard, Verra) et retrait transparent en votre nom. L’intégrité (méthodologie, permanence, additionnalité) et la transparence sont prioritaires.",
+  vcmP2:
+    "Les analyses projettent une forte croissance à long terme si l’intégrité progresse. Le graphique ci-dessous illustre des fourchettes issues d’études de référence.",
+  chartTitle: "Valeur projetée du VCM (fourchettes illustratives)",
+  chartNote:
+    "* Fourchettes inspirées d’analyses reconnues (Ecosystem Marketplace 2024 ; McKinsey/TSVCM 2021 ; BCG 2023). Les résultats dépendent de l’intégrité, des politiques et de la demande.",
+  buttons: { buyCompanies: "Acheter pour entreprises" },
+  src1: "Ecosystem Marketplace (2024) – State of the Voluntary Carbon Market : volumes/valeurs récents et intégrité.",
+  src2: "McKinsey/TSVCM (2021) – scénarios suggérant ~5–50 Md$ d’ici 2030 (forte intégrité).",
+  src3: "BCG (2023) – volonté de payer plus pour des crédits de haute qualité.",
+  src4: "Harvard Business School Online (2021) – études sur les préférences des consommateurs et la RSE.",
 };
