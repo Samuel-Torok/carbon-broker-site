@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
+import { useCart } from "../lib/cart";
 
 const PRICE_PER_TON = { standard: 12, premium: 16, elite: 22 };
 
 export default function Companies() {
   const navigate = useNavigate();
+  const { addItem } = useCart();
   const { t, lang } = useI18n();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
@@ -125,7 +127,12 @@ export default function Companies() {
         {/* Actions */}
         <div className="mt-8 space-y-3">
           <button
-            onClick={() => navigate("/cart-review", { state: { size, quality: qualityOptions.find(q => q.key === quality)?.label, csr, basePrice, total } })}
+            onClick={() => {
+              const qualityLabel = qualityOptions.find(q => q.key === quality)?.label ?? quality;
+              addItem({ size, qualityKey: quality, qualityLabel, csr, basePrice, total });
+              navigate("/cart-review");
+            }}
+
             className="w-full rounded-xl bg-emerald-500 px-6 py-3 font-medium text-emerald-950 hover:bg-emerald-400"
           >
             {t("packages.proceed")}

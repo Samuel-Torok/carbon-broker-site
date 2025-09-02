@@ -155,17 +155,23 @@
   },
 
   "cart": {
-    "title": "Order review",
-    "empty": "Your cart is empty. Please choose a package first.",
-    "csrLine": "CSR add-on: {plan} (€{price})",
-    "total": "Grand total",
+    "title": "Your cart",
+    "empty": "Your cart is empty.",
+    "itemTitle": "Item {{index}}",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "grandTotal": "Grand total",
+    "continue": "Continue shopping",
     "checkout": "Go to checkout",
-    "edit": "Back to edit"
+    "csrLine": "CSR add-on: {{plan}} (€{{price}})"
   },
   "checkout": {
     "title": "Checkout",
-    "body": "Payment options will appear here. We’ll email a formal offer and invoice once completed.",
-    "back": "Back to cart"
+    "body": "Implement your payment here.",
+    "backToCart": "Back to cart",
+    "confirm": "Confirm order",
+    "thanksTitle": "Thanks for your order!",
+    "placed": "Your order has been placed."
   },
 
   "individuals": {

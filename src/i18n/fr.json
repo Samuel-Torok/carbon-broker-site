@@ -157,17 +157,23 @@
   },
 
   "cart": {
-    "title": "Revue de commande",
-    "empty": "Votre panier est vide. Choisissez d’abord un forfait.",
-    "csrLine": "Module RSE : {plan} ({price} €)",
-    "total": "Total général",
+    "title": "Votre panier",
+    "empty": "Votre panier est vide.",
+    "itemTitle": "Article {{index}}",
+    "remove": "Supprimer",
+    "subtotal": "Sous-total",
+    "grandTotal": "Total",
+    "continue": "Continuer les achats",
     "checkout": "Passer au paiement",
-    "edit": "Revenir modifier"
+    "csrLine": "Option RSE : {{plan}} (€{{price}})"
   },
   "checkout": {
     "title": "Paiement",
-    "body": "Les options de paiement s’afficheront ici. Nous enverrons une offre et une facture une fois terminé.",
-    "back": "Retour au panier"
+    "body": "Implémentez votre paiement ici.",
+    "backToCart": "Retour au panier",
+    "confirm": "Confirmer la commande",
+    "thanksTitle": "Merci pour votre commande !",
+    "placed": "Votre commande a été passée."
   },
 
 
