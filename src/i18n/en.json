@@ -16,7 +16,8 @@
     "terms": "Terms",
     "imprint": "Imprint",
     "csr": "CSR & VCM",
-    "marketplace": "Marketplace"
+    "marketplace": "Marketplace",
+    "leaderboard": "Leaderboard"
   },
 
   "home": {
@@ -94,27 +95,139 @@
 
   "indiv": {
     "hero": {
-      "title": "Hi there! Looking to reduce your footprint or gift real climate impact?",
-      "sub": "Offset for yourself or surprise someone who cares — verified projects, clear certificates.",
-      "image": "[Place for a beautiful image]"
+      "title": "Hi there! Looking to reduce your footprint, do nature a favor, or gift real climate impact?",
+      "sub": "You’re in the right place. Offset verified carbon for yourself in minutes — or send a thoughtful gift that retires credits in your recipient’s name.",
+      "imageAlt": "Beautiful nature scene"
     },
-    "self": {
-      "title": "Offset for myself",
-      "lede": "Pick how much and the quality you prefer. If you don’t choose projects, we’ll assemble a convenient, high-quality mix for you."
-    },
-    "gift": {
-      "title": "Gift a carbon offset",
-      "lede": "If you buy for yourself, credits are retired to you (not transferable). For gifts, we retire them in the recipient’s name and send a certificate."
-    },
+    "self": { "title": "Offset for myself", "lede": "Pick quantity and quality. If you don’t choose projects, we’ll assemble the most convenient, high-quality mix for you (prices may be higher when you choose yourself)." },
+    "gift": { "title": "Gift a carbon offset", "lede": "If you buy for yourself, credits are immediately retired to your name (not transferable). For gifts, we retire them to the recipient’s name and send a beautiful certificate." },
     "amount": "Amount (tCO₂e)",
     "quality": "Quality tier",
-    "qualityNote": "Premium reflects scarcer, often newer projects.",
+    "qualityNote": "Premium/Elite reflect scarcer, often newer projects.",
     "projects": "Project selection",
-    "chooseProjects": "I want to choose the projects myself",
-    "priceNote": "Note: prices may be higher when you choose projects yourself.",
-    "toMarketplace": "Choose projects in marketplace",
-    "addCart": "Add to cart",
-    "disclaimer": "Equivalences are indicative; actual footprints vary by route, vehicle and habits."
+    "chooseProjectsBtn": "Choose projects yourself",
+    "priceNoteNeutral": "Prices may be higher when you choose projects yourself; availability can vary.",
+    "subtotal": "Subtotal",
+    "addToCart": "Add selected to cart",
+    "select": "Select",
+    "proceed": "Proceed",
+    "ready": "Ready to proceed",
+    "details": { "you": "Your details", "recipient": "Recipient details" },
+    "form": {
+      "name": "Your name", "email": "Your email",
+      "recipientName": "Recipient name", "recipientEmail": "Recipient email",
+      "message": "Personal message (optional)",
+      "leaderboard": "Opt in to our public leaderboard",
+      "needs": "Select and fill out the required information to proceed."
+    },
+    "addons": { "card": "Gift card (physical) +€10", "ecert": "Electronic certificate", "photo": "Add a personal photo" },
+    "eq": { "short": "short-haul flights", "long": "long-haul round trips", "km": "km by car" },
+    "custom": "Custom",
+    "learnMore": "Learn more",
+    "marketModal": {
+      "title": "Choose specific projects",
+      "body1": "Want to know exactly where and what you impact with your purchase? Great—visit the marketplace to explore what we offer.",
+      "body2": "Prices may be higher when selecting yourself; availability is not always immediate, but we deliver as soon as you place your offer.",
+      "body3": "Marketplace prices may sometimes be indicative.",
+      "visit": "Visit marketplace",
+      "dismiss": "Discard"
+    },
+    "disclaimer": "Equivalences are indicative; actual footprints vary by route, vehicle and habits.",
+    "quantitySelector": {
+      "label": "Quantity",
+      "packageLabel": "Package",
+      "sizeOptions": ["1","2","5","10","25","50","100"],
+      "custom": "Custom",
+      "customPlaceholder": "Enter quantity",
+      "stepper": { "inc": "Increase quantity", "dec": "Decrease quantity" }
+    },
+
+    "qualityLabels": {
+      "standardFmt": "Standard — {price}/t",
+      "premiumFmt": "Premium — {price}/t",
+      "eliteFmt": "Elite — {price}/t",
+      "note": "Premium/Elite include rarer and often newer projects."
+    },
+
+    "leaderboard": {
+      "label": "Appear in our leaderboard",
+      "tooltip": "We run a public leaderboard: compete with others, win gifts if you lead, and enjoy surprises on special occasions (e.g., Christmas).",
+      "cta": "Visit leaderboard"
+    },
+
+    "giftLeaderboardNote": "The recipient will appear on the leaderboard (not you).",
+    "visitLeaderboard": "Visit leaderboard",
+    "priceNote": "Prices may be higher when selecting yourself; availability isn’t always immediate (we deliver as soon as you place your offer). Marketplace prices might sometimes be indicative.",
+    "projectsModal": {
+      "title": "Choose projects yourself?",
+      "body": "You want to know exactly where and what you impact with your purchase? Great. Visit the marketplace to get an image of what we offer.",
+      "note": "Prices may be higher when selecting yourself; availability isn’t always immediate (we deliver as soon as you place your offer). Marketplace prices might sometimes be indicative.",
+      "close": "Discard",
+      "visit": "Visit marketplace"
+    },
+    "lb": {
+      "tooltip": {
+        "self": "We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas).",
+        "gift": "We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas). For gifts, the recipient will appear on the leaderboard."
+      }
+    }
+
+
+  },
+
+  "lb": {
+    "title": "Public Leaderboard",
+    "sub": "Compete kindly: rankings are weighted by credit quality (Standard ×1, Premium ×1.25, Elite ×1.5).",
+    "name": "Name",
+    "email": "Email",
+    "total": "Total tCO₂e",
+    "weighted": "Weighted score",
+    "empty": "No entries yet—be the first!",
+    "anon": "Anonymous",
+    "note": "Quality coefficients: Standard ×1.0, Premium ×1.25, Elite ×1.5."
+  },
+
+
+  "learn": {
+    "self": {
+      "title": "How individual offsets work",
+      "sub": "Benefits, certificates, and the simple process.",
+      "h1": "What you get",
+      "p1": "Credits retired in your name with a downloadable certificate and registry details.",
+      "h2": "Steps",
+      "q1": "Choose quantity and quality",
+      "q2": "We source and retire on registry",
+      "q3": "You receive your certificate",
+      "h3": "Good to know",
+      "p3": "Availability and price depend on project type and vintage; we quote best execution."
+    },
+    "gift": {
+      "title": "How offset gifts work",
+      "sub": "We retire credits to the recipient’s name and send a certificate.",
+      "h1": "What the recipient gets",
+      "p1": "Credits retired in their name (not transferable).",
+      "p2": "A certificate (PDF; optional physical card) with project details and retirement ID.",
+      "p3": "Optional appearance on the public leaderboard if allowed.",
+      "h2": "Delivery & timing",
+      "p4": "Electronic certificates are immediate after retirement; physical cards ship separately."
+    }
+
+  },
+
+  "leaderboardPage": {
+    "title": "Leaderboard",
+    "subtitle": "Top supporters",
+    "scoreNote": "Score = Quantity × Quality coefficient.",
+    "table": {
+      "rank": "Rank",
+      "name": "Name",
+      "qty": "Quantity (tCO₂e)",
+      "quality": "Quality",
+      "coef": "Coefficient",
+      "score": "Score",
+      "date": "Date"
+    },
+    "empty": "No entries yet."
   },
 
 

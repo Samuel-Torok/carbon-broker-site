@@ -1,252 +1,429 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowRight, Gift, Leaf, Info, Sliders } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  Check,
+  Gift,
+  Leaf,
+  Info,
+  Plane,
+  Car,
+} from "lucide-react";
 import PagePanel from "../components/PagePanel.jsx";
 import { useCart } from "../lib/cart";
 import { useI18n } from "../i18n";
+import { addPurchase } from "../lib/leaderboard";
 
-
-
-/* ---- pricing + choices ---- */
+/* --- quality options (same tiers as Companies) --- */
 const QUALITY_OPTIONS = [
   { id: "standard", label: "Standard", pricePerTonne: 12 },
-  { id: "premium", label: "Premium", pricePerTonne: 20 },
+  { id: "premium",  label: "Premium (nature-based, recent)", pricePerTonne: 20 },
+  { id: "elite",    label: "Elite (cookstoves/REDD+, newest)", pricePerTonne: 30 },
 ];
-const AMOUNTS = [1, 2, 5, 10, 25, 50, 100];
 
-/* ---- quick equivalences (indicative only) ---- */
-function Equivalence({ tco2 }) {
-  const shortHaulPerFlight = 0.15; // tCO2e / one-way (very rough)
-  const longHaulRt = 1.6;          // tCO2e / round trip (very rough)
-  const carPer1kKm = 0.2;          // tCO2e per ~1000 km (very rough)
+/* fixed package sizes */
+const PRESETS = [1, 2, 5, 10, 25, 50, 100];
+
+const clamp = (n, lo, hi) => Math.min(Math.max(n, lo), hi);
+const emailOk = (s) => /^\S+@\S+\.\S+$/.test(s || "");
+
+/* visible plane/car chips */
+function EquivalenceChips({ tco2 }) {
+  const shortHaulPerFlight = 0.15;
+  const longHaulRt = 1.6;
+  const carPer1kKm = 0.2;
 
   const flightsShort = Math.max(1, Math.round(tco2 / shortHaulPerFlight));
   const flightsLongRt = Math.max(1, Math.round(tco2 / longHaulRt));
   const carKm = Math.round((tco2 / carPer1kKm) * 1000);
 
+  const Chip = ({ icon: Icon, label }) => (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/30 px-2.5 py-1 text-xs text-emerald-200">
+      <Icon className="h-3.5 w-3.5" />
+      {label}
+    </span>
+  );
+
   return (
-    <div className="mt-2 text-xs text-white/70">
-      ≈ {flightsShort} short-haul flights · ≈ {flightsLongRt} long-haul round trips · ≈ {carKm.toLocaleString()} km by car (est.)
+    <div className="mt-2 flex flex-wrap gap-2">
+      <Chip icon={Plane} label={`≈ ${flightsShort} short-haul flights`} />
+      <Chip icon={Plane} label={`≈ ${flightsLongRt} long-haul round trips`} />
+      <Chip icon={Car}   label={`≈ ${carKm.toLocaleString()} km by car`} />
     </div>
   );
 }
 
-/* ---- “For myself” card ---- */
-function SelfBlock({ onAdd, t }) {
-  const [qty, setQty] = useState(10);
-  const [quality, setQuality] = useState(QUALITY_OPTIONS[0]);
-  const [customProjects, setCustomProjects] = useState(false);
-  const total = useMemo(() => qty * quality.pricePerTonne, [qty, quality]);
-
-  return (
-    <div className="rounded-2xl bg-white/10 ring-1 ring-white/15 p-5 md:p-6 backdrop-blur">
-      <div className="flex items-center gap-2 text-emerald-400 mb-2">
-        <Leaf className="h-5 w-5"/><h3 className="font-semibold text-lg">{t("indiv.self.title","Offset for myself")}</h3>
-      </div>
-      <p className="text-sm text-white/80">
-        {t("indiv.self.lede","Pick how much and the quality you prefer. If you don’t want to choose projects yourself, we’ll build the most convenient, high-quality mix for you.")}
-      </p>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.amount","Amount (tCO₂e)")}</label>
-          <select value={qty} onChange={(e)=>setQty(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2">
-            {AMOUNTS.map(a => <option key={a} value={a}>{a} tCO₂e</option>)}
-          </select>
-          <Equivalence tco2={qty} />
-        </div>
-
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.quality","Quality tier")}</label>
-          <select value={quality.id}
-                  onChange={(e)=>setQuality(QUALITY_OPTIONS.find(q=>q.id===e.target.value))}
-                  className="mt-1 w-full rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2">
-            {QUALITY_OPTIONS.map(q => (
-              <option key={q.id} value={q.id}>
-                {q.label} — €{q.pricePerTonne}/t
-              </option>
-            ))}
-          </select>
-          <div className="mt-1 text-xs text-white/60 flex items-center gap-1">
-            <Info className="h-3.5 w-3.5"/>{t("indiv.qualityNote","Premium reflects scarcer, often newer projects.")}
-          </div>
-        </div>
-
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.projects","Project selection")}</label>
-          <div className="mt-1 flex items-center gap-2">
-            <input id="self-custom" type="checkbox" checked={customProjects} onChange={()=>setCustomProjects(v=>!v)}
-                   className="h-4 w-4 rounded border-white/20 bg-white/5"/>
-            <label htmlFor="self-custom" className="text-sm">
-              {t("indiv.chooseProjects","I want to choose the projects myself")}
-            </label>
-          </div>
-          <div className="mt-1 text-xs text-amber-300/80">
-            {t("indiv.priceNote","Note: prices may be higher when you choose projects yourself.")}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="text-sm text-white/80">Subtotal: <span className="font-semibold">€{total.toLocaleString()}</span></div>
-        <button
-          onClick={()=>onAdd({ mode:"self", qty, quality:quality.id, customProjects })}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 px-4 py-2 font-medium transition"
-        >
-          {customProjects ? t("indiv.toMarketplace","Choose projects in marketplace") : t("indiv.addCart","Add to cart")}
-          <ArrowRight className="h-4 w-4"/>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ---- Gift card ---- */
-function GiftBlock({ onAdd, t }) {
-  const [qty, setQty] = useState(5);
-  const [quality, setQuality] = useState(QUALITY_OPTIONS[0]);
-  const [customProjects, setCustomProjects] = useState(false);
-  const [giftCard, setGiftCard] = useState(false);
-  const [eCert, setECert] = useState(true);
-  const [includePhoto, setIncludePhoto] = useState(true);
-
-  const addOnTotal = (giftCard?10:0) + (eCert?0:0) + (includePhoto?0:0);
-  const total = useMemo(() => qty * quality.pricePerTonne + addOnTotal, [qty, quality, giftCard, eCert, includePhoto]);
-
-  return (
-    <div className="rounded-2xl bg-white/10 ring-1 ring-white/15 p-5 md:p-6 backdrop-blur">
-      <div className="flex items-center gap-2 text-emerald-400 mb-2">
-        <Gift className="h-5 w-5"/><h3 className="font-semibold text-lg">{t("indiv.gift.title","Gift a carbon offset")}</h3>
-      </div>
-      <p className="text-sm text-white/80">
-        {t("indiv.gift.lede","Perfect for someone who truly cares about the planet. If you offset for yourself, credits are retired to you immediately (not transferable). For gifts, we retire them in the recipient’s name and send a beautiful certificate.")}
-      </p>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.amount","Amount (tCO₂e)")}</label>
-          <select value={qty} onChange={(e)=>setQty(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2">
-            {AMOUNTS.map(a => <option key={a} value={a}>{a} tCO₂e</option>)}
-          </select>
-          <Equivalence tco2={qty} />
-        </div>
-
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.quality","Quality tier")}</label>
-          <select value={quality.id}
-                  onChange={(e)=>setQuality(QUALITY_OPTIONS.find(q=>q.id===e.target.value))}
-                  className="mt-1 w-full rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2">
-            {QUALITY_OPTIONS.map(q => (
-              <option key={q.id} value={q.id}>
-                {q.label} — €{q.pricePerTonne}/t
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="text-xs text-white/70">{t("indiv.projects","Project selection")}</label>
-          <div className="mt-1 flex items-center gap-2">
-            <input id="gift-custom" type="checkbox" checked={customProjects} onChange={()=>setCustomProjects(v=>!v)}
-                   className="h-4 w-4 rounded border-white/20 bg-white/5"/>
-            <label htmlFor="gift-custom" className="text-sm">
-              {t("indiv.chooseProjects","I want to choose the projects myself")}
-            </label>
-          </div>
-          <div className="mt-1 text-xs text-amber-300/80">
-            {t("indiv.priceNote","Note: prices may be higher when you choose projects yourself.")}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3">
-          <div className="flex items-center gap-2">
-            <input id="addon-card" type="checkbox" checked={giftCard} onChange={()=>setGiftCard(v=>!v)}/>
-            <label htmlFor="addon-card" className="text-sm font-medium">Gift card (physical) +€10</label>
-          </div>
-          <p className="mt-1 text-xs text-white/70">Elegant card with a unique retirement code.</p>
-        </div>
-        <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3">
-          <div className="flex items-center gap-2">
-            <input id="addon-ecert" type="checkbox" checked={eCert} onChange={()=>setECert(v=>!v)}/>
-            <label htmlFor="addon-ecert" className="text-sm font-medium">Electronic certificate</label>
-          </div>
-          <p className="mt-1 text-xs text-white/70">PDF with recipient’s name and message.</p>
-        </div>
-        <div className="rounded-xl bg-white/5 ring-1 ring-white/10 p-3">
-          <div className="flex items-center gap-2">
-            <input id="addon-photo" type="checkbox" checked={includePhoto} onChange={()=>setIncludePhoto(v=>!v)}/>
-            <label htmlFor="addon-photo" className="text-sm font-medium">Add a personal photo</label>
-          </div>
-          <p className="mt-1 text-xs text-white/70">We’ll place it on the certificate.</p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="text-sm text-white/80">Subtotal: <span className="font-semibold">€{total.toLocaleString()}</span></div>
-        <button
-          onClick={()=>onAdd({
-            mode:"gift",
-            qty,
-            quality:quality.id,
-            customProjects,
-            addons:{ giftCard, eCert, includePhoto }
-          })}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 px-4 py-2 font-medium transition"
-        >
-          {customProjects ? t("indiv.toMarketplace","Choose projects in marketplace") : t("indiv.addCart","Add to cart")}
-          <ArrowRight className="h-4 w-4"/>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ---- Page ---- */
-export default function Individuals() {
-  const { t } = useI18n();
-  const { addItem } = useCart();
+/* shared selector UI */
+function Selector({
+  t,
+  kind,                // "self" | "gift"
+  ringOn,
+  onProceed,
+  prefill = {},
+}) {
   const navigate = useNavigate();
 
-  const handleAdd = (opts) => {
-    if (opts.customProjects) {
-      navigate(`/marketplace?from=individuals&type=${opts.mode}`);
-      return;
-    }
-    const unitPrice = QUALITY_OPTIONS.find(q=>q.id===opts.quality)?.pricePerTonne ?? 12;
-    const addonsPrice =
-      (opts.addons?.giftCard ? 10 : 0) +
-      (opts.addons?.eCert ? 0 : 0) +
-      (opts.addons?.includePhoto ? 0 : 0);
-    const price = opts.qty * unitPrice + addonsPrice;
+  // quantity UX: one box with presets + "Custom". If "Custom", show number input (with up/down arrows).
+  const [qtyChoice, setQtyChoice] = useState(
+    PRESETS.includes(prefill.qty) ? String(prefill.qty) : "custom"
+  );
+  const [qty, setQty] = useState(prefill.qty ? clamp(prefill.qty, 1, 1000) : 10);
 
-    const qualityLabel =
-      opts.quality === "premium"
-        ? (t?.("packages.qualities.premium") || "Premium")
-        : (t?.("packages.qualities.standard") || "Standard");
+  const [quality, setQuality] = useState(
+    QUALITY_OPTIONS.find(q => q.id === prefill.quality) ?? QUALITY_OPTIONS[0]
+  );
 
-    // IMPORTANT: match CartReview's expected shape
-    addItem({
-      size: opts.qty,
-      qualityLabel,
-      csr: { title: (t?.("companies.csr.none") || "No thanks"), price: 0 },
-      total: price,
-      meta: { type:"individual", mode:opts.mode, qty:opts.qty, quality:opts.quality, addons:opts.addons || {} }
+  // modal for "choose projects myself"
+  const [showProjectsModal, setShowProjectsModal] = useState(false);
+  const [customProjects, setCustomProjects] = useState(!!prefill.customProjects);
+
+  // reveal form after Select
+  const [opened, setOpened] = useState(!!prefill.opened);
+  const [meName, setMeName] = useState(prefill.meName || "");
+  const [meEmail, setMeEmail] = useState(prefill.meEmail || "");
+  const [message, setMessage] = useState(prefill.message || "");
+  const [leaderboard, setLeaderboard] = useState(!!prefill.leaderboard);
+
+  // gift-only fields
+  const [recName, setRecName]   = useState(prefill.recName || "");
+  const [recEmail, setRecEmail] = useState(prefill.recEmail || "");
+
+  // optional gift add-ons (placeholders for later pricing)
+  const [giftCard, setGiftCard] = useState(!!prefill.giftCard);
+  const [eCert, setECert] = useState(prefill.eCert ?? true);
+  const [includePhoto, setIncludePhoto] = useState(!!prefill.includePhoto);
+
+  const effQty = qtyChoice === "custom" ? qty : Number(qtyChoice);
+  const addOnTotal = kind === "gift" ? (giftCard ? 10 : 0) : 0;
+  const subtotal = useMemo(
+    () => clamp(effQty,1,1000) * quality.pricePerTonne + addOnTotal,
+    [effQty, quality, addOnTotal]
+  );
+
+  const validBase = effQty >= 1 && effQty <= 1000 && quality?.id;
+  const validSelf = validBase && meName && emailOk(meEmail);
+  const validGift = validSelf && recName && emailOk(recEmail);
+  const isValid = kind === "gift" ? validGift : validSelf;
+
+  const proceed = () => {
+    if (!opened || !isValid) return;
+    onProceed({
+      kind,
+      qty: clamp(effQty,1,1000),
+      quality: quality.id,
+      customProjects,
+      meName, meEmail, message, leaderboard,
+      ...(kind === "gift" ? { recName, recEmail, addons: { giftCard, eCert, includePhoto } } : {}),
+      subtotal
     });
+  };
 
-    navigate(`/cart-review?info=${opts.mode}`);
+  const onClickChooseProjects = () => setShowProjectsModal(true);
+  const visitMarketplace = () => {
+    setCustomProjects(true);
+    navigate(`/marketplace?from=individuals&type=${kind}`);
   };
 
   return (
+    <div className={`rounded-2xl p-5 md:p-6 ring-1 transition ${ringOn ? "ring-emerald-400 bg-white/[.07]" : "ring-white/15 bg-white/10"}`}>
+      {/* quantity + quality + project choice */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Quantity */}
+        <div>
+          <label className="text-xs text-white/70">{t("indiv.amount","Quantity (tCO₂e)")}</label>
+          <div className="mt-1 flex items-center gap-2">
+            <select
+              value={qtyChoice}
+              onChange={(e)=>setQtyChoice(e.target.value)}
+              className="w-36 rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"
+            >
+              {PRESETS.map(p => (
+                <option key={p} value={String(p)}>{p}</option>
+              ))}
+              <option value="custom">{t("indiv.custom","Custom")}</option>
+            </select>
+            {qtyChoice === "custom" && (
+              <input
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={1000}
+                value={qty}
+                onChange={(e)=>setQty(clamp(parseInt(e.target.value || "0",10),1,1000))}
+                className="w-28 rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"
+              />
+            )}
+          </div>
+          <EquivalenceChips tco2={effQty}/>
+        </div>
+
+        {/* Quality (same style as Companies; no shiny) */}
+        <div>
+          <label className="text-xs text-white/70">{t("indiv.quality","Quality tier")}</label>
+          <select
+            value={quality.id}
+            onChange={(e)=>setQuality(QUALITY_OPTIONS.find(q=>q.id===e.target.value))}
+            className="mt-1 w-full rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"
+          >
+            {QUALITY_OPTIONS.map(q=>(
+              <option key={q.id} value={q.id}>{q.label} — €{q.pricePerTonne}/t</option>
+            ))}
+          </select>
+          <div className="mt-1 flex items-center gap-1 text-xs text-white/60">
+            <Info className="h-3.5 w-3.5"/>{t("indiv.qualityNote","Premium/Elite reflect scarcer, often newer projects.")}
+          </div>
+        </div>
+
+        {/* Projects button -> modal */}
+        <div>
+          <label className="text-xs text-white/70">{t("indiv.projects","Project selection")}</label>
+          <div className="mt-1">
+            <button
+              onClick={onClickChooseProjects}
+              className="rounded-lg bg-white/5 hover:bg-white/10 ring-1 ring-white/15 px-3 py-2 text-left w-full"
+            >
+              {t("indiv.chooseProjectsBtn","I want to choose the projects myself")}
+            </button>
+            <div className="mt-1 text-xs text-white/60">
+              {t("indiv.priceNote","Note: prices may be higher when selecting yourself; availability may not be immediate and marketplace prices can be indicative.")}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* subtotal bar */}
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/12">
+        <div className="text-sm text-white/75">{t("indiv.subtotal","Subtotal")}</div>
+        <div className="text-base font-semibold text-white">€{subtotal.toLocaleString()}</div>
+      </div>
+
+      {/* select -> show form */}
+      {!opened ? (
+        <div className="mt-4 flex items-center justify-between">
+          <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
+            {t("indiv.visitLeaderboard","Visit leaderboard")}
+          </Link>
+          <button
+            onClick={()=>setOpened(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 px-4 py-2 font-medium"
+          >
+            {t("indiv.select","Select")} <ArrowRight className="h-4 w-4"/>
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* details form */}
+          <div className="mt-4 grid gap-3">
+            <div className="text-sm font-medium text-white/90">
+              {t("indiv.details.you","Your details")}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                placeholder={t("indiv.form.name","Your name")}
+                value={meName} onChange={e=>setMeName(e.target.value)}
+                className="rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"/>
+              <input
+                placeholder={t("indiv.form.email","Your email")}
+                value={meEmail} onChange={e=>setMeEmail(e.target.value)}
+                className="rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"/>
+            </div>
+
+            {kind === "gift" && (
+              <>
+                <div className="text-sm font-medium text-white/90">
+                  {t("indiv.details.recipient","Recipient details")}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input
+                    placeholder={t("indiv.form.recipientName","Recipient name")}
+                    value={recName} onChange={e=>setRecName(e.target.value)}
+                    className="rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"/>
+                  <input
+                    placeholder={t("indiv.form.recipientEmail","Recipient email")}
+                    value={recEmail} onChange={e=>setRecEmail(e.target.value)}
+                    className="rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2"/>
+                </div>
+                {/* gift add-ons */}
+                <div className="grid gap-3 md:grid-cols-3">
+                  <label className="flex items-center gap-2 rounded-lg bg-white/5 ring-1 ring-white/10 p-3">
+                    <input type="checkbox" checked={giftCard} onChange={()=>setGiftCard(v=>!v)}/>
+                    <span className="text-sm">{t("indiv.addons.card","Gift card (physical) +€10")}</span>
+                  </label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white/5 ring-1 ring-white/10 p-3">
+                    <input type="checkbox" checked={eCert} onChange={()=>setECert(v=>!v)}/>
+                    <span className="text-sm">{t("indiv.addons.ecert","Electronic certificate")}</span>
+                  </label>
+                  <label className="flex items-center gap-2 rounded-lg bg-white/5 ring-1 ring-white/10 p-3">
+                    <input type="checkbox" checked={includePhoto} onChange={()=>setIncludePhoto(v=>!v)}/>
+                    <span className="text-sm">{t("indiv.addons.photo","Add a personal photo")}</span>
+                  </label>
+                </div>
+              </>
+            )}
+
+            <textarea
+              placeholder={t("indiv.form.message","Personal message (optional)")}
+              value={message} onChange={e=>setMessage(e.target.value)}
+              className="rounded-lg bg-white/5 ring-1 ring-white/15 px-3 py-2 min-h-[84px]"/>
+
+            {/* leaderboard opt-in + tooltip + visit button */}
+            <div className="flex items-center justify-between">
+              <label className="inline-flex items-center gap-2">
+                <input type="checkbox" checked={leaderboard} onChange={()=>setLeaderboard(v=>!v)}/>
+                <span className="text-sm text-white/80">
+                  {t("indiv.form.leaderboard","Appear in our public leaderboard")}
+                </span>
+                <span className="relative group inline-flex">
+                  <Info className="h-4 w-4 text-white/70" />
+                  <span className="absolute left-5 top-0 z-20 hidden group-hover:block w-72 text-xs rounded-lg bg-white/95 text-emerald-950 p-3 shadow-lg">
+                    {kind === "gift"
+                      ? t("indiv.lb.tooltip.gift","We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas). For gifts, the recipient will appear on the leaderboard.")
+                      : t("indiv.lb.tooltip.self","We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas).")}
+                  </span>
+                </span>
+              </label>
+              <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
+                {t("indiv.visitLeaderboard","Visit leaderboard")}
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between">
+            {!isValid ? (
+              <div className="text-xs text-red-300">
+                {t("indiv.form.needs","Select and fill out the required information to proceed.")}
+              </div>
+            ) : <span className="text-emerald-300 text-xs inline-flex items-center gap-1"><Check className="h-3.5 w-3.5"/> {t("indiv.ready","Ready to proceed")}</span>}
+            <div className="flex gap-2">
+              <button
+                onClick={proceed}
+                disabled={!isValid}
+                className={`rounded-lg px-4 py-2 font-medium inline-flex items-center gap-2 ${isValid ? "bg-emerald-500 text-emerald-950 hover:bg-emerald-400" : "bg-white/10 text-white/60 cursor-not-allowed"}`}
+              >
+                {t("indiv.proceed","Proceed")} <ArrowRight className="h-4 w-4"/>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Projects modal */}
+      {showProjectsModal && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60">
+          <div className="w-[min(640px,90vw)] rounded-2xl bg-white p-5 text-emerald-950 shadow-2xl">
+            <div className="flex items-start justify-between">
+              <h4 className="text-lg font-semibold">
+                {t("indiv.projectsModal.title","Choose projects yourself?")}
+              </h4>
+              <button onClick={()=>setShowProjectsModal(false)} className="text-emerald-700 hover:text-emerald-900">×</button>
+            </div>
+            <p className="mt-2 text-sm">
+              {t("indiv.projectsModal.body","You want to know exactly where and what you impact with your purchase? Great. Visit the marketplace to get an image of what we offer.")}
+            </p>
+            <p className="mt-2 text-xs text-emerald-700/90">
+              {t("indiv.projectsModal.note","Prices may be higher when selecting yourself; availability isn’t always immediate (we deliver as soon as you place your offer). Marketplace prices might sometimes be indicative.")}
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={()=>setShowProjectsModal(false)} className="rounded-lg px-3 py-1.5 ring-1 ring-emerald-700/30">
+                {t("indiv.projectsModal.close","Discard")}
+              </button>
+              <button onClick={visitMarketplace} className="rounded-lg px-3 py-1.5 bg-emerald-600 text-white">
+                {t("indiv.projectsModal.visit","Visit marketplace")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Individuals() {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+
+  const [pickedSelf, setPickedSelf] = useState(null);
+  const [pickedGift, setPickedGift] = useState(null);
+
+  const makeCartItem = (sel) => {
+    const q = QUALITY_OPTIONS.find(x=>x.id===sel.quality) ?? QUALITY_OPTIONS[0];
+    const qualityLabel =
+      sel.quality === "premium" ? (t("packages.qualities.premium") || "Premium")
+      : sel.quality === "elite" ? (t("packages.qualities.elite") || "Elite")
+      : (t("packages.qualities.standard") || "Standard");
+
+    const base = {
+      size: sel.qty,
+      qualityLabel,
+      csr: { title: t("companies.csr.none") || "No thanks", price: 0 },
+      total: sel.subtotal,
+      meta: {
+        type: "individual",
+        mode: sel.kind,
+        qty: sel.qty,
+        quality: sel.quality,
+        customProjects: !!sel.customProjects,
+        meName: sel.meName, meEmail: sel.meEmail, message: sel.message, leaderboard: !!sel.leaderboard,
+      },
+    };
+    if (sel.kind === "gift") {
+      base.meta.recName = sel.recName;
+      base.meta.recEmail = sel.recEmail;
+      base.meta.addons = sel.addons || {};
+    }
+    return base;
+  };
+
+  const handleAddToCart = () => {
+    // marketplace redirect takes precedence
+    if (pickedSelf?.customProjects) {
+      navigate(`/marketplace?from=individuals&type=self`);
+      return;
+    }
+    if (pickedGift?.customProjects) {
+      navigate(`/marketplace?from=individuals&type=gift`);
+      return;
+    }
+
+    // add to cart
+    if (pickedSelf) addItem(makeCartItem(pickedSelf));
+    if (pickedGift) addItem(makeCartItem(pickedGift));
+
+    // record for leaderboard (weighted done at page render)
+    if (pickedSelf?.leaderboard) {
+      addPurchase({
+        name: pickedSelf.meName, email: pickedSelf.meEmail,
+        qty: pickedSelf.qty, quality: pickedSelf.quality
+      });
+    }
+    if (pickedGift?.leaderboard) {
+      // recipient appears on leaderboard
+      addPurchase({
+        name: pickedGift.recName, email: pickedGift.recEmail,
+        qty: pickedGift.qty, quality: pickedGift.quality
+      });
+    }
+
+    navigate("/cart-review");
+  };
+
+  const footerEnabled = !!(pickedSelf || pickedGift);
+
+  return (
     <PagePanel
-      title={t("indiv.hero.title","Hi there! Ready to reduce your footprint or surprise someone who cares?")}
-      subtitle={t("indiv.hero.sub","You’re in the right place — offset for yourself or gift verified carbon in a few clicks.")}
-      icon={Sliders}
+      title={t(
+        "indiv.hero.title",
+        "Hi there! Looking to reduce your footprint, do nature a favor, or gift real climate impact?"
+      )}
+      subtitle={t(
+        "indiv.hero.sub",
+        "You’re in the right place. Offset verified carbon for yourself in minutes — or send a thoughtful gift that retires credits in your recipient’s name."
+      )}
+      icon={Leaf}
     >
-      <div className="mt-2 mb-6">
+      {/* hero image */}
+      <div className="mt-3 mb-6">
         <img
           src="/images/individuals-hero.jpg"
           alt={t("indiv.hero.imageAlt","Beautiful nature scene")}
@@ -254,11 +431,46 @@ export default function Individuals() {
         />
       </div>
 
+      {/* Section 1 */}
+      <section className="mb-2">
+        <div className="mb-2 flex items-center gap-2 text-emerald-400">
+          <Leaf className="h-5 w-5"/><h3 className="text-lg font-semibold">{t("indiv.self.title","Offset for myself")}</h3>
+        </div>
+        <p className="text-sm text-white/80">
+          {t("indiv.self.lede","Pick quantity and quality. If you don’t choose projects, we’ll assemble the most convenient, high-quality mix for you.")}
+        </p>
+        <Link to="/learn/individuals" className="text-xs text-emerald-300 underline underline-offset-2">
+          {t("indiv.learnMore","Learn more")}
+        </Link>
+      </section>
+      <Selector t={t} kind="self" ringOn={!!pickedSelf} onProceed={(sel)=>setPickedSelf(sel)} />
 
+      {/* Section 2 */}
+      <section className="mt-8 mb-2">
+        <div className="mb-2 flex items-center gap-2 text-emerald-400">
+          <Gift className="h-5 w-5"/><h3 className="text-lg font-semibold">{t("indiv.gift.title","Gift a carbon offset")}</h3>
+        </div>
+        <p className="text-sm text-white/80">
+          {t("indiv.gift.lede","For yourself, credits are retired to your name (not transferable). For gifts, we retire them to the recipient’s name and send a beautiful certificate. The recipient appears on the leaderboard if opted in.")}
+        </p>
+        <Link to="/learn/gifts" className="text-xs text-emerald-300 underline underline-offset-2">
+          {t("indiv.learnMore","Learn more")}
+        </Link>
+      </section>
+      <Selector t={t} kind="gift" ringOn={!!pickedGift} onProceed={(sel)=>setPickedGift(sel)} />
 
-      <div className="grid gap-6">
-        <SelfBlock onAdd={handleAdd} t={t}/>
-        <GiftBlock onAdd={handleAdd} t={t}/>
+      {/* footer add to cart */}
+      <div className="mt-6 flex justify-between">
+        <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
+          {t("indiv.visitLeaderboard","Visit leaderboard")}
+        </Link>
+        <button
+          onClick={handleAddToCart}
+          disabled={!footerEnabled}
+          className={`rounded-lg px-5 py-2.5 font-medium ${footerEnabled ? "bg-emerald-500 text-emerald-950 hover:bg-emerald-400" : "bg-white/10 text-white/60 cursor-not-allowed"}`}
+        >
+          {t("indiv.addToCart","Add selected to cart")}
+        </button>
       </div>
 
       <div className="mt-6 text-xs text-white/60">

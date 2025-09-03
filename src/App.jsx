@@ -22,6 +22,10 @@ import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
 import Imprint from "./pages/Imprint.jsx";
 import CSR from "./pages/CSR.jsx";
+import Leaderboard from "./pages/Leaderboard.jsx";
+import LearnIndividuals from "./pages/LearnIndividuals.jsx";
+import LearnGifts from "./pages/LearnGifts.jsx";
+
 
 
 export default function App() {
@@ -54,6 +58,9 @@ export default function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/imprint" element={<Imprint />} />
               <Route path="/csr" element={<CSR />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/learn/individuals" element={<LearnIndividuals />} />
+              <Route path="/learn/gifts" element={<LearnGifts />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

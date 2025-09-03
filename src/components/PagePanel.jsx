@@ -1,7 +1,14 @@
 import React from "react";
 import BackHome from "./BackHome.jsx";
 
-export default function PagePanel({ children, maxWidth = "max-w-5xl" }) {
+export default function PagePanel({
+  children,
+  title,
+  subtitle,
+  icon: Icon,
+  badge,
+  maxWidth = "max-w-5xl",
+}) {
   return (
     <div className="relative isolate flex-1 flex min-h-0">
       {/* fixed ocean background */}
@@ -19,6 +26,29 @@ export default function PagePanel({ children, maxWidth = "max-w-5xl" }) {
             </div>
 
             <div className="pt-14 md:pt-16">
+              {(title || subtitle) && (
+                <header className="mb-4 md:mb-6">
+                  <div className="flex items-center gap-2 text-emerald-400">
+                    {Icon ? <Icon className="h-5 w-5" /> : null}
+                    {badge ? (
+                      <span className="text-xs rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/30 px-2 py-0.5">
+                        {badge}
+                      </span>
+                    ) : null}
+                  </div>
+                  {title && (
+                    <h1 className="mt-1 text-2xl md:text-3xl font-semibold text-emerald-300">
+                      {title}
+                    </h1>
+                  )}
+                  {subtitle && (
+                    <p className="mt-1 text-sm md:text-base text-white/80 max-w-3xl">
+                      {subtitle}
+                    </p>
+                  )}
+                </header>
+              )}
+
               {children}
             </div>
           </div>
