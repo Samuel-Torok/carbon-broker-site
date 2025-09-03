@@ -70,10 +70,12 @@ export default function SideMenu() {
           <NavItem to="/buy/individuals">{t("nav.individuals")}</NavItem>
           <NavItem to="/csr">{t("nav.csr")}</NavItem>
           <NavItem to="/marketplace">{t("nav.marketplace")}</NavItem>
-          <NavItem to="/faq">{t("nav.faq")}</NavItem>
+          <NavItem to="/leaderboard">{t("nav.leaderboard")}</NavItem>
           <NavItem to="/about">{t("nav.about")}</NavItem>
           <NavItem to="/contact">{t("nav.contact")}</NavItem>
+          <NavItem to="/faq">{t("nav.faq")}</NavItem>
           <NavItem to="/assistant">{t("nav.assistant")}</NavItem>
+
         </nav>
 
         {/* Language switch */}

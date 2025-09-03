@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -26,6 +26,22 @@ const PRESETS = [1, 2, 5, 10, 25, 50, 100];
 
 const clamp = (n, lo, hi) => Math.min(Math.max(n, lo), hi);
 const emailOk = (s) => /^\S+@\S+\.\S+$/.test(s || "");
+const DRAFT_KEY = (kind) => `indiv:draft:${kind}`;
+
+function loadDraft(kind) {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY(kind));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function saveDraft(kind, data) {
+  try {
+    localStorage.setItem(DRAFT_KEY(kind), JSON.stringify(data));
+  } catch {}
+}
+
 
 /* visible plane/car chips */
 function EquivalenceChips({ tco2 }) {
@@ -62,36 +78,47 @@ function Selector({
   prefill = {},
 }) {
   const navigate = useNavigate();
+  const draft = useMemo(() => loadDraft(kind), [kind]);
+
 
   // quantity UX: one box with presets + "Custom". If "Custom", show number input (with up/down arrows).
   const [qtyChoice, setQtyChoice] = useState(
-    PRESETS.includes(prefill.qty) ? String(prefill.qty) : "custom"
+    draft?.qtyChoice ?? (PRESETS.includes(prefill.qty) ? String(prefill.qty) : "5")
   );
-  const [qty, setQty] = useState(prefill.qty ? clamp(prefill.qty, 1, 1000) : 10);
+  const [qty, setQty] = useState(
+    draft?.qty ?? (prefill.qty ? clamp(prefill.qty, 1, 1000) : 10)
+  );
 
-  const [quality, setQuality] = useState(
-    QUALITY_OPTIONS.find(q => q.id === prefill.quality) ?? QUALITY_OPTIONS[0]
-  );
+  const [quality, setQuality] = useState(() => {
+    const qid = draft?.qualityId ?? prefill.quality;
+    return QUALITY_OPTIONS.find((q) => q.id === qid) ?? QUALITY_OPTIONS[0];
+  });
 
   // modal for "choose projects myself"
   const [showProjectsModal, setShowProjectsModal] = useState(false);
-  const [customProjects, setCustomProjects] = useState(!!prefill.customProjects);
+  const [customProjects, setCustomProjects] = useState(
+    draft?.customProjects ?? !!prefill.customProjects
+  );
 
   // reveal form after Select
-  const [opened, setOpened] = useState(!!prefill.opened);
-  const [meName, setMeName] = useState(prefill.meName || "");
-  const [meEmail, setMeEmail] = useState(prefill.meEmail || "");
-  const [message, setMessage] = useState(prefill.message || "");
-  const [leaderboard, setLeaderboard] = useState(!!prefill.leaderboard);
+  const [opened, setOpened] = useState(draft?.opened ?? !!prefill.opened);
+  const [meName, setMeName]       = useState(draft?.meName   ?? (prefill.meName || ""));
+  const [meEmail, setMeEmail]     = useState(draft?.meEmail  ?? (prefill.meEmail || ""));
+  const [message, setMessage]     = useState(draft?.message  ?? (prefill.message || ""));
+  const [leaderboard, setLeaderboard] = useState(draft?.leaderboard ?? !!prefill.leaderboard);
 
   // gift-only fields
-  const [recName, setRecName]   = useState(prefill.recName || "");
-  const [recEmail, setRecEmail] = useState(prefill.recEmail || "");
+  const [recName, setRecName]     = useState(draft?.recName  ?? (prefill.recName || ""));
+  const [recEmail, setRecEmail]   = useState(draft?.recEmail ?? (prefill.recEmail || ""));
 
-  // optional gift add-ons (placeholders for later pricing)
-  const [giftCard, setGiftCard] = useState(!!prefill.giftCard);
-  const [eCert, setECert] = useState(prefill.eCert ?? true);
-  const [includePhoto, setIncludePhoto] = useState(!!prefill.includePhoto);
+  // optional gift add-ons
+  const [giftCard, setGiftCard]   = useState(draft?.giftCard ?? !!prefill.giftCard);
+  const [eCert, setECert]         = useState(draft?.eCert ?? (prefill.eCert ?? true));
+  const [includePhoto, setIncludePhoto] = useState(draft?.includePhoto ?? !!prefill.includePhoto);
+
+  // After “Proceed”, mark this selector as selected and hide the button
+  const [selected, setSelected]   = useState(draft?.selected ?? false);
+
 
   const effQty = qtyChoice === "custom" ? qty : Number(qtyChoice);
   const addOnTotal = kind === "gift" ? (giftCard ? 10 : 0) : 0;
@@ -99,6 +126,44 @@ function Selector({
     () => clamp(effQty,1,1000) * quality.pricePerTonne + addOnTotal,
     [effQty, quality, addOnTotal]
   );
+
+  useEffect(() => {
+    saveDraft(kind, {
+      qtyChoice,
+      qty,
+      qualityId: quality?.id,
+      customProjects,
+      opened,
+      meName,
+      meEmail,
+      message,
+      leaderboard,
+      recName,
+      recEmail,
+      giftCard,
+      eCert,
+      includePhoto,
+      selected,
+    });
+  }, [
+    kind,
+    qtyChoice,
+    qty,
+    quality?.id,
+    customProjects,
+    opened,
+    meName,
+    meEmail,
+    message,
+    leaderboard,
+    recName,
+    recEmail,
+    giftCard,
+    eCert,
+    includePhoto,
+    selected,
+  ]);
+
 
   const validBase = effQty >= 1 && effQty <= 1000 && quality?.id;
   const validSelf = validBase && meName && emailOk(meEmail);
@@ -116,6 +181,7 @@ function Selector({
       ...(kind === "gift" ? { recName, recEmail, addons: { giftCard, eCert, includePhoto } } : {}),
       subtotal
     });
+    setSelected(true);
   };
 
   const onClickChooseProjects = () => setShowProjectsModal(true);
@@ -123,9 +189,38 @@ function Selector({
     setCustomProjects(true);
     navigate(`/marketplace?from=individuals&type=${kind}`);
   };
+  const resetSelector = () => {
+    setQtyChoice("5");
+    setQty(10);
+    setQuality(QUALITY_OPTIONS[0]);
+    setCustomProjects(false);
+    setOpened(false);
+    setMeName("");
+    setMeEmail("");
+    setMessage("");
+    setLeaderboard(false);
+    setRecName("");
+    setRecEmail("");
+    setGiftCard(false);
+    setECert(true);
+    setIncludePhoto(false);
+    setSelected(false);
+    try { localStorage.removeItem(DRAFT_KEY(kind)); } catch {}
+  };
+
 
   return (
     <div className={`rounded-2xl p-5 md:p-6 ring-1 transition ${ringOn ? "ring-emerald-400 bg-white/[.07]" : "ring-white/15 bg-white/10"}`}>
+      <div className="mb-2 flex justify-end">
+        <button
+          type="button"
+          onClick={resetSelector}
+          className="text-xs text-white/55 hover:text-white/85 underline underline-offset-2"
+        >
+          {t("indiv.reset","Reset")}
+        </button>
+      </div>
+
       {/* quantity + quality + project choice */}
       <div className="grid gap-4 md:grid-cols-3">
         {/* Quantity */}
@@ -289,21 +384,39 @@ function Selector({
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            {!isValid ? (
+            {!isValid && !selected ? (
               <div className="text-xs text-red-300">
-                {t("indiv.form.needs","Select and fill out the required information to proceed.")}
+                {t("indiv.form.needs", "Select and fill out the required information to proceed.")}
               </div>
-            ) : <span className="text-emerald-300 text-xs inline-flex items-center gap-1"><Check className="h-3.5 w-3.5"/> {t("indiv.ready","Ready to proceed")}</span>}
-            <div className="flex gap-2">
-              <button
-                onClick={proceed}
-                disabled={!isValid}
-                className={`rounded-lg px-4 py-2 font-medium inline-flex items-center gap-2 ${isValid ? "bg-emerald-500 text-emerald-950 hover:bg-emerald-400" : "bg-white/10 text-white/60 cursor-not-allowed"}`}
-              >
-                {t("indiv.proceed","Proceed")} <ArrowRight className="h-4 w-4"/>
-              </button>
-            </div>
+            ) : !selected ? (
+              <span className="text-emerald-300 text-xs inline-flex items-center gap-1">
+                <Check className="h-3.5 w-3.5" />
+                {t("indiv.ready", "Ready to proceed")}
+              </span>
+            ) : (
+              <span className="text-emerald-300 text-sm inline-flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/40 px-2.5 py-1">
+                  <Check className="h-4 w-4" />
+                  <b>{t("indiv.selected", "Item selected")}</b>
+                </span>
+              </span>
+            )}
+
+            {!selected && (
+              <div className="flex gap-2">
+                <button
+                  onClick={proceed}
+                  disabled={!isValid}
+                  className={`rounded-lg px-4 py-2 font-medium inline-flex items-center gap-2 ${
+                    isValid ? "bg-emerald-500 text-emerald-950 hover:bg-emerald-400" : "bg-white/10 text-white/60 cursor-not-allowed"
+                  }`}
+                >
+                  {t("indiv.proceed", "Proceed")} <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
+
         </>
       )}
 
@@ -345,6 +458,18 @@ export default function Individuals() {
 
   const [pickedSelf, setPickedSelf] = useState(null);
   const [pickedGift, setPickedGift] = useState(null);
+  useEffect(() => {
+    if (localStorage.getItem("indiv:resetAfterPurchase") === "1") {
+      localStorage.removeItem("indiv:resetAfterPurchase");
+      try {
+        localStorage.removeItem(DRAFT_KEY("self"));
+        localStorage.removeItem(DRAFT_KEY("gift"));
+      } catch {}
+      setPickedSelf(null);
+      setPickedGift(null);
+    }
+  }, []);
+
 
   const makeCartItem = (sel) => {
     const q = QUALITY_OPTIONS.find(x=>x.id===sel.quality) ?? QUALITY_OPTIONS[0];
@@ -376,21 +501,11 @@ export default function Individuals() {
   };
 
   const handleAddToCart = () => {
-    // marketplace redirect takes precedence
-    if (pickedSelf?.customProjects) {
-      navigate(`/marketplace?from=individuals&type=self`);
-      return;
-    }
-    if (pickedGift?.customProjects) {
-      navigate(`/marketplace?from=individuals&type=gift`);
-      return;
-    }
-
     // add to cart
     if (pickedSelf) addItem(makeCartItem(pickedSelf));
     if (pickedGift) addItem(makeCartItem(pickedGift));
 
-    // record for leaderboard (weighted done at page render)
+    // record for leaderboard
     if (pickedSelf?.leaderboard) {
       addPurchase({
         name: pickedSelf.meName, email: pickedSelf.meEmail,
@@ -398,7 +513,6 @@ export default function Individuals() {
       });
     }
     if (pickedGift?.leaderboard) {
-      // recipient appears on leaderboard
       addPurchase({
         name: pickedGift.recName, email: pickedGift.recEmail,
         qty: pickedGift.qty, quality: pickedGift.quality
@@ -407,6 +521,7 @@ export default function Individuals() {
 
     navigate("/cart-review");
   };
+
 
   const footerEnabled = !!(pickedSelf || pickedGift);
 

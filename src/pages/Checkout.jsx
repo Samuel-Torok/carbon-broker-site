@@ -15,10 +15,19 @@ export default function Checkout() {
   const [receipt, setReceipt] = useState(null);
 
   const confirm = () => {
+    if (confirmed || items.length === 0) return;
+
+    // snapshot for the receipt UI
     setReceipt({ items: [...items], total });
+
+    // flag Individuals page to reset selectors on next visit
+    try { localStorage.setItem("indiv:resetAfterPurchase", "1"); } catch {}
+
+    // clear cart and show confirmation
     clear();
     setConfirmed(true);
   };
+
 
   return (
     <PagePanel maxWidth="max-w-3xl">

@@ -170,7 +170,9 @@
         "self": "We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas).",
         "gift": "We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas). For gifts, the recipient will appear on the leaderboard."
       }
-    }
+    },
+    "selected": "Item selected"
+
 
 
   },
