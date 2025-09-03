@@ -215,11 +215,12 @@ function Selector({
         <button
           type="button"
           onClick={resetSelector}
-          className="text-xs text-white/55 hover:text-white/85 underline underline-offset-2"
+          className="text-xs rounded-md px-2.5 py-1 bg-white/5 hover:bg-white/10 ring-1 ring-white/15 text-white/80"
         >
           {t("indiv.reset","Reset")}
         </button>
       </div>
+
 
       {/* quantity + quality + project choice */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -295,9 +296,14 @@ function Selector({
       {/* select -> show form */}
       {!opened ? (
         <div className="mt-4 flex items-center justify-between">
-          <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
-            {t("indiv.visitLeaderboard","Visit leaderboard")}
-          </Link>
+          <button
+            type="button"
+            onClick={() => navigate("/leaderboard")}
+            className="text-xs rounded-md px-2.5 py-1 bg-white/5 hover:bg-white/10 ring-1 ring-white/15 text-white/80"
+          >
+            {t("indiv.visitLeaderboard", "Visit leaderboard")}
+          </button>
+
           <button
             onClick={()=>setOpened(true)}
             className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 px-4 py-2 font-medium"
@@ -377,9 +383,14 @@ function Selector({
                   </span>
                 </span>
               </label>
-              <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
-                {t("indiv.visitLeaderboard","Visit leaderboard")}
-              </Link>
+              <button
+                type="button"
+                onClick={() => navigate("/leaderboard")}
+                className="text-xs rounded-md px-2.5 py-1 bg-white/5 hover:bg-white/10 ring-1 ring-white/15 text-white/80"
+              >
+                {t("indiv.visitLeaderboard", "Visit leaderboard")}
+              </button>
+
             </div>
           </div>
 
@@ -458,17 +469,55 @@ export default function Individuals() {
 
   const [pickedSelf, setPickedSelf] = useState(null);
   const [pickedGift, setPickedGift] = useState(null);
+  const [resetSeed, setResetSeed] = useState(0);
+
   useEffect(() => {
     if (localStorage.getItem("indiv:resetAfterPurchase") === "1") {
       localStorage.removeItem("indiv:resetAfterPurchase");
       try {
-        localStorage.removeItem(DRAFT_KEY("self"));
-        localStorage.removeItem(DRAFT_KEY("gift"));
+        localStorage.removeItem("indiv:draft:self");
+        localStorage.removeItem("indiv:draft:gift");
       } catch {}
       setPickedSelf(null);
       setPickedGift(null);
+      setResetSeed((n) => n + 1); // <-- force remount of selectors
     }
   }, []);
+
+  // Rehydrate picks from saved drafts when the page mounts (unless we're resetting after purchase)
+  useEffect(() => {
+    if (localStorage.getItem("indiv:resetAfterPurchase") === "1") return;
+
+    const fromDraft = (kind, d) => {
+      if (!d?.selected) return null;
+      const effQty = d.qtyChoice === "custom" ? d.qty : Number(d.qtyChoice);
+      const q = QUALITY_OPTIONS.find(x => x.id === d.qualityId) ?? QUALITY_OPTIONS[0];
+      const addOnTotal = kind === "gift" ? (d.giftCard ? 10 : 0) : 0;
+      return {
+        kind,
+        qty: clamp(effQty, 1, 1000),
+        quality: q.id,
+        customProjects: !!d.customProjects,
+        meName: d.meName || "",
+        meEmail: d.meEmail || "",
+        message: d.message || "",
+        leaderboard: !!d.leaderboard,
+        ...(kind === "gift"
+          ? { recName: d.recName || "", recEmail: d.recEmail || "", addons: { giftCard: !!d.giftCard, eCert: !!d.eCert, includePhoto: !!d.includePhoto } }
+          : {}),
+        subtotal: clamp(effQty, 1, 1000) * q.pricePerTonne + addOnTotal,
+      };
+    };
+
+    const ds = loadDraft("self");
+    const dg = loadDraft("gift");
+    const pickS = fromDraft("self", ds);
+    const pickG = fromDraft("gift", dg);
+    if (pickS) setPickedSelf(pickS);
+    if (pickG) setPickedGift(pickG);
+  }, []);
+
+
 
 
   const makeCartItem = (sel) => {
@@ -558,7 +607,7 @@ export default function Individuals() {
           {t("indiv.learnMore","Learn more")}
         </Link>
       </section>
-      <Selector t={t} kind="self" ringOn={!!pickedSelf} onProceed={(sel)=>setPickedSelf(sel)} />
+      <Selector key={`self-${resetSeed}`} t={t} kind="self" ringOn={!!pickedSelf} onProceed={setPickedSelf} prefill={pickedSelf ?? {}} />
 
       {/* Section 2 */}
       <section className="mt-8 mb-2">
@@ -572,13 +621,18 @@ export default function Individuals() {
           {t("indiv.learnMore","Learn more")}
         </Link>
       </section>
-      <Selector t={t} kind="gift" ringOn={!!pickedGift} onProceed={(sel)=>setPickedGift(sel)} />
+      <Selector key={`gift-${resetSeed}`} t={t} kind="gift" ringOn={!!pickedGift} onProceed={setPickedGift} prefill={pickedGift ?? {}} />
 
       {/* footer add to cart */}
       <div className="mt-6 flex justify-between">
-        <Link to="/leaderboard" className="text-xs underline underline-offset-2 text-white/80 hover:text-white">
-          {t("indiv.visitLeaderboard","Visit leaderboard")}
-        </Link>
+        <button
+          type="button"
+          onClick={() => navigate("/leaderboard")}
+          className="text-xs rounded-md px-2.5 py-1 bg-white/5 hover:bg-white/10 ring-1 ring-white/15 text-white/80"
+        >
+          {t("indiv.visitLeaderboard", "Visit leaderboard")}
+        </button>
+
         <button
           onClick={handleAddToCart}
           disabled={!footerEnabled}
