@@ -285,7 +285,17 @@
       "eCert": "Certificat électronique",
       "photo": "Ajouter une photo personnelle"
     },
-    "continueShopping": "Continuer les achats"
+    "continueShopping": "Continuer les achats",
+    "details": {
+      "close": "Fermer",
+      "qty": "Quantité",
+      "quality": "Qualité",
+      "buyer": "Acheteur",
+      "recipient": "Destinataire",
+      "csr": "Option RSE",
+      "addons": "Options",
+      "none": "Aucune"
+    }
 
 
   },
