@@ -171,7 +171,9 @@
         "gift": "We have a public leaderboard where you can compete and get gifts if you’re leading; special surprises on occasions (e.g., Christmas). For gifts, the recipient will appear on the leaderboard."
       }
     },
-    "selected": "Item selected"
+    "selected": "Item selected",
+    "reset": "Reset"
+
 
 
 
@@ -314,7 +316,34 @@
     "grandTotal": "Grand total",
     "continue": "Continue shopping",
     "checkout": "Go to checkout",
-    "csrLine": "CSR add-on: {{plan}} (€{{price}})"
+    "csrLine": "CSR add-on: {{plan}} (€{{price}})",
+    "continueIndividuals": "Continue shopping — Individuals",
+    "continueCompanies": "Continue shopping — Companies",
+    "type": {
+      "self": "Individual purchase",
+      "gift": "Gift purchase",
+      "company": "Corporate purchase",
+      "unknown": "Purchase"
+    },
+    "giftLine": {
+      "card": "Gift card (physical) (+€{price})",
+      "eCert": "Electronic certificate",
+      "photo": "Add a personal photo"
+    },
+    "details": {
+      "qty": "Quantity",
+      "quality": "Quality",
+      "buyer": "Buyer",
+      "recipient": "Recipient",
+      "csr": "CSR plan",
+      "addons": "Add-ons",
+      "none": "None",
+      "close": "Close"
+    },
+    "continueShopping": "Continue shopping"
+
+
+
   },
   "checkout": {
     "title": "Checkout",

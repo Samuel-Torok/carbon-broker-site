@@ -190,6 +190,7 @@ function Selector({
     navigate(`/marketplace?from=individuals&type=${kind}`);
   };
   const resetSelector = () => {
+    onProceed(null); // also clear parent pick -> ring turns off
     setQtyChoice("5");
     setQty(10);
     setQuality(QUALITY_OPTIONS[0]);
@@ -554,22 +555,26 @@ export default function Individuals() {
     if (pickedSelf) addItem(makeCartItem(pickedSelf));
     if (pickedGift) addItem(makeCartItem(pickedGift));
 
-    // record for leaderboard
+    // leaderboard logging
     if (pickedSelf?.leaderboard) {
-      addPurchase({
-        name: pickedSelf.meName, email: pickedSelf.meEmail,
-        qty: pickedSelf.qty, quality: pickedSelf.quality
-      });
+      addPurchase({ name: pickedSelf.meName, email: pickedSelf.meEmail, qty: pickedSelf.qty, quality: pickedSelf.quality });
     }
     if (pickedGift?.leaderboard) {
-      addPurchase({
-        name: pickedGift.recName, email: pickedGift.recEmail,
-        qty: pickedGift.qty, quality: pickedGift.quality
-      });
+      addPurchase({ name: pickedGift.recName, email: pickedGift.recEmail, qty: pickedGift.qty, quality: pickedGift.quality });
     }
+
+    // RESET NOW (not only after checkout)
+    try {
+      localStorage.removeItem("indiv:draft:self");
+      localStorage.removeItem("indiv:draft:gift");
+    } catch {}
+    setPickedSelf(null);
+    setPickedGift(null);
+    setResetSeed((n) => n + 1); // forces both selectors to remount (ring off)
 
     navigate("/cart-review");
   };
+
 
 
   const footerEnabled = !!(pickedSelf || pickedGift);

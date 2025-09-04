@@ -157,7 +157,9 @@
       "cta": "Voir le classement"
     },
 
-    "giftLeaderboardNote": "C’est le destinataire du cadeau qui apparaîtra dans le classement (pas vous)."
+    "giftLeaderboardNote": "C’est le destinataire du cadeau qui apparaîtra dans le classement (pas vous).",
+    "reset": "Réinitialiser"
+
   },
 
   "learn": {
@@ -269,7 +271,23 @@
     "grandTotal": "Total",
     "continue": "Continuer les achats",
     "checkout": "Passer au paiement",
-    "csrLine": "Option RSE : {{plan}} (€{{price}})"
+    "csrLine": "Option RSE : {{plan}} (€{{price}})",
+    "continueIndividuals": "Continuer les achats — Particuliers",
+    "continueCompanies": "Continuer les achats — Entreprises",
+    "type": {
+      "self": "Achat individuel",
+      "gift": "Achat cadeau",
+      "company": "Achat entreprise",
+      "unknown": "Achat"
+    },
+    "giftLine": {
+      "card": "Carte cadeau (physique) (+€{price})",
+      "eCert": "Certificat électronique",
+      "photo": "Ajouter une photo personnelle"
+    },
+    "continueShopping": "Continuer les achats"
+
+
   },
   "checkout": {
     "title": "Paiement",
