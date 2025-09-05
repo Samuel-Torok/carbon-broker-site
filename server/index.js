@@ -3,7 +3,16 @@ import Stripe from "stripe";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import OpenAI from "openai";
 dotenv.config();
+
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
 
 const app = express();
 // allow your Vite origin in dev; fallback to open when env missing
@@ -165,3 +174,31 @@ app.post("/api/stripe-webhook",
 
 const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`API on :${PORT}`));
+
+
+app.options("/api/chat", (req, res) => { for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v); res.status(204).end(); });
+
+app.post("/api/chat", async (req, res) => {
+  for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v);
+  try {
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
+    const userMessages = Array.isArray(body.messages) ? body.messages : [];
+    const locale = String(body.locale || "en").toLowerCase();
+    const language = locale.startsWith("fr") ? "French" : "English";
+
+    const r = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        { role: "system",
+          content: `You are Zephyr Carbon's concise, accurate website assistant. Always reply in ${language} unless the user asks otherwise. Keep answers short and factual.` },
+        ...userMessages,
+      ],
+    });
+
+    res.json({ text: r.choices?.[0]?.message?.content || "" });
+  } catch (e) {
+    console.error("chat error:", e);
+    res.status(500).json({ error: e.message });
+  }
+});

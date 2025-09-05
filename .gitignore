@@ -18,3 +18,9 @@ server/.env
 .env.local
 server/.env
 server/.env.local
+
+# env
+.env
+.env.local
+server/.env
+server/.env.local
