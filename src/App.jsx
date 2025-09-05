@@ -25,6 +25,7 @@ import CSR from "./pages/CSR.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
 import LearnIndividuals from "./pages/LearnIndividuals.jsx";
 import LearnGifts from "./pages/LearnGifts.jsx";
+import CheckoutSuccess from "./pages/CheckoutSuccess.jsx";
 
 
 
@@ -61,6 +62,7 @@ export default function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/learn/individuals" element={<LearnIndividuals />} />
               <Route path="/learn/gifts" element={<LearnGifts />} />
+              <Route path="/checkout-success" element={<CheckoutSuccess />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

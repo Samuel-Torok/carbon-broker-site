@@ -4,29 +4,30 @@ import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
 import { Check } from "lucide-react";
+import { startCheckout } from "../lib/payments";
+
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
+ 
+
   const { items, total, clear } = useCart();
   const [confirmed, setConfirmed] = useState(false);
   const [receipt, setReceipt] = useState(null);
 
-  const confirm = () => {
+  const pay = async () => {
     if (confirmed || items.length === 0) return;
-
-    // snapshot for the receipt UI
-    setReceipt({ items: [...items], total });
-
-    // flag Individuals page to reset selectors on next visit
-    try { localStorage.setItem("indiv:resetAfterPurchase", "1"); } catch {}
-
-    // clear cart and show confirmation
-    clear();
-    setConfirmed(true);
+    try {
+      await startCheckout(items); // redirects to Stripe
+    } catch (e) {
+      console.error(e);
+      alert("Could not start payment. Please try again.");
+    }
   };
+
 
 
   return (
@@ -47,7 +48,7 @@ export default function Checkout() {
           </button>
 
           <button
-            onClick={confirm}
+            onClick={pay}
             disabled={confirmed || items.length === 0}
             className={`rounded-lg px-4 py-2 font-medium ${
               confirmed || items.length === 0

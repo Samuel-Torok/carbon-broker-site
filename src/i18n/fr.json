@@ -294,7 +294,14 @@
       "recipient": "Destinataire",
       "csr": "Option RSE",
       "addons": "Options",
-      "none": "Aucune"
+      "none": "Aucune",
+      "company": "Entreprise",
+      "vat": "TVA / Registre",
+      "website": "Site web",
+      "role": "Rôle du contact",
+      "country": "Pays",
+      "address": "Adresse",
+      "leaderboard": "Classement public"
     }
 
 
@@ -361,6 +368,39 @@
     "error": "Erreur lors de la connexion à l’IA. Réessayez.",
     "disclaimer": "Remarque : l’IA peut se tromper. Vérifiez les informations importantes. Aucune responsabilité n’est acceptée pour les réponses générées par l’IA.",
     "powered": "Propulsé par OpenAI."
+  },
+
+  "common": { "yes": "Oui", "no": "Non", "close": "Fermer", "save": "Enregistrer" },
+  "companyModal": {
+    "title": "Détails de l’entreprise",
+    "desc": "Indiquez qui vous êtes et au nom de quelle entreprise nous retirerons les crédits et émettrons le certificat.",
+    "yourName": "Votre nom *",
+    "yourEmail": "Votre e-mail *",
+    "yourRole": "Votre rôle",
+    "companyName": "Raison sociale *",
+    "vat": "TVA / N° registre",
+    "website": "Site web",
+    "country": "Pays",
+    "address": "Adresse (optionnel)",
+    "leaderboardOptIn": "Apparaître dans le classement public des entreprises"
+  },
+  "giftModal": {
+    "title": "Détails du cadeau",
+    "desc": "Nous retirerons les crédits au nom du destinataire et enverrons le certificat.",
+    "recipientName": "Nom du destinataire *",
+    "recipientEmail": "E-mail du destinataire *"
+  },
+  "selfModal": {
+    "title": "Vos informations",
+    "desc": "Nous retirons les crédits à votre nom et envoyons le certificat par e-mail.",
+    "message": "Message personnel (optionnel)"
+  },
+
+  "lb": {
+    "title": "Classement public",
+    "sub": "Le classement est pondéré par la qualité des crédits (Standard ×1, Premium ×1,25, Elite ×1,5).",
+    "tab": { "ind": "Particuliers", "comp": "Entreprises" },
+    "company": "Entreprise"
   },
 
   "packages": {

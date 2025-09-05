@@ -2,10 +2,12 @@ import PagePanel from "../components/PagePanel.jsx";
 import { Trophy } from "lucide-react";
 import { useI18n } from "../i18n";
 import { getLeaderboard, QUALITY_COEFF } from "../lib/leaderboard";
+import { useState, useMemo } from "react";
 
 export default function Leaderboard() {
   const { t } = useI18n();
-  const rows = getLeaderboard();
+  const [view, setView] = useState("individual"); // "individual" | "company"
+  const rows = useMemo(() => getLeaderboard(view), [view]);
 
   return (
     <PagePanel
@@ -13,12 +15,27 @@ export default function Leaderboard() {
       subtitle={t("lb.sub","Compete kindly: rankings are weighted by credit quality (Standard ×1, Premium ×1.25, Elite ×1.5).")}
       icon={Trophy}
     >
+      <div className="mb-3 inline-flex rounded-xl ring-1 ring-white/15 overflow-hidden">
+        <button
+          onClick={() => setView("individual")}
+          className={`px-3 py-1.5 text-sm ${view === "individual" ? "bg-emerald-500 text-emerald-950" : "bg-white/5 text-white"}`}
+        >
+          {t("lb.tab.ind", "Individuals")}
+        </button>
+        <button
+          onClick={() => setView("company")}
+          className={`px-3 py-1.5 text-sm ${view === "company" ? "bg-emerald-500 text-emerald-950" : "bg-white/5 text-white"}`}
+        >
+          {t("lb.tab.comp", "Companies")}
+        </button>
+      </div>
+
       <div className="overflow-x-auto rounded-2xl ring-1 ring-white/10">
         <table className="min-w-full text-sm">
           <thead className="bg-white/5 text-left">
             <tr>
               <th className="px-4 py-2">#</th>
-              <th className="px-4 py-2">{t("lb.name","Name")}</th>
+              <th className="px-4 py-2">{view==="company" ? t("lb.company","Company") : t("lb.name","Name")}</th>
               <th className="px-4 py-2">{t("lb.email","Email")}</th>
               <th className="px-4 py-2">{t("lb.total","Total tCO₂e")}</th>
               <th className="px-4 py-2">{t("lb.weighted","Weighted score")}</th>

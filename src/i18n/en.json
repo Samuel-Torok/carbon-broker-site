@@ -188,7 +188,9 @@
     "weighted": "Weighted score",
     "empty": "No entries yet—be the first!",
     "anon": "Anonymous",
-    "note": "Quality coefficients: Standard ×1.0, Premium ×1.25, Elite ×1.5."
+    "note": "Quality coefficients: Standard ×1.0, Premium ×1.25, Elite ×1.5.",
+    "tab": { "ind": "Individuals", "comp": "Companies" },
+    "company": "Company"
   },
 
 
@@ -307,6 +309,8 @@
     "back": "Back to packages"
   },
 
+  
+
   "cart": {
     "title": "Your cart",
     "empty": "Your cart is empty.",
@@ -338,7 +342,14 @@
       "csr": "CSR plan",
       "addons": "Add-ons",
       "none": "None",
-      "close": "Close"
+      "close": "Close",
+      "company": "Company",
+      "vat": "VAT / Registry",
+      "website": "Website",
+      "role": "Contact role",
+      "country": "Country",
+      "address": "Address",
+      "leaderboard": "Public leaderboard"
     },
     "continueShopping": "Continue shopping"
 
@@ -405,6 +416,32 @@
     "error": "Error contacting AI. Try again.",
     "disclaimer": "Note: AI can make mistakes. Please verify important information. We take no responsibility for AI-generated responses.",
     "powered": "Powered by OpenAI."
+  },
+
+  "common": { "yes": "Yes", "no": "No", "close": "Close", "save": "Save" },
+  "companyModal": {
+    "title": "Company details",
+    "desc": "Tell us who you are and on behalf of which company we’ll retire credits and issue the certificate.",
+    "yourName": "Your name *",
+    "yourEmail": "Your email *",
+    "yourRole": "Your role",
+    "companyName": "Company legal name *",
+    "vat": "VAT / Reg. No.",
+    "website": "Website",
+    "country": "Country",
+    "address": "Address (optional)",
+    "leaderboardOptIn": "Appear on the public companies leaderboard"
+  },
+  "giftModal": {
+    "title": "Gift details",
+    "desc": "We’ll retire the credits to the recipient’s name and send the certificate.",
+    "recipientName": "Recipient name *",
+    "recipientEmail": "Recipient email *"
+  },
+  "selfModal": {
+    "title": "Your details",
+    "desc": "We retire credits to your name and email for your records.",
+    "message": "Personal message (optional)"
   },
 
   "packages": {

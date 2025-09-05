@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Check, Info } from "lucide-react";
+import InfoModal from "../components/InfoModal.jsx";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
@@ -41,6 +42,7 @@ export default function Companies() {
   const [csr, setCsr] = useState(CSR_OPTIONS[0]);
   const [configHelp, setConfigHelp] = useState(false);
   const [csrHelp, setCsrHelp] = useState(false); // keep, but we'll change its usage
+  const [companyModal, setCompanyModal] = useState(false);
 
   const basePrice = useMemo(() => size * (PRICE_PER_TON[quality] ?? 12), [size, quality]);
   const total = basePrice + csr.price;
@@ -244,11 +246,7 @@ export default function Companies() {
         {/* Actions */}
         <div className="mt-8 space-y-3">
           <button
-            onClick={() => {
-              const qualityLabel = qualityOptions.find(q => q.key === quality)?.label ?? quality;
-              addItem({ size, qualityKey: quality, qualityLabel, csr, basePrice, total });
-              navigate("/cart-review");
-            }}
+            onClick={() => setCompanyModal(true)}
 
             className="w-full rounded-xl bg-emerald-500 px-6 py-3 font-medium text-emerald-950 hover:bg-emerald-400"
           >
@@ -260,6 +258,33 @@ export default function Companies() {
           </Link>
         </div>
       </div>
+      {companyModal && (
+        <InfoModal
+          type="company"
+          onClose={()=>setCompanyModal(false)}
+          onSave={(meta)=>{
+            const qualityLabel = qualityOptions.find(q => q.key === quality)?.label ?? quality;
+            // add cart item with company metadata
+            addItem({
+              size,
+              qualityKey: quality,
+              qualityLabel,
+              csr,
+              basePrice,
+              total,
+              meta: {
+                type: "company",
+                quality: qualityLabel,
+                qty: size,
+                ...meta,               // companyName, meEmail, leaderboardOptIn, etc.
+              }
+            });
+            setCompanyModal(false);
+            navigate("/cart-review");
+          }}
+        />
+      )}
+
     </PagePanel>
   );
 }

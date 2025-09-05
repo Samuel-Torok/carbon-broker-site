@@ -5,6 +5,7 @@ import { useCart } from "../lib/cart";
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import InfoModal from "../components/InfoModal.jsx";
+import { addPurchase } from "../lib/leaderboard";
 
 export default function CartReview() {
   const { t, lang } = useI18n();
@@ -142,6 +143,7 @@ export default function CartReview() {
           >
             {t("cart.checkout")}
           </button>
+
         </div>
 
 
@@ -174,6 +176,19 @@ export default function CartReview() {
                   {kind === "company" && it.csr && (
                     <div><b>{t("cart.details.csr")}:</b> {t("cart.csrLine", { plan: it.csr.title, price: (it.csr.price ?? 0).toLocaleString(lang === "fr" ? "fr-FR" : "en-US") })}</div>
                   )}
+                  {kind === "company" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <div><b>{t("cart.details.company")}:</b> {it.meta?.companyName || "—"}</div>
+                      <div><b>{t("cart.details.vat")}:</b> {it.meta?.companyVat || "—"}</div>
+                      <div><b>{t("cart.details.website")}:</b> {it.meta?.companyWebsite || "—"}</div>
+                      <div><b>{t("cart.details.country")}:</b> {it.meta?.companyCountry || "—"}</div>
+                      <div className="md:col-span-2"><b>{t("cart.details.address")}:</b> {it.meta?.companyAddress || "—"}</div>
+                      <div><b>{t("cart.details.role")}:</b> {it.meta?.meRole || "—"}</div>
+                      <div><b>{t("cart.details.leaderboard")}:</b> {it.meta?.leaderboardOptIn ? t("common.yes","Yes") : t("common.no","No")}</div>
+                    </div>
+                  )}
+
+
 
                   {/* Gift add-ons */}
                   {kind === "gift" && it.meta?.addons && (

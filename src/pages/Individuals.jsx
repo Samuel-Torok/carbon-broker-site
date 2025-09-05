@@ -12,7 +12,7 @@ import {
 import PagePanel from "../components/PagePanel.jsx";
 import { useCart } from "../lib/cart";
 import { useI18n } from "../i18n";
-import { addPurchase } from "../lib/leaderboard";
+
 
 /* --- quality options (same tiers as Companies) --- */
 const QUALITY_OPTIONS = [
@@ -530,6 +530,7 @@ export default function Individuals() {
 
     const base = {
       size: sel.qty,
+      qualityKey: sel.quality,
       qualityLabel,
       csr: { title: t("companies.csr.none") || "No thanks", price: 0 },
       total: sel.subtotal,
@@ -555,13 +556,7 @@ export default function Individuals() {
     if (pickedSelf) addItem(makeCartItem(pickedSelf));
     if (pickedGift) addItem(makeCartItem(pickedGift));
 
-    // leaderboard logging
-    if (pickedSelf?.leaderboard) {
-      addPurchase({ name: pickedSelf.meName, email: pickedSelf.meEmail, qty: pickedSelf.qty, quality: pickedSelf.quality });
-    }
-    if (pickedGift?.leaderboard) {
-      addPurchase({ name: pickedGift.recName, email: pickedGift.recEmail, qty: pickedGift.qty, quality: pickedGift.quality });
-    }
+    
 
     // RESET NOW (not only after checkout)
     try {
