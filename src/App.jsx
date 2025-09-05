@@ -62,6 +62,7 @@ export default function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/learn/individuals" element={<LearnIndividuals />} />
               <Route path="/learn/gifts" element={<LearnGifts />} />
+              <Route path="/checkout/return" element={<CheckoutSuccess />} />
               <Route path="/checkout-success" element={<CheckoutSuccess />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

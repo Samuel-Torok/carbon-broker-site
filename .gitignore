@@ -12,3 +12,9 @@ pnpm-debug.log*
 # env
 .env.local
 server/.env
+
+# env
+.env
+.env.local
+server/.env
+server/.env.local

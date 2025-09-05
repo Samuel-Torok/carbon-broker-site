@@ -65,55 +65,97 @@ function computeTotalCents(items) {
 // ---- create checkout session
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    const { items } = req.body || {};
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Empty cart" });
-    }
-    let amount;
-    try {
-      amount = computeTotalCents(items);
-    } catch (e) {
-      return res.status(400).json({ error: e.message });
-    }
+    const { items = [], customer_email, metadata = {} } = req.body;
+
+    const line_items = items.map((it, idx) => {
+      const name = it.title || it.name || `Carbon offset`;
+      const qty  = Number(it.quantity ?? it.qty ?? 1);
+
+      // Try many common fields for price per unit (EUR)
+      const unitPriceEur = Number(
+        it.unitPriceEur ??
+        it.unit_price ??
+        it.pricePerTonne ??
+        it.price_per_tonne ??
+        it.price ??
+        it.unit_price_eur ??
+        0
+      );
+
+      let unit_amount; // cents
+      let quantity = (Number.isFinite(qty) && qty > 0) ? qty : 1;
+
+      if (Number.isFinite(unitPriceEur) && unitPriceEur > 0) {
+        unit_amount = Math.round(unitPriceEur * 100);
+      } else if (Number.isFinite(Number(it.total)) && Number(it.total) > 0) {
+        // Fallback: charge the item total as a single line
+        unit_amount = Math.round(Number(it.total) * 100);
+        quantity = 1;
+      } else {
+        // Last-resort fallback (keep UI and charge consistent if no price sent)
+        const perTon = Number(process.env.PRICE_PER_TON_EUR ?? 60);
+        const size   = Number(it.size ?? 1);
+        unit_amount  = Math.round(perTon * size * 100);
+        quantity     = 1;
+      }
+
+      if (!Number.isFinite(unit_amount) || unit_amount < 1) {
+        throw new Error(`Bad unit_amount for "${name}" (${unitPriceEur || it.total || 0})`);
+      }
+
+      return {
+        price_data: {
+          currency: "eur",
+          product_data: { name },
+          unit_amount,
+        },
+        quantity,
+      };
+    });
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{
-        price_data: { currency: "eur", product_data: { name: "Carbon offset purchase" }, unit_amount: amount },
-        quantity: 1,
-      }],
-      success_url: `${process.env.CLIENT_URL}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/cart-review`,
-      allow_promotion_codes: true,
-      automatic_tax: { enabled: false },
+      ui_mode: "embedded",
+      line_items,
+      customer_email,
+      metadata: {
+        ...metadata,
+        cart: metadata.cart || JSON.stringify(items), // snapshot for /verify
+      },
+      return_url: `${process.env.CLIENT_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
     });
 
-    pending.set(session.id, { items });
-    res.json({ id: session.id, url: session.url });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message || "Server error" });
+    res.json({ clientSecret: session.client_secret });
+  } catch (err) {
+    console.error("create-checkout-session error:", err);
+    res.status(400).json({ error: err.message });
   }
 });
 
+
 // ---- verify endpoint (used by CheckoutSuccess)
+// GET /api/verify?session_id=cs_test_...
 app.get("/api/verify", async (req, res) => {
   try {
-    const sessionId = String(req.query.session_id || "");
-    if (!sessionId) return res.status(400).json({ error: "Missing session_id" });
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const paid = session.payment_status === "paid";
-    const cached = pending.get(sessionId);
-    if (paid && cached) {
-      res.json({ paid: true, items: cached.items });
-      pending.delete(sessionId);
-    } else {
-      res.json({ paid: false });
-    }
-  } catch {
-    res.status(500).json({ error: "Verify failed" });
+    const { session_id } = req.query;
+    if (!session_id) return res.status(400).json({ error: "missing session_id" });
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const paid = session.status === "complete" && session.payment_status === "paid";
+
+    let items = [];
+    try {
+      items = JSON.parse(session.metadata?.cart || "[]"); // snapshot from session creation
+    } catch {}
+
+    return res.json({ paid, items });
+  } catch (err) {
+    console.error("verify error:", err);
+    res.status(400).json({ error: err.message });
   }
 });
+
 
 // ---- webhook (optional now)
 app.post("/api/stripe-webhook",
