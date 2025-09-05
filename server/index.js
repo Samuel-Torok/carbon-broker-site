@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import OpenAI from "openai";
+import { randomUUID } from "crypto";
 import contactRoutes from "./contactRoutes.js";
 dotenv.config();
 
@@ -16,13 +17,56 @@ const CORS = {
 };
 
 const app = express();
-// allow your Vite origin in dev; fallback to open when env missing
-app.use(cors({ origin: process.env.CLIENT_URL || true, credentials: true }));
 app.use(express.json());
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"] }));
 
-const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || "").trim(), {
-  apiVersion: "2024-06-20",
-});
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Build valid Stripe line_items (EUR, integer cents)
+function buildLineItems(raw = []) {
+  return raw.flatMap((it, idx) => {
+    const qty = Math.max(1, Math.round(Number(it.size ?? it.quantity ?? 1)));
+    const type = normType(it.type);
+    const quality = normQual(it.quality);
+    const key = `${type}/${quality}`;
+    const unit = PRICE[key];
+    if (!unit) throw new Error(`Unknown pricing key: ${key}`);
+
+    const main = {
+      quantity: qty,
+      price_data: {
+        currency: "eur",
+        unit_amount: unit, // cents from PRICE
+        product_data: {
+          name: `${type} offset (${quality})`,
+          metadata: { type, quality },
+        },
+      },
+    };
+
+    const extras = [];
+    if (it.csr?.title) {
+      const csrKey = String(it.csr.title).toLowerCase();
+      if (CSR[csrKey] != null) {
+        extras.push({
+          quantity: 1,
+          price_data: {
+            currency: "eur",
+            unit_amount: CSR[csrKey],
+            product_data: {
+              name: `CSR plan: ${csrKey}`,
+              metadata: { kind: "csr", key: csrKey },
+            },
+          },
+        });
+      }
+    }
+
+    return [main, ...extras];
+  });
+}
+
 
 
 // ---- dev health
@@ -72,76 +116,33 @@ function computeTotalCents(items) {
   return total;
 }
 
-// ---- create checkout session
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    const { items = [], customer_email, metadata = {} } = req.body;
+    const { items = [], customer_email } = req.body;
+    const line_items = buildLineItems(items);
 
-    const line_items = items.map((it, idx) => {
-      const name = it.title || it.name || `Carbon offset`;
-      const qty  = Number(it.quantity ?? it.qty ?? 1);
-
-      // Try many common fields for price per unit (EUR)
-      const unitPriceEur = Number(
-        it.unitPriceEur ??
-        it.unit_price ??
-        it.pricePerTonne ??
-        it.price_per_tonne ??
-        it.price ??
-        it.unit_price_eur ??
-        0
-      );
-
-      let unit_amount; // cents
-      let quantity = (Number.isFinite(qty) && qty > 0) ? qty : 1;
-
-      if (Number.isFinite(unitPriceEur) && unitPriceEur > 0) {
-        unit_amount = Math.round(unitPriceEur * 100);
-      } else if (Number.isFinite(Number(it.total)) && Number(it.total) > 0) {
-        // Fallback: charge the item total as a single line
-        unit_amount = Math.round(Number(it.total) * 100);
-        quantity = 1;
-      } else {
-        // Last-resort fallback (keep UI and charge consistent if no price sent)
-        const perTon = Number(process.env.PRICE_PER_TON_EUR ?? 60);
-        const size   = Number(it.size ?? 1);
-        unit_amount  = Math.round(perTon * size * 100);
-        quantity     = 1;
-      }
-
-      if (!Number.isFinite(unit_amount) || unit_amount < 1) {
-        throw new Error(`Bad unit_amount for "${name}" (${unitPriceEur || it.total || 0})`);
-      }
-
-      return {
-        price_data: {
-          currency: "eur",
-          product_data: { name },
-          unit_amount,
-        },
-        quantity,
-      };
-    });
-
+    const ref = randomUUID().slice(0, 12);
+    pending.set(ref, items); // temp snapshot in memory
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
       line_items,
-      customer_email,
-      metadata: {
-        ...metadata,
-        cart: metadata.cart || JSON.stringify(items), // snapshot for /verify
-      },
+      customer_email: customer_email || undefined,
+      client_reference_id: ref,
       return_url: `${process.env.CLIENT_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     res.json({ clientSecret: session.client_secret });
   } catch (err) {
-    console.error("create-checkout-session error:", err);
-    res.status(400).json({ error: err.message });
+    console.error("Stripe error:", err?.raw?.message || err.message);
+    res.status(400).json({ error: err?.raw?.message || err.message });
   }
 });
+
+
+
+
 
 
 // ---- verify endpoint (used by CheckoutSuccess)
@@ -154,10 +155,9 @@ app.get("/api/verify", async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(session_id);
     const paid = session.status === "complete" && session.payment_status === "paid";
 
-    let items = [];
-    try {
-      items = JSON.parse(session.metadata?.cart || "[]"); // snapshot from session creation
-    } catch {}
+    const ref = session.client_reference_id || "";
+    const items = pending.get(ref) || [];
+    if (ref) pending.delete(ref); // cleanup
 
     return res.json({ paid, items });
   } catch (err) {
@@ -165,6 +165,20 @@ app.get("/api/verify", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+
+app.get("/api/checkout-session", async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
+      expand: ["line_items.data.price.product"],
+    });
+    res.json(session);
+  } catch (err) {
+    res.status(400).json({ error: err?.message || "Failed to retrieve session" });
+  }
+});
+
+
 
 
 // ---- webhook (optional now)
@@ -207,12 +221,3 @@ app.post("/api/chat", async (req, res) => {
 
 app.use("/api", contactRoutes);
 
-
-
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"],
-  methods: ["GET", "POST"],
-}));
-
-
-app.use("/api", contactRoutes);

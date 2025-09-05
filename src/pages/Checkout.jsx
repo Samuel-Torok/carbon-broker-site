@@ -1,30 +1,32 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
-import { createEmbeddedSession, mountEmbeddedCheckout } from "../lib/payments";
+import { startCheckout, destroyEmbeddedCheckout } from "../lib/payments";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
-
   const { items, total } = useCart();
   const [mounting, setMounting] = useState(false);
+  const embeddedRef = useRef(null);
 
   const pay = async () => {
     if (mounting || items.length === 0) return;
     try {
       setMounting(true);
-      const { clientSecret } = await createEmbeddedSession(items);
-      await mountEmbeddedCheckout(clientSecret, "#stripe-checkout");
+      embeddedRef.current = await startCheckout(items, "#stripe-checkout", undefined);
     } catch (e) {
       console.error(e);
-      alert("Could not start payment. Please try again.");
+      alert(e.message || "Could not start payment. Please try again.");
       setMounting(false);
     }
   };
+
+  // destroy embedded when leaving this page (prevents the "multiple objects" error)
+  useEffect(() => () => destroyEmbeddedCheckout(), []);
 
   return (
     <PagePanel maxWidth="max-w-3xl">
@@ -36,7 +38,7 @@ export default function Checkout() {
 
         <div className="mt-6 flex gap-3">
           <button
-            onClick={() => navigate("/cart-review")}
+            onClick={() => { destroyEmbeddedCheckout(); navigate("/cart-review"); }}
             className="rounded-lg bg-white/10 px-4 py-2 font-medium text-white ring-1 ring-white/15 hover:bg-white/15"
           >
             {t("checkout.backToCart")}
@@ -55,7 +57,6 @@ export default function Checkout() {
           </button>
         </div>
 
-        {/* Stripe Embedded Checkout mounts here */}
         <div id="stripe-checkout" className="mt-8 min-h-[640px] rounded-2xl bg-white/5 ring-1 ring-white/10" />
       </div>
     </PagePanel>

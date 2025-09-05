@@ -2,6 +2,8 @@
 import { loadStripe } from "@stripe/stripe-js";
 
 let stripePromise;
+let currentEmbedded = null;
+
 export function getStripe() {
   if (!stripePromise) {
     stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -9,45 +11,46 @@ export function getStripe() {
   return stripePromise;
 }
 
-function normalizeCartItems(cartItems) {
-  return cartItems.map((it) => ({
-    type: it.type || it.meta?.type || "individual",
-    quality: it.qualityLabel || it.meta?.quality || "std",
-    size: Number(it.size || it.meta?.qty || 1), // tonnes
-    csr: it.csr?.title ? { title: it.csr.title, price: it.csr.price ?? 0 } : null,
-    addons: it.meta?.addons || null,
-  }));
+export function destroyEmbeddedCheckout() {
+  try { currentEmbedded?.destroy(); } catch {}
+  currentEmbedded = null;
 }
 
-// send RAW items so server can read unitPriceEur / total / quantity / title
-export async function createEmbeddedSession(cartItems) {
-  const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/create-checkout-session`, {
+export async function createEmbeddedSession(cartItems, email) {
+  const base =
+    (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.replace(/\/$/, "")) ||
+    "http://localhost:4242";
+
+  const resp = await fetch(`${base}/api/create-checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      items: cartItems,
-      metadata: { cart: JSON.stringify(cartItems) }
-    }),
+    body: JSON.stringify({ items: cartItems, customer_email: email || undefined }),
   });
 
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data?.error || "Checkout session failed");
+  let data = null;
+  try { data = await resp.json(); } catch {}
+  if (!resp.ok) throw new Error((data && data.error) || "Checkout session failed");
+
   const clientSecret = data.clientSecret || data.client_secret;
-  if (!clientSecret) throw new Error("Missing client secret from server");
+  if (!clientSecret) throw new Error("Server did not return a client_secret");
   return { clientSecret };
 }
 
-
-// 2) Mount the Embedded Checkout UI into your page
 export async function mountEmbeddedCheckout(clientSecret, mountSelector = "#stripe-checkout") {
+  // ensure only ONE embedded instance exists
+  destroyEmbeddedCheckout();
+
+  // (optional) clear container
+  const el = document.querySelector(mountSelector);
+  if (el) el.innerHTML = "";
+
   const stripe = await getStripe();
-  const embedded = await stripe.initEmbeddedCheckout({ clientSecret });
-  embedded.mount(mountSelector);
-  return embedded;
+  currentEmbedded = await stripe.initEmbeddedCheckout({ clientSecret });
+  currentEmbedded.mount(mountSelector);
+  return currentEmbedded;
 }
 
-// 3) Backward-compatible wrapper: startCheckout now uses Embedded Checkout
-export async function startCheckout(cartItems, mountSelector = "#stripe-checkout") {
-  const { clientSecret } = await createEmbeddedSession(cartItems);
+export async function startCheckout(cartItems, mountSelector = "#stripe-checkout", email) {
+  const { clientSecret } = await createEmbeddedSession(cartItems, email);
   return mountEmbeddedCheckout(clientSecret, mountSelector);
 }
