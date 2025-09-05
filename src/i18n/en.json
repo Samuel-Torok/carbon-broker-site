@@ -45,7 +45,12 @@
       "optional": "Optional",
       "cancel": "Cancel",
       "submit": "Send",
-      "sent": "Thanks! We’ll get back to you shortly."
+      "sent": "Thanks! We’ll get back to you shortly.",
+      "needConsent": "Please accept the privacy note.",
+      "fail": "Something went wrong. Please try again.",
+      "consent": "I agree that you store my details to reply.",
+      "sending": "Sending…"
+
     },
     "quotes": [
       { "text": "The greatest threat to our planet is the belief that someone else will save it.", "author": "Robert Swan" },

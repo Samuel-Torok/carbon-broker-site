@@ -32,6 +32,47 @@ export default function Site() {
   const features = t("home.features");
   const slideCta = t("home.slideCta");
 
+
+  const [cName, setCName] = React.useState("");
+  const [cEmail, setCEmail] = React.useState("");
+  const [cWho, setCWho] = React.useState("Company");
+  const [cNeed, setCNeed] = React.useState("Offsets");
+  const [cMsg, setCMsg] = React.useState("");
+  const [cConsent, setCConsent] = React.useState(true);
+  const [cBusy, setCBusy] = React.useState(false);
+  const [cErr, setCErr] = React.useState("");
+
+  const API_BASE = import.meta.env.VITE_API_BASE || "";
+
+
+  async function submitContact(e) {
+    e.preventDefault();
+    if (!cConsent) { setCErr(t("home.contactModal.needConsent","Please accept the privacy note.")); return; }
+    setCBusy(true); setCErr("");
+    try {
+      const res = await fetch(`${API_BASE}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: cName,
+          email: cEmail,
+          who: cWho,
+          need: cNeed,
+          message: cMsg,
+          locale: navigator.language || "en",
+        }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setCName(""); setCEmail(""); setCWho("Company"); setCNeed("Offsets"); setCMsg("");
+      setContactOpen(false);
+    } catch {
+      setCErr(t("home.contactModal.fail","Something went wrong. Please try again."));
+    } finally {
+      setCBusy(false);
+    }
+  }
+
+
   // ---- Effects
   React.useEffect(() => {
     if (!quotes?.length) return;
@@ -227,100 +268,103 @@ export default function Site() {
               </section>
 
               {contactOpen && (
-              <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="w-full max-w-lg rounded-2xl bg-slate-950/90 ring-1 ring-white/10 p-6 text-slate-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold">{t("home.contactModal.title")}</h3>
-                    <button
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/5"
-                      onClick={() => setContactOpen(false)}
-                      aria-label={t("home.contactModal.close")}
-                    >
-                      ✕
-                    </button>
+                <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="w-full max-w-lg rounded-2xl bg-slate-950/90 ring-1 ring-white/10 p-6 text-slate-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold">{t("home.contactModal.title")}</h3>
+                      <button
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/5"
+                        onClick={() => setContactOpen(false)}
+                        aria-label={t("home.contactModal.close")}
+                      >
+                        ✕
+                      </button>
+                    </div>
 
+                    <form onSubmit={submitContact}>
+                      <div className="grid gap-3">
+                        <label className="grid gap-1">
+                          <span className="text-sm opacity-80">{t("home.contactModal.name")}</span>
+                          <input
+                            className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2"
+                            required value={cName} onChange={e=>setCName(e.target.value)}
+                          />
+                        </label>
+
+                        <label className="grid gap-1">
+                          <span className="text-sm opacity-80">{t("home.contactModal.email")}</span>
+                          <input
+                            type="email"
+                            className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2"
+                            required value={cEmail} onChange={e=>setCEmail(e.target.value)}
+                          />
+                        </label>
+
+                        <label className="grid gap-1">
+                          <span className="text-sm opacity-80">{t("home.contactModal.who")}</span>
+                          <div className="relative">
+                            <select
+                              className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                              value={cWho} onChange={e=>setCWho(e.target.value)}
+                            >
+                              <option>{t("home.contactModal.optCompany")}</option>
+                              <option>{t("home.contactModal.optIndividual")}</option>
+                              <option>{t("home.contactModal.optOther")}</option>
+                            </select>
+                            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+                          </div>
+                        </label>
+
+                        <label className="grid gap-1">
+                          <span className="text-sm opacity-80">{t("home.contactModal.need")}</span>
+                          <div className="relative">
+                            <select
+                              className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
+                              value={cNeed} onChange={e=>setCNeed(e.target.value)}
+                            >
+                              <option>{t("home.contactModal.needOffsets")}</option>
+                              <option>{t("home.contactModal.needAdvice")}</option>
+                              <option>{t("home.contactModal.needOther")}</option>
+                            </select>
+                            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
+                          </div>
+                        </label>
+
+                        <label className="grid gap-1">
+                          <span className="text-sm opacity-80">{t("home.contactModal.message")}</span>
+                          <textarea
+                            className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2 min-h-[100px]"
+                            placeholder={t("home.contactModal.optional")}
+                            value={cMsg} onChange={e=>setCMsg(e.target.value)}
+                          />
+                        </label>
+
+                        <label className="mt-1 inline-flex items-center gap-2 text-sm text-white/80">
+                          <input type="checkbox" className="h-4 w-4 rounded bg-white/5"
+                                checked={cConsent} onChange={e=>setCConsent(e.target.checked)} />
+                          {t("home.contactModal.consent","I agree that you store my details to reply.")}
+                        </label>
+
+                        {cErr && <div className="text-red-300 text-sm">{cErr}</div>}
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-end gap-2">
+                        <button type="button" onClick={() => setContactOpen(false)} className="btn-outline-neutral">
+                          <span className="pill"><span className="text-slate-200">{t("home.contactModal.cancel")}</span></span>
+                        </button>
+                        <button type="submit" disabled={cBusy} className="btn-outline-gradient">
+                          <span className="pill">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                              {cBusy ? t("home.contactModal.sending","Sending…") : t("home.contactModal.submit")}
+                            </span>
+                          </span>
+                        </button>
+                      </div>
+                    </form>
                   </div>
-
-                  <form onSubmit={(e) => { e.preventDefault(); alert(t("home.contactModal.sent")); setContactOpen(false); }}>
-                    <div className="grid gap-3">
-                      <label className="grid gap-1">
-                        <span className="text-sm opacity-80">{t("home.contactModal.name")}</span>
-                        <input className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2" required />
-                      </label>
-
-                      <label className="grid gap-1">
-                        <span className="text-sm opacity-80">{t("home.contactModal.email")}</span>
-                        <input type="email" className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2" required />
-                      </label>
-
-                      <label className="grid gap-1">
-                        <span className="text-sm opacity-80">{t("home.contactModal.who")}</span>
-                        <div className="relative">
-                          <select
-                            className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
-                          >
-                            <option>{t("home.contactModal.optCompany")}</option>
-                            <option>{t("home.contactModal.optIndividual")}</option>
-                            <option>{t("home.contactModal.optOther")}</option>
-                          </select>
-                          <svg
-                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                          >
-                            <path d="m6 9 6 6 6-6" />
-                          </svg>
-                        </div>
-                      </label>
-
-
-                      <label className="grid gap-1">
-                        <span className="text-sm opacity-80">{t("home.contactModal.need")}</span>
-                        <div className="relative">
-                          <select
-                            className="w-full appearance-none rounded-lg bg-slate-900/80 border border-white/10 px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-emerald-400/30"
-                          >
-                            <option>{t("home.contactModal.needOffsets")}</option>
-                            <option>{t("home.contactModal.needAdvice")}</option>
-                            <option>{t("home.contactModal.needOther")}</option>
-                          </select>
-                          <svg
-                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                          >
-                            <path d="m6 9 6 6 6-6" />
-                          </svg>
-                        </div>
-                      </label>
-
-
-                      <label className="grid gap-1">
-                        <span className="text-sm opacity-80">{t("home.contactModal.message")}</span>
-                        <textarea className="rounded-lg bg-slate-900 border border-white/10 px-3 py-2 min-h-[100px]" placeholder={t("home.contactModal.optional")} />
-                      </label>
-                    </div>
-
-                    <div className="mt-4 flex items-center justify-end gap-2">
-                      <button type="button" onClick={() => setContactOpen(false)} className="btn-outline-neutral">
-                        <span className="pill">
-                          <span className="text-slate-200">
-                            {t("home.contactModal.cancel")}
-                          </span>
-                        </span>
-                      </button>
-
-                      <button type="submit" className="btn-outline-gradient">
-                        <span className="pill">
-                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
-                            {t("home.contactModal.submit")}
-                          </span>
-                        </span>
-                      </button>
-                    </div>
-                  </form>
                 </div>
-              </div>
-              
-            )}
+              )}
+
 
             {langPromptOpen && (
               <div className="fixed inset-0 z-[220] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">

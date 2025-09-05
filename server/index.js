@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import OpenAI from "openai";
+import contactRoutes from "./contactRoutes.js";
 dotenv.config();
 
 
@@ -202,3 +203,16 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+
+app.use("/api", contactRoutes);
+
+
+
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"],
+  methods: ["GET", "POST"],
+}));
+
+
+app.use("/api", contactRoutes);

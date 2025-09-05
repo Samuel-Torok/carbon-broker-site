@@ -45,7 +45,12 @@
       "optional": "Optionnel",
       "cancel": "Annuler",
       "submit": "Envoyer",
-      "sent": "Merci ! Nous revenons vers vous rapidement."
+      "sent": "Merci ! Nous revenons vers vous rapidement.",
+      "needConsent": "Veuillez accepter la note de confidentialité.",
+      "fail": "Un problème est survenu. Réessayez.",
+      "consent": "J’accepte que vous conserviez mes coordonnées pour me répondre.",
+      "sending": "Envoi…"
+
     },
 
      "quotes": [
