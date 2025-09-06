@@ -113,15 +113,27 @@ export default function SideMenu() {
         </div>
 
         <div className="mt-auto border-t border-white/10 px-4 py-3 text-xs text-slate-400">
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
             <span>© {year} Zephyr Carbon</span>
-            <div className="space-x-3">
-              <Link to="/privacy" className="hover:text-slate-200">{t("nav.privacy")}</Link>
-              <Link to="/terms" className="hover:text-slate-200">{t("nav.terms")}</Link>
-              <Link to="/imprint" className="hover:text-slate-200">{t("nav.imprint")}</Link>
-            </div>
+
+            {lang === "fr" ? (
+              // FR: stack for clean layout
+              <div className="flex flex-col gap-1 text-right">
+                <Link to="/privacy" className="hover:text-slate-200">{t("nav.privacy")}</Link>
+                <Link to="/terms" className="hover:text-slate-200">{t("nav.terms")}</Link>
+                <Link to="/imprint" className="hover:text-slate-200">{t("nav.imprint")}</Link>
+              </div>
+            ) : (
+              // Others: keep single line
+              <div className="space-x-3">
+                <Link to="/privacy" className="hover:text-slate-200">{t("nav.privacy")}</Link>
+                <Link to="/terms" className="hover:text-slate-200">{t("nav.terms")}</Link>
+                <Link to="/imprint" className="hover:text-slate-200">{t("nav.imprint")}</Link>
+              </div>
+            )}
           </div>
         </div>
+
       </aside>
     </div>
   );
