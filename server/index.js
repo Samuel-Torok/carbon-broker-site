@@ -5,9 +5,15 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import OpenAI from "openai";
 import { randomUUID } from "crypto";
+import fs from "fs";
+import fsp from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import contactRoutes from "./contactRoutes.js";
 dotenv.config();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ORDERS_DIR = path.join(__dirname, "data", "orders");
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CORS = {
@@ -22,6 +28,39 @@ app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000", "http:
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+async function persistOrder(session, items) {
+  // build order record – keep it flexible
+  const record = {
+    id: session.id,
+    client_reference_id: session.client_reference_id || null,
+    status: session.status,
+    payment_status: session.payment_status,
+    currency: session.currency,
+    amount_total: session.amount_total,
+    customer_email: session.customer_details?.email || session.customer_email || null,
+    created_at: new Date().toISOString(),
+    items,                      // <-- your full cart snapshot (company/individual meta etc.)
+  };
+
+  // ensure dir structure: data/orders/YYYY/MM/DD/
+  const d = new Date();
+  const y = String(d.getUTCFullYear());
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const dir = path.join(ORDERS_DIR, y, m, day);
+  await fsp.mkdir(dir, { recursive: true });
+
+  const file = path.join(dir, `${session.id}.json`);
+
+  // idempotent write – skip if already saved
+  try { await fsp.access(file); return; } catch {}
+
+  await fsp.writeFile(file, JSON.stringify(record, null, 2), "utf8");
+  // also append to rolling NDJSON (optional)
+  await fsp.appendFile(path.join(ORDERS_DIR, "orders.ndjson"), JSON.stringify(record) + "\n", "utf8");
+}
+
 
 // Build valid Stripe line_items (EUR, integer cents)
 function buildLineItems(raw = []) {
@@ -152,12 +191,20 @@ app.get("/api/verify", async (req, res) => {
     const { session_id } = req.query;
     if (!session_id) return res.status(400).json({ error: "missing session_id" });
 
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const session = await stripe.checkout.sessions.retrieve(session_id, {
+      expand: ["line_items.data.price.product"],
+    });
+
     const paid = session.status === "complete" && session.payment_status === "paid";
 
+    // recover snapshot saved at session creation
     const ref = session.client_reference_id || "";
     const items = pending.get(ref) || [];
-    if (ref) pending.delete(ref); // cleanup
+
+    if (paid) {
+      await persistOrder(session, items); // <-- write JSON only on successful payment
+      if (ref) pending.delete(ref);       // cleanup memory
+    }
 
     return res.json({ paid, items });
   } catch (err) {
@@ -165,6 +212,7 @@ app.get("/api/verify", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
 
 
 app.get("/api/checkout-session", async (req, res) => {
