@@ -532,44 +532,35 @@
 
   "market": {
     "title": "Marketplace",
-    "subtitle": "Sample listings for demonstration. Pricing and availability on request.",
+    "subtitle": "Browse sample projects or purchase from limited in-stock inventory.",
+    "tab": { "stock": "In stock", "samples": "Sample projects" },
+    "stock": { "heading": "Current availability (limited stock)", "left": "Left", "min": "Min", "soldOut": "Sold out" },
+    "samples": { "heading": "Explore sample projects" },
+    "buyNow": "Buy now",
     "enquire": "Enquire",
-    "placeholderNote": "Images/text are placeholders. Put your images in /public/images/marketplace/.",
-    "items": [
-      {
-        "id": "gs-stoves-ke",
-        "title": "Clean cookstoves – Kenya",
-        "standard": "Gold Standard",
-        "type": "Avoidance / household energy",
-        "origin": "Kenya",
-        "vintage": "2022–2024",
-        "priceEur": 12,
-        "image": "/images/marketplace/stoves.jpg",
-        "summary": "Efficient stoves reduce wood use and indoor air pollution; monitored fuel savings deliver verified CO₂e cuts."
-      },
-      {
-        "id": "vcs-reforestation-br",
-        "title": "Reforestation – Atlantic Forest",
-        "standard": "Verra (VCS)",
-        "type": "Removal / nature-based",
-        "origin": "Brazil",
-        "vintage": "2021–2023",
-        "priceEur": 15,
-        "image": "/images/marketplace/reforestation.jpg",
-        "summary": "Native species restoration with biodiversity benefits and community jobs; conservative growth models."
-      },
-      {
-        "id": "acr-landfill-mx",
-        "title": "Landfill gas capture",
-        "standard": "ACR",
-        "type": "Avoidance / methane",
-        "origin": "Mexico",
-        "vintage": "2020–2022",
-        "priceEur": 9,
-        "image": "/images/marketplace/landfill.jpg",
-        "summary": "Methane collection and flaring turn a potent greenhouse gas into CO₂, cutting climate impact ~28× per tonne."
-      }
-    ]
+    "placeholderNote": "These are placeholder items for testing. Real inventory will appear here soon.",
+    "disclaimer": "Marketplace prices can be indicative; availability can change rapidly. We’ll confirm exact pricing/stock by email.",
+    "forms": {
+      "enquiryTitle": "Tell us a bit about you",
+      "enquirySub": "We’ll get back to you with availability and pricing for",
+      "buyTitle": "Quick details to proceed",
+      "name": "Your name",
+      "email": "Your email",
+      "company": "Company (optional)",
+      "qty": "Approx. quantity (tCO₂e)",
+      "qtyExact": "Quantity (tCO₂e)",
+      "notes": "Notes (optional)",
+      "cancel": "Cancel",
+      "send": "Send enquiry",
+      "sending": "Sending…",
+      "subtotal": "Subtotal",
+      "checkout": "Go to checkout",
+      "processing": "Processing…"
+    },
+    "toast": {
+      "enquiryOk": "Thanks — we’ll follow up by email.",
+      "enquiryErr": "Could not send your enquiry. Please try again."
+    }
   },
   
   "nudge": {
