@@ -16,6 +16,8 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ORDERS_DIR = path.join(__dirname, "data", "orders");
 
+
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -135,6 +137,11 @@ app.post("/api/create-checkout-session", async (req, res) => {
   try {
     const cartItems = Array.isArray(req.body?.items) ? req.body.items : [];
     const lineItems = buildLineItems(cartItems);
+
+    // stash cart snapshot and pass ref to Stripe
+    const ref = randomUUID();
+    pending.set(ref, cartItems);
+
     // optional: debug to verify € values
     console.log(
       "LINE_ITEMS_DEBUG",
@@ -146,13 +153,20 @@ app.post("/api/create-checkout-session", async (req, res) => {
     );
 
 
+    const base = req.body.return_url || "http://localhost:5173/checkout/return";
+    const returnUrl = /\bsession_id=/.test(base)
+      ? base
+      : `${base}${base.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
-      line_items: lineItems,             // ✅ unified prices
+      line_items: lineItems,
       customer_email: req.body.customer_email,
-      return_url: req.body.return_url || "http://localhost:5173/checkout/return",
+      client_reference_id: ref,
+      return_url: returnUrl, // ensures Stripe appends ?session_id=...
     });
+
 
     res.json({ clientSecret: session.client_secret });
   } catch (err) {
@@ -174,26 +188,44 @@ app.get("/api/verify", async (req, res) => {
     if (!session_id) return res.status(400).json({ error: "missing session_id" });
 
     const session = await stripe.checkout.sessions.retrieve(session_id, {
-      expand: ["line_items.data.price.product"],
+      expand: ["payment_intent", "line_items.data.price.product"],
     });
 
     const paid = session.status === "complete" && session.payment_status === "paid";
 
-    // recover snapshot saved at session creation
+    console.log("VERIFY_DEBUG", {
+      id: session.id,
+      status: session.status,                // "open" | "complete" | "expired"
+      payment_status: session.payment_status // "paid" | "unpaid" | "no_payment_required"
+    });
+
     const ref = session.client_reference_id || "";
     const items = pending.get(ref) || [];
 
     if (paid) {
-      await persistOrder(session, items); // <-- write JSON only on successful payment
-      if (ref) pending.delete(ref);       // cleanup memory
+      await persistOrder(session, items);   // writes JSON & ndjson
+      console.log("ORDER_SAVED", {
+        id: session.id,
+        items: items.length,
+        amount_total: session.amount_total
+      });
+      if (ref) pending.delete(ref);         // cleanup memory
     }
 
-    return res.json({ paid, items });
+    // return more fields so UI can decide
+    return res.json({
+      paid,
+      status: session.status,
+      payment_status: session.payment_status,
+      amount_total: session.amount_total,
+      items,
+    });
   } catch (err) {
     console.error("verify error:", err);
     res.status(400).json({ error: err.message });
   }
 });
+
 
 
 
