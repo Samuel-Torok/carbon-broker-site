@@ -50,7 +50,25 @@ export async function mountEmbeddedCheckout(clientSecret, mountSelector = "#stri
   return currentEmbedded;
 }
 
-export async function startCheckout(cartItems, mountSelector = "#stripe-checkout", email) {
-  const { clientSecret } = await createEmbeddedSession(cartItems, email);
-  return mountEmbeddedCheckout(clientSecret, mountSelector);
+export async function startCheckout(items, mountSelector = "#stripe-checkout", returnUrl) {
+  // create the session
+  const res = await fetch("http://localhost:4242/api/create-checkout-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      items,
+      return_url: returnUrl ?? window.location.origin + "/checkout/return",
+      customer_email: items?.[0]?.meta?.meEmail || undefined,
+    }),
+  });
+  const { clientSecret, error } = await res.json();
+  if (error) throw new Error(error);
+
+  // mount embedded checkout (await!)
+  const stripe = await getStripe();
+  destroyEmbeddedCheckout();                 // ensure a single instance
+  const checkout = await stripe.initEmbeddedCheckout({ clientSecret });
+  checkout.mount(mountSelector);
+  currentEmbedded = checkout;
+  return checkout;
 }

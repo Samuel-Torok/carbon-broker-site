@@ -3,31 +3,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useI18n } from "../i18n";
 import { Info } from "lucide-react";
 import { Link } from "react-router-dom";
+import PRICING from "../../shared/pricing.js";
 
 export default function PackageSelector({ audience = "company", onChange }) {
   const { t, lang } = useI18n();
   const isCompany = audience === "company";
-  const MAX_SIZE = 100000;
+  const MAX_SIZE  = PRICING.qtyLimits.max;
 
 
   // popular suggestions
   const sizes = isCompany ? [100, 500, 1000, 5000, 10000] : [1, 5, 10, 20, 50];
-  const basePrice = isCompany ? 12 : 15;
 
+
+  const perTonne = isCompany ? PRICING.companies.perTonne : PRICING.individuals.perTonne;
   const qualities = [
-    { id: "standard", x: 1.0 },
-    { id: "premium",  x: 1.25 },
-    { id: "elite",    x: 1.5 },
+    { id: "standard", price: perTonne.standard },
+    { id: "premium",  price: perTonne.premium },
+    { id: "elite",    price: perTonne.elite },
   ];
 
-  const [size, setSize] = useState(sizes[0]);
-  const [quality, setQuality] = useState(qualities[0].id);
+  const [size, setSize] = useState(isCompany ? 100 : 5);
+  const [quality, setQuality] = useState("standard");
   const [openHelp, setOpenHelp] = useState(false);
   
   const total = useMemo(() => {
-    const q = qualities.find(q => q.id === quality)?.x ?? 1;
-    return Number(size || 0) * basePrice * q;
-  }, [size, quality, basePrice]);
+    const price = qualities.find(q => q.id === quality)?.price ?? perTonne.standard;
+    return Number(size || 0) * price;
+  }, [size, quality]);
 
   useEffect(() => {
     onChange?.({ audience, size: Number(size), quality, total });

@@ -5,8 +5,9 @@ import InfoModal from "../components/InfoModal.jsx";
 import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
+import PRICING from "../../shared/pricing.js";
 
-const PRICE_PER_TON = { standard: 12, premium: 16, elite: 22 };
+const PRICE_PER_TON = PRICING.companies.perTonne;
 
 export default function Companies() {
   const navigate = useNavigate();
@@ -34,10 +35,10 @@ export default function Companies() {
 
   // CSR options translated
   const CSR_OPTIONS = [
-    { id: "none", title: t("companies.csr.none"), desc: t("companies.csr.noneDesc"), price: 0 },
-    { id: "starter", title: t("order.addons.items.starter.title"), desc: t("order.addons.items.starter.desc"), price: 390 },
-    { id: "plus", title: t("order.addons.items.plus.title"), desc: t("order.addons.items.plus.desc"), price: 990 },
-    { id: "pro", title: t("order.addons.items.pro.title"), desc: t("order.addons.items.pro.desc"), price: 2490 },
+    { id: "none",    title: t("companies.csr.none"),  desc: t("companies.csr.noneDesc"), price: 0 },
+    { id: "starter", title: t("order.addons.items.starter.title"), desc: t("order.addons.items.starter.desc"), price: PRICING.companies.csr.starter },
+    { id: "plus",    title: t("order.addons.items.plus.title"),    desc: t("order.addons.items.plus.desc"),    price: PRICING.companies.csr.plus },
+    { id: "pro",     title: t("order.addons.items.pro.title"),     desc: t("order.addons.items.pro.desc"),     price: PRICING.companies.csr.pro },
   ];
   const [csr, setCsr] = useState(CSR_OPTIONS[0]);
   const [configHelp, setConfigHelp] = useState(false);

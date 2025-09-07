@@ -12,13 +12,14 @@ import {
 import PagePanel from "../components/PagePanel.jsx";
 import { useCart } from "../lib/cart";
 import { useI18n } from "../i18n";
+import PRICING from "../../shared/pricing.js";
 
 
 /* --- quality options (same tiers as Companies) --- */
 const QUALITY_OPTIONS = [
-  { id: "standard", label: "Standard", pricePerTonne: 12 },
-  { id: "premium",  label: "Premium (nature-based, recent)", pricePerTonne: 20 },
-  { id: "elite",    label: "Elite (cookstoves/REDD+, newest)", pricePerTonne: 30 },
+  { id: "standard", label: "Standard", pricePerTonne: PRICING.individuals.perTonne.standard },
+  { id: "premium",  label: "Premium (nature-based, recent)", pricePerTonne: PRICING.individuals.perTonne.premium },
+  { id: "elite",    label: "Elite (cookstoves/REDD+, newest)", pricePerTonne: PRICING.individuals.perTonne.elite },
 ];
 
 /* fixed package sizes */
@@ -108,20 +109,23 @@ function Selector({
   const [leaderboard, setLeaderboard] = useState(draft?.leaderboard ?? !!prefill.leaderboard);
 
   // gift-only fields
-  const [recName, setRecName]     = useState(draft?.recName  ?? (prefill.recName || ""));
-  const [recEmail, setRecEmail]   = useState(draft?.recEmail ?? (prefill.recEmail || ""));
+  const [recName, setRecName]   = useState(draft?.recName  ?? (prefill.recName || ""));
+  const [recEmail, setRecEmail] = useState(draft?.recEmail ?? (prefill.recEmail || ""));
 
-  // optional gift add-ons
-  const [giftCard, setGiftCard]   = useState(draft?.giftCard ?? !!prefill.giftCard);
+  // optional gift add-ons (declare BEFORE using)
+  const [giftCard, setGiftCard] = useState(draft?.giftCard ?? !!prefill.giftCard);
   const [eCert, setECert]         = useState(draft?.eCert ?? (prefill.eCert ?? true));
   const [includePhoto, setIncludePhoto] = useState(draft?.includePhoto ?? !!prefill.includePhoto);
+  // now safe to use giftCard
+  const addOnTotal =
+    kind === "gift" && giftCard ? PRICING.individuals.addons.giftCard : 0;
 
   // After “Proceed”, mark this selector as selected and hide the button
   const [selected, setSelected]   = useState(draft?.selected ?? false);
 
 
   const effQty = qtyChoice === "custom" ? qty : Number(qtyChoice);
-  const addOnTotal = kind === "gift" ? (giftCard ? 10 : 0) : 0;
+
   const subtotal = useMemo(
     () => clamp(effQty,1,1000) * quality.pricePerTonne + addOnTotal,
     [effQty, quality, addOnTotal]
@@ -493,7 +497,8 @@ export default function Individuals() {
       if (!d?.selected) return null;
       const effQty = d.qtyChoice === "custom" ? d.qty : Number(d.qtyChoice);
       const q = QUALITY_OPTIONS.find(x => x.id === d.qualityId) ?? QUALITY_OPTIONS[0];
-      const addOnTotal = kind === "gift" ? (d.giftCard ? 10 : 0) : 0;
+      const addOnTotal = kind === "gift" ? (d?.giftCard ? PRICING.individuals.addons.giftCard : 0) : 0;
+
       return {
         kind,
         qty: clamp(effQty, 1, 1000),

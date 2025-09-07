@@ -10,6 +10,7 @@ import fsp from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import contactRoutes from "./contactRoutes.js";
+import PRICING, { normalizeQuality, eurToCents } from "../shared/pricing.js";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -26,8 +27,11 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"] }));
 
+app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 async function persistOrder(session, items) {
   // build order record – keep it flexible
@@ -62,48 +66,59 @@ async function persistOrder(session, items) {
 }
 
 
-// Build valid Stripe line_items (EUR, integer cents)
-function buildLineItems(raw = []) {
-  return raw.flatMap((it, idx) => {
-    const qty = Math.max(1, Math.round(Number(it.size ?? it.quantity ?? 1)));
-    const type = normType(it.type);
-    const quality = normQual(it.quality);
-    const key = `${type}/${quality}`;
-    const unit = PRICE[key];
-    if (!unit) throw new Error(`Unknown pricing key: ${key}`);
+// ---- single source of truth for Stripe line_items
+function buildLineItems(cartItems = []) {
+  const items = [];
 
-    const main = {
-      quantity: qty,
+  for (const it of cartItems) {
+    const isCompany = (it?.meta?.type === "company");
+    const audience  = isCompany ? "companies" : "individuals";
+
+    const qKey = normalizeQuality(it.qualityKey || it.meta?.quality || it.quality);
+    const perTonne = PRICING[audience].perTonne[qKey] ?? PRICING[audience].perTonne.standard;
+    const qty = Math.max(
+      PRICING.qtyLimits.min,
+      Math.min(PRICING.qtyLimits.max, Number(it.size || it.meta?.qty || 1))
+    );
+
+    // main offset line
+    items.push({
       price_data: {
-        currency: "eur",
-        unit_amount: unit, // cents from PRICE
-        product_data: {
-          name: `${type} offset (${quality})`,
-          metadata: { type, quality },
-        },
+        currency: PRICING.currency,
+        product_data: { name: `${isCompany ? "Company" : "Individual"} offset (${qKey})` },
+        unit_amount: eurToCents(perTonne),
       },
-    };
+      quantity: qty,
+    });
 
-    const extras = [];
-    if (it.csr?.title) {
-      const csrKey = String(it.csr.title).toLowerCase();
-      if (CSR[csrKey] != null) {
-        extras.push({
-          quantity: 1,
+    // CSR add-on (company)
+    if (isCompany && it.csr?.id && it.csr.id !== "none") {
+      const csrPrice = PRICING.companies.csr[it.csr.id] ?? 0;
+      if (csrPrice > 0) {
+        items.push({
           price_data: {
-            currency: "eur",
-            unit_amount: CSR[csrKey],
-            product_data: {
-              name: `CSR plan: ${csrKey}`,
-              metadata: { kind: "csr", key: csrKey },
-            },
+            currency: PRICING.currency,
+            product_data: { name: `CSR add-on: ${it.csr.id}` },
+            unit_amount: eurToCents(csrPrice),
           },
+          quantity: 1,
         });
       }
     }
 
-    return [main, ...extras];
-  });
+    // Gift add-on (individual)
+    if (!isCompany && it?.meta?.addons?.giftCard) {
+      items.push({
+        price_data: {
+          currency: PRICING.currency,
+          product_data: { name: "Gift card (physical)" },
+          unit_amount: eurToCents(PRICING.individuals.addons.giftCard),
+        },
+        quantity: 1,
+      });
+    }
+  }
+  return items;
 }
 
 
@@ -114,68 +129,35 @@ app.get("/health", (_, res) => res.json({ ok: true }));
 // ---- simple in-memory store of items by session id (dev)
 const pending = new Map();
 
-// ---- price book (ALL in cents)
-const PRICE = {
-  "individual/std": 900,
-  "individual/high": 1200,
-  "company/std": 1000,
-  "company/high": 1400,
-};
-const CSR = { starter: 39000, plus: 99000, pro: 249000 };
 
-// ---- helpers (single definitions)
-function normType(t) {
-  const s = String(t || "").toLowerCase();
-  return s.startsWith("comp") ? "company" : "individual";
-}
-function normQual(q) {
-  const s = String(q || "").toLowerCase();
-  if (["std", "standard", "basic", "regular", "default"].includes(s)) return "std";
-  if (["high", "premium", "plus", "pro", "gold"].includes(s)) return "high";
-  return "std";
-}
-function keyFor(type, quality) {
-  return `${normType(type)}/${normQual(quality)}`;
-}
-function computeTotalCents(items) {
-  let total = 0;
-  for (const it of items) {
-    const k = keyFor(it.type, it.quality);
-    const unit = PRICE[k];
-    if (!unit) throw new Error(`Unknown pricing key: ${k}`);
-    const qty = Math.max(1, Math.round(Number(it.size || 1)));
-    if (!Number.isFinite(qty)) throw new Error("Bad quantity");
-    total += unit * qty;
-
-    if (it.csr?.title) {
-      const key = String(it.csr.title).toLowerCase();
-      if (CSR[key] != null) total += CSR[key];
-    }
-  }
-  return total;
-}
 
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    const { items = [], customer_email } = req.body;
-    const line_items = buildLineItems(items);
+    const cartItems = Array.isArray(req.body?.items) ? req.body.items : [];
+    const lineItems = buildLineItems(cartItems);
+    // optional: debug to verify € values
+    console.log(
+      "LINE_ITEMS_DEBUG",
+      lineItems.map(li => ({
+        name: li.price_data.product_data.name,
+        unit_amount: li.price_data.unit_amount,
+        qty: li.quantity,
+      }))
+    );
 
-    const ref = randomUUID().slice(0, 12);
-    pending.set(ref, items); // temp snapshot in memory
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
-      line_items,
-      customer_email: customer_email || undefined,
-      client_reference_id: ref,
-      return_url: `${process.env.CLIENT_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+      line_items: lineItems,             // ✅ unified prices
+      customer_email: req.body.customer_email,
+      return_url: req.body.return_url || "http://localhost:5173/checkout/return",
     });
 
     res.json({ clientSecret: session.client_secret });
   } catch (err) {
-    console.error("Stripe error:", err?.raw?.message || err.message);
-    res.status(400).json({ error: err?.raw?.message || err.message });
+    console.error("create-checkout-session error:", err);
+    res.status(400).json({ error: err.message || "Unable to create session" });
   }
 });
 
@@ -268,4 +250,5 @@ app.post("/api/chat", async (req, res) => {
 
 
 app.use("/api", contactRoutes);
+
 

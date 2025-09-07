@@ -489,41 +489,97 @@
   "market": {
     "title": "Marché",
     "subtitle": "Annonces de démonstration. Tarifs et disponibilités sur demande.",
+    "tab": { "stock": "En stock", "samples": "Projets exemples" },
+    "stock": {
+      "heading": "Disponibilités actuelles (stock limité)",
+      "left": "Restant",
+      "min": "Min",
+      "soldOut": "Épuisé"
+    },
+    "samples": { "heading": "Explorer des projets exemples" },
+    "buyNow": "Acheter",
     "enquire": "Demander",
-    "placeholderNote": "Images/textes provisoires. Ajoutez vos images dans /public/images/marketplace/.",
-    "items": [
+    "placeholderNote": "Il s’agit d’éléments fictifs pour les tests. L’inventaire réel apparaîtra ici bientôt.",
+    "disclaimer": "Les prix du marketplace peuvent être indicatifs ; la disponibilité peut évoluer rapidement. Confirmation exacte par e-mail.",
+    "forms": {
+      "enquiryTitle": "Quelques infos sur vous",
+      "enquirySub": "Nous revenons vers vous avec la disponibilité et le prix pour",
+      "buyTitle": "Détails rapides pour continuer",
+      "name": "Votre nom",
+      "email": "Votre e-mail",
+      "company": "Entreprise (facultatif)",
+      "qty": "Quantité approx. (tCO₂e)",
+      "qtyExact": "Quantité (tCO₂e)",
+      "notes": "Notes (facultatif)",
+      "cancel": "Annuler",
+      "send": "Envoyer la demande",
+      "sending": "Envoi…",
+      "subtotal": "Sous-total",
+      "checkout": "Aller au paiement",
+      "processing": "Traitement…"
+    },
+    "toast": {
+      "enquiryOk": "Merci — nous vous recontactons par e-mail.",
+      "enquiryErr": "Échec de l’envoi. Réessayez."
+    },
+
+    
+    "stockItems": [
       {
-        "id": "gs-stoves-ke",
-        "title": "Foyers propres — Kenya",
+        "id": "gs-cook-ken-2019",
+        "title": "Foyers propres – Kenya",
         "standard": "Gold Standard",
-        "type": "Évitement / énergie domestique",
+        "vintage": "2019–2023",
+        "type": "Foyers améliorés",
         "origin": "Kenya",
-        "vintage": "2022–2024",
-        "priceEur": 12,
-        "image": "/images/marketplace/stoves.jpg",
-        "summary": "Des foyers efficaces réduisent l’usage de bois et la pollution intérieure ; les économies de combustible sont vérifiées."
+        "priceEur": 18,
+        "stockTonnes": 42,
+        "minOrderTonnes": 1,
+        "image": "/images/market/cookstoves.jpg"
       },
       {
-        "id": "vcs-reforestation-br",
-        "title": "Reboisement — Forêt atlantique",
+        "id": "verra-redd-bra-2021",
+        "title": "Protection des forêts REDD+ – Brésil",
         "standard": "Verra (VCS)",
-        "type": "Retrait / naturel",
+        "vintage": "2021–2024",
+        "type": "REDD+",
         "origin": "Brésil",
-        "vintage": "2021–2023",
         "priceEur": 15,
-        "image": "/images/marketplace/reforestation.jpg",
-        "summary": "Restauration d’espèces natives, biodiversité et emplois locaux ; modèles de croissance prudents."
+        "stockTonnes": 17,
+        "minOrderTonnes": 1,
+        "image": "/images/market/redd.jpg"
       },
       {
-        "id": "acr-landfill-mx",
-        "title": "Captage de gaz de décharge",
-        "standard": "ACR",
-        "type": "Évitement / méthane",
-        "origin": "Mexique",
+        "id": "gs-wind-ind-2020",
+        "title": "Énergie éolienne – Inde",
+        "standard": "Gold Standard",
         "vintage": "2020–2022",
-        "priceEur": 9,
-        "image": "/images/marketplace/landfill.jpg",
-        "summary": "Le captage et le torchage transforment le méthane en CO₂, réduisant ~28× l’impact par tonne."
+        "type": "Énergies renouvelables",
+        "origin": "Inde",
+        "priceEur": 12,
+        "stockTonnes": 60,
+        "minOrderTonnes": 5,
+        "image": "/images/market/wind.jpg"
+      }
+    ],
+    "sampleItems": [
+      {
+        "id": "sample-biochar-eu",
+        "title": "Biochar – programme petits exploitants UE",
+        "standard": "Gold Standard / Puro.earth",
+        "indicative": "20–35 € / tCO₂e",
+        "type": "Biochar",
+        "origin": "UE",
+        "image": "/images/market/biochar.jpg"
+      },
+      {
+        "id": "sample-blue-carbon",
+        "title": "Carbone bleu – restauration de mangroves",
+        "standard": "Verra (VCS)",
+        "indicative": "18–28 € / tCO₂e",
+        "type": "Solutions fondées sur la nature",
+        "origin": "Asie du Sud-Est",
+        "image": "/images/market/mangroves.jpg"
       }
     ]
   },
