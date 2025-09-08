@@ -10,13 +10,14 @@ import fsp from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import contactRoutes from "./contactRoutes.js";
+import { MARKET_STOCK } from "../shared/marketplaceData.js";
 import PRICING, { normalizeQuality, eurToCents } from "../shared/pricing.js";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ORDERS_DIR = path.join(__dirname, "data", "orders");
 
-
+const STOCK_INDEX = new Map(MARKET_STOCK.map(i => [i.id, i]));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CORS = {
@@ -75,7 +76,8 @@ function buildLineItems(cartItems = []) {
   for (const it of cartItems) {
     // ✅ 1) Marketplace projects: price comes from the item itself
     if (it?.meta?.type === "market") {
-      const unit = Number(it.meta?.pricePerTonne);            // e.g. 18
+      const project = STOCK_INDEX.get(String(it.meta?.projectId || ""));
+      const unit = project ? Number(project.priceEur) : Number(it.meta?.pricePerTonne);
       const qty  = Math.max(PRICING.qtyLimits.min,
                      Math.min(PRICING.qtyLimits.max, Number(it.meta?.qty ?? it.size ?? 1)));
       if (!Number.isFinite(unit) || unit <= 0) {
