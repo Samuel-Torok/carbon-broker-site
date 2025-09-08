@@ -73,6 +73,27 @@ function buildLineItems(cartItems = []) {
   const items = [];
 
   for (const it of cartItems) {
+    // ✅ 1) Marketplace projects: price comes from the item itself
+    if (it?.meta?.type === "market") {
+      const unit = Number(it.meta?.pricePerTonne);            // e.g. 18
+      const qty  = Math.max(PRICING.qtyLimits.min,
+                     Math.min(PRICING.qtyLimits.max, Number(it.meta?.qty ?? it.size ?? 1)));
+      if (!Number.isFinite(unit) || unit <= 0) {
+        throw new Error("Missing marketplace unit price");
+      }
+
+      items.push({
+        price_data: {
+          currency: PRICING.currency,
+          product_data: { name: `marketplace: ${it.meta?.title || it.meta?.projectId}` },
+          unit_amount: eurToCents(unit),                       // cents
+        },
+        quantity: qty,
+      });
+
+      // (no quality tiers / CSR / gift add-ons on market lines)
+      continue; // ⬅️ important so we don't fall through to the tiers below
+    }
     const isCompany = (it?.meta?.type === "company");
     const audience  = isCompany ? "companies" : "individuals";
 
