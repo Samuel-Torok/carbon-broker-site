@@ -18,6 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ORDERS_DIR = path.join(__dirname, "data", "orders");
 
 const STOCK_INDEX = new Map(MARKET_STOCK.map(i => [i.id, i]));
+const INVENTORY_FILE = path.join(__dirname, "data", "market-stock.json");
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CORS = {
@@ -34,6 +35,26 @@ app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
+async function ensureInventoryFile() {
+  try { await fsp.access(INVENTORY_FILE); }
+  catch {
+    const initial = Object.fromEntries(
+      MARKET_STOCK.map(i => [i.id, Number(i.stockTonnes ?? 0)])
+    );
+    await fsp.mkdir(path.dirname(INVENTORY_FILE), { recursive: true });
+    await fsp.writeFile(INVENTORY_FILE, JSON.stringify(initial, null, 2), "utf8");
+  }
+}
+async function readInventory() {
+  await ensureInventoryFile();
+  const raw = await fsp.readFile(INVENTORY_FILE, "utf8");
+  return JSON.parse(raw || "{}");
+}
+async function writeInventory(inv) {
+  await fsp.writeFile(INVENTORY_FILE, JSON.stringify(inv, null, 2), "utf8");
+}
 
 
 async function persistOrder(session, items) {
@@ -146,6 +167,17 @@ function buildLineItems(cartItems = []) {
   return items;
 }
 
+app.get("/api/market/stock", async (_req, res) => {
+  try {
+    const inv = await readInventory();
+    const items = MARKET_STOCK
+      .filter(i => i.active !== false)
+      .map(i => ({ ...i, stockTonnes: inv[i.id] ?? Number(i.stockTonnes || 0) }));
+    res.json({ items });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 
 // ---- dev health
@@ -160,6 +192,24 @@ app.post("/api/create-checkout-session", async (req, res) => {
   try {
     const cartItems = Array.isArray(req.body?.items) ? req.body.items : [];
     const lineItems = buildLineItems(cartItems);
+
+    // ensure enough stock for market items
+    const inv = await readInventory();
+    const need = {};
+    for (const it of cartItems) {
+      if (it?.meta?.type === "market") {
+        const id  = String(it.meta.projectId || "");
+        const qty = Math.max(1, Number(it.meta?.qty ?? it.size ?? 1));
+        need[id] = (need[id] || 0) + qty;
+      }
+    }
+    for (const [id, qty] of Object.entries(need)) {
+      const available = inv[id] ?? 0;
+      if (qty > available) {
+        throw new Error(`Not enough stock for ${id}: need ${qty}, left ${available}`);
+      }
+    }
+
 
     // stash cart snapshot and pass ref to Stripe
     const ref = randomUUID();
@@ -227,6 +277,16 @@ app.get("/api/verify", async (req, res) => {
 
     if (paid) {
       await persistOrder(session, items);   // writes JSON & ndjson
+      const inv2 = await readInventory();
+      for (const it of items) {
+        if (it?.meta?.type === "market") {
+          const id  = String(it.meta.projectId || "");
+          const qty = Math.max(1, Number(it.meta?.qty ?? it.size ?? 1));
+          inv2[id] = Math.max(0, (inv2[id] ?? 0) - qty);
+        }
+      }
+      await writeInventory(inv2);
+
       console.log("ORDER_SAVED", {
         id: session.id,
         items: items.length,
@@ -264,6 +324,7 @@ app.get("/api/checkout-session", async (req, res) => {
 });
 
 
+ensureInventoryFile().catch(console.error);
 
 
 // ---- webhook (optional now)

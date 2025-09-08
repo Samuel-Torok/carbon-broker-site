@@ -5,3 +5,6 @@ dist/
 .env.*
 !.env.example
 server/data/orders/
+
+# runtime data
+server/data/market-stock.json
