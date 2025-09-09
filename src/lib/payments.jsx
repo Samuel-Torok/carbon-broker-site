@@ -51,21 +51,29 @@ export async function mountEmbeddedCheckout(clientSecret, mountSelector = "#stri
   return currentEmbedded;
 }
 
-export async function startCheckout(items, mountSelector = "#stripe-checkout", returnUrl) {
+export async function startCheckout(
+  items,
+  mountSelector = "#stripe-checkout",
+  buyer = {},                    // <-- accept buyer here
+  returnUrl
+) {
   const res = await fetch(`${API_BASE}/api/create-checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       items,
-      buyer, // <<— NEW: forward the form data
+      buyer,                     // <-- send buyer
       return_url: returnUrl ?? `${window.location.origin}/checkout/return`,
       customer_email: items?.[0]?.meta?.meEmail || undefined,
     }),
   });
+
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error || `Server ${res.status}`);
+
   const clientSecret = data.client_secret || data.clientSecret;
   if (!clientSecret) throw new Error("No client_secret returned by server");
+
   const stripe = await getStripe();
   destroyEmbeddedCheckout();
   const checkout = await stripe.initEmbeddedCheckout({ clientSecret });
