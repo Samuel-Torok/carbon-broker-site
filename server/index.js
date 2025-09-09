@@ -12,6 +12,8 @@ import { fileURLToPath } from "url";
 import contactRoutes from "./contactRoutes.js";
 import { MARKET_STOCK } from "../shared/marketplaceData.js";
 import PRICING, { normalizeQuality, eurToCents } from "../shared/pricing.js";
+import { Resend } from "resend"; // ⬅️ add
+
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -35,6 +37,46 @@ app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+function authAdmin(req, res, next) {
+  const token = (req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
+  if (!process.env.ADMIN_API_TOKEN || token !== process.env.ADMIN_API_TOKEN) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+  next();
+}
+
+
+function eur(cents) {
+  return typeof cents === "number"
+    ? `€${(cents / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}`
+    : "€–";
+}
+function escapeHtml(s = "") {
+  return String(s).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]));
+}
+function renderReceiptHTML({ buyer = {}, items = [], total_cents = null }) {
+  const rows = items.map(i =>
+    `<tr><td style="padding:4px 8px">${escapeHtml(i.name||"Item")}</td><td style="padding:4px 8px">${i.qty||1}</td><td style="padding:4px 8px">${eur(i.amount_cents)}</td></tr>`
+  ).join("");
+  return `
+    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b3b31">
+      <h2>Thank you for your purchase!</h2>
+      <p>We'll retire your credits shortly and email your certificate.</p>
+      <h3 style="margin-top:18px">Order summary</h3>
+      <table style="border-collapse:collapse;background:#f6fff9;border-radius:8px">
+        <thead><tr><th align="left" style="padding:6px 8px">Item</th><th align="left" style="padding:6px 8px">Qty</th><th align="left" style="padding:6px 8px">Subtotal</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="3" style="padding:8px">Details will follow.</td></tr>`}</tbody>
+        <tfoot><tr><td colspan="2" style="padding:8px"><b>Total</b></td><td style="padding:8px"><b>${eur(total_cents)}</b></td></tr></tfoot>
+      </table>
+      <h3 style="margin-top:18px">Buyer</h3>
+      <p>${escapeHtml(buyer.companyName||buyer.contactName||"")}${buyer.companyName?" (company)":""}<br/>
+         ${escapeHtml(buyer.contactEmail||"")}</p>
+      <p style="color:#387c6d;font-size:12px">LuxOffset</p>
+    </div>`;
+}
 
 
 async function ensureInventoryFile() {
@@ -323,6 +365,40 @@ app.get("/api/checkout-session", async (req, res) => {
   }
 });
 
+// List most-recent paid Checkout Sessions
+app.get("/api/admin/orders", authAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit || 50)));
+    const list = await stripe.checkout.sessions.list({
+      limit,
+      expand: ["data.line_items"],
+    });
+
+    const orders = list.data
+      .filter(s => s.status === "complete" && s.payment_status === "paid")
+      .map(s => ({
+        id: s.id,
+        created: s.created,
+        email: s.customer_details?.email || s.customer_email || null,
+        buyer: s.metadata || {},
+        total_cents: s.amount_total,
+        currency: s.currency,
+        items: (s.line_items?.data || []).map(li => ({
+          name: li.description, qty: li.quantity, amount_cents: li.amount_subtotal
+        })),
+        order_ref: s.client_reference_id || null,
+        emailed: (s.metadata?.emailed === "1"),
+      }));
+
+    res.json({ orders });
+  } catch (e) {
+    res.status(400).json({ error: e.message || "failed to list orders" });
+  }
+});
+
+
+
+
 
 ensureInventoryFile().catch(console.error);
 
@@ -363,6 +439,47 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Resend a receipt email for a paid session
+app.post("/api/admin/orders/:id/resend", authAdmin, async (req, res) => {
+  try {
+    if (!resend) return res.status(400).json({ error: "RESEND_API_KEY not set" });
+
+    const sessionId = req.params.id;
+    const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["line_items"] });
+
+    const paid = session.status === "complete" && session.payment_status === "paid";
+    if (!paid) return res.status(400).json({ error: "session is not paid" });
+
+    const buyer = session.metadata || {};
+    const email = session.customer_details?.email || session.customer_email || buyer.contactemail || null;
+    if (!email) return res.status(400).json({ error: "no email on session" });
+
+    const items = (session.line_items?.data || []).map(li => ({
+      name: li.description, qty: li.quantity, amount_cents: li.amount_subtotal, currency: li.currency,
+    }));
+    const total_cents = session.amount_total ?? null;
+    const html = renderReceiptHTML({ buyer, items, total_cents });
+
+    await resend.emails.send({
+      from: process.env.SENDER_EMAIL,     // e.g., receipts@luxoffset.com
+      to: email,
+      subject: "Your LuxOffset purchase receipt",
+      html,
+    });
+
+    // mark emailed=1 to avoid duplicates elsewhere
+    try { await stripe.checkout.sessions.update(sessionId, { metadata: { ...(session.metadata||{}), emailed: "1" } }); } catch {}
+    if (session.payment_intent) {
+      try { await stripe.paymentIntents.update(session.payment_intent, { metadata: { emailed: "1" } }); } catch {}
+    }
+
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message || "failed to resend email" });
+  }
+});
+
 
 
 app.use("/api", contactRoutes);

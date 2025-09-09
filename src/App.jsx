@@ -26,6 +26,7 @@ import Leaderboard from "./pages/Leaderboard.jsx";
 import LearnIndividuals from "./pages/LearnIndividuals.jsx";
 import LearnGifts from "./pages/LearnGifts.jsx";
 import CheckoutSuccess from "./pages/CheckoutSuccess.jsx";
+import AdminOrders from "./pages/AdminOrders.jsx";
 
 
 
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="/learn/gifts" element={<LearnGifts />} />
               <Route path="/checkout/return" element={<CheckoutSuccess />} />
               <Route path="/checkout-success" element={<CheckoutSuccess />} />
+              <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
