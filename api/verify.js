@@ -1,58 +1,112 @@
+// /api/verify.js (or .ts)
 import Stripe from "stripe";
 import { Resend } from "resend";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+// lazy, safe init — never throw at import time
+let _resend = null;
+function getResend() {
+  if (!_resend && process.env.RESEND_API_KEY) {
+    try {
+      _resend = new Resend(String(process.env.RESEND_API_KEY).trim());
+    } catch (e) {
+      console.error("RESEND init failed:", e);
+      _resend = null;
+    }
+  }
+  return _resend;
+}
+
+const emailOk = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s||"").trim());
+const eur = (c) => (typeof c === "number" ? `€${(c/100).toLocaleString("fr-FR",{minimumFractionDigits:2})}` : "€–");
+const esc = (s="") => String(s).replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]));
+const renderReceiptHTML = ({ buyer={}, items=[], total_cents=null }) => {
+  const rows = (items||[]).map(i =>
+    `<tr><td style="padding:4px 8px">${esc(i.name||"Item")}</td><td style="padding:4px 8px">${i.qty||1}</td><td style="padding:4px 8px">${eur(i.amount_cents)}</td></tr>`
+  ).join("");
+  return `
+    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b3b31">
+      <h2>Thank you for your purchase!</h2>
+      <p>We'll retire your credits shortly and email your certificate.</p>
+      <h3 style="margin-top:18px">Order summary</h3>
+      <table style="border-collapse:collapse;background:#f6fff9;border-radius:8px">
+        <thead><tr><th align="left" style="padding:6px 8px">Item</th><th align="left" style="padding:6px 8px">Qty</th><th align="left" style="padding:6px 8px">Subtotal</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="3" style="padding:8px">Details will follow.</td></tr>`}</tbody>
+        <tfoot><tr><td colspan="2" style="padding:8px"><b>Total</b></td><td style="padding:8px"><b>${eur(total_cents)}</b></td></tr></tfoot>
+      </table>
+      <h3 style="margin-top:18px">Buyer</h3>
+      <p>${esc(buyer.companyName||buyer.contactName||"")}${buyer.companyName?" (company)":""}<br/>${esc(buyer.contactEmail||"")}</p>
+      <p style="color:#387c6d;font-size:12px">LuxOffset</p>
+    </div>`;
+};
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
-    const session_id = req.query.session_id || req.url.split("session_id=")[1];
+
+    const session_id = req.query.session_id || (req.url.split("session_id=")[1] || "").split("&")[0];
     if (!session_id) return res.status(400).json({ error: "missing session_id" });
 
+    // Keep this narrow; expand only what you need
     const session = await stripe.checkout.sessions.retrieve(session_id, { expand: ["line_items"] });
+
     const status = session.status || "";
     const payment_status = session.payment_status || "";
     const paid = status === "complete" && payment_status === "paid";
 
     const buyer = session.metadata || {};
-    const email = session.customer_details?.email || session.customer_email || buyer.contactemail || null;
+    const email =
+      session.customer_details?.email ||
+      session.customer_email ||
+      buyer.contactemail || null;
 
     const items = (session.line_items?.data || []).map(li => ({
-      name: li.description, qty: li.quantity, amount_cents: li.amount_subtotal, currency: li.currency,
+      name: li.description,
+      qty: li.quantity,
+      amount_cents: li.amount_subtotal,
+      currency: li.currency,
     }));
     const total_cents = session.amount_total ?? null;
 
-    // --- Send receipt/certificate email once (idempotent via metadata flag)
-    if (paid && resend && email && session.metadata?.emailed !== "1") {
-      const html = renderReceiptHTML({ buyer, items, total_cents });
+    // ---- send email safely, but NEVER fail the verify endpoint
+    if (paid && emailOk(process.env.SENDER_EMAIL) && emailOk(email) && session.metadata?.emailed !== "1") {
       try {
-        await resend.emails.send({
-          from: process.env.SENDER_EMAIL,
-          to: email,
-          subject: "Your LuxOffset purchase receipt",
-          html,
-        });
-        // mark emailed to avoid duplicates
-        try {
-          await stripe.checkout.sessions.update(session_id, {
-            metadata: { ...(session.metadata || {}), emailed: "1" },
+        const resend = getResend();
+        if (resend) {
+          const html = renderReceiptHTML({ buyer, items, total_cents });
+          const r = await resend.emails.send({
+            from: String(process.env.SENDER_EMAIL).trim(),       // e.g. "LuxOffset <receipts@luxoffset.com>"
+            to: String(email).trim(),
+            subject: "Your LuxOffset purchase receipt",
+            html,
           });
-        } catch {}
-        if (session.payment_intent) {
+          // Resend SDK sometimes returns { error } instead of throwing:
+          if (r?.error) console.error("Resend send error:", r.error);
+
+          // Mark as emailed (best-effort)
           try {
-            await stripe.paymentIntents.update(session.payment_intent, {
-              metadata: { emailed: "1" },
+            await stripe.checkout.sessions.update(session_id, {
+              metadata: { ...(session.metadata || {}), emailed: "1" },
             });
-          } catch {}
+          } catch (e) { console.error("Stripe metadata update (session) failed:", e?.message); }
+
+          if (session.payment_intent) {
+            try {
+              await stripe.paymentIntents.update(session.payment_intent, { metadata: { emailed: "1" } });
+            } catch (e) { console.error("Stripe metadata update (PI) failed:", e?.message); }
+          }
+        } else {
+          console.warn("RESEND_API_KEY not set or failed to init; skipping email.");
         }
       } catch (e) {
-        // Don’t fail the verify call just because email failed
-        console.error("email send error:", e);
+        // swallow — verify must still return JSON 200/400
+        console.error("email send exception:", e);
       }
     }
 
-    res.status(200).json({
+    // ✅ always respond with JSON so the front-end never sees an HTML 500 page
+    return res.status(200).json({
       paid, status, payment_status,
       buyer,
       customer_email: email,
@@ -62,30 +116,7 @@ export default async function handler(req, res) {
       created: session.created,
     });
   } catch (e) {
-    res.status(400).json({ error: e.message || "verify failed" });
+    console.error("VERIFY ERROR:", e);
+    return res.status(400).json({ error: e.message || "verify failed" });
   }
-}
-
-// --- tiny HTML template
-function eur(cents) { return typeof cents === "number" ? `€${(cents/100).toLocaleString("fr-FR",{minimumFractionDigits:2})}` : "€–"; }
-function escape(s=""){ return String(s).replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m])); }
-function renderReceiptHTML({ buyer={}, items=[], total_cents=null }) {
-  const rows = items.map(i =>
-    `<tr><td style="padding:4px 8px">${escape(i.name||"Item")}</td><td style="padding:4px 8px">${i.qty||1}</td><td style="padding:4px 8px">${eur(i.amount_cents)}</td></tr>`
-  ).join("");
-  return `
-  <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0b3b31">
-    <h2>Thank you for your purchase!</h2>
-    <p>We'll retire your credits shortly and email your certificate.</p>
-    <h3 style="margin-top:18px">Order summary</h3>
-    <table style="border-collapse:collapse;background:#f6fff9;border-radius:8px">
-      <thead><tr><th align="left" style="padding:6px 8px">Item</th><th align="left" style="padding:6px 8px">Qty</th><th align="left" style="padding:6px 8px">Subtotal</th></tr></thead>
-      <tbody>${rows || `<tr><td colspan="3" style="padding:8px">Details will follow.</td></tr>`}</tbody>
-      <tfoot><tr><td colspan="2" style="padding:8px"><b>Total</b></td><td style="padding:8px"><b>${eur(total_cents)}</b></td></tr></tfoot>
-    </table>
-    <h3 style="margin-top:18px">Buyer</h3>
-    <p>${escape(buyer.companyName||buyer.contactName||"")}${buyer.companyName?" (company)":""}<br/>
-       ${escape(buyer.contactEmail||"")}</p>
-    <p style="color:#387c6d;font-size:12px">LuxOffset</p>
-  </div>`;
 }
