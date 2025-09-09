@@ -9,3 +9,7 @@ server/data/orders/
 # runtime data
 server/data/market-stock.json
 .env.local
+.vercel
+
+.env.production
+.env.preview
