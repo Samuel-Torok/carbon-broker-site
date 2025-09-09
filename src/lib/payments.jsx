@@ -57,6 +57,7 @@ export async function startCheckout(items, mountSelector = "#stripe-checkout", r
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       items,
+      buyer, // <<— NEW: forward the form data
       return_url: returnUrl ?? `${window.location.origin}/checkout/return`,
       customer_email: items?.[0]?.meta?.meEmail || undefined,
     }),

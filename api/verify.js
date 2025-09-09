@@ -12,16 +12,23 @@ export default async function handler(req, res) {
     const payment_status = session.payment_status || "";
     const paid = status === "complete" && payment_status === "paid";
 
-    // Return items if you need them for leaderboard logic (adjust mapping as you use in your app)
+    const buyer = session.metadata || {}; // <<— the details you saved
     const items = (session.line_items?.data || []).map(li => ({
       name: li.description,
       qty: li.quantity,
-      amount_cents: li.amount_subtotal, // or li.price?.unit_amount
+      amount_cents: li.amount_subtotal,
       currency: li.currency,
-      meta: li.price?.metadata || {},
     }));
 
-    res.status(200).json({ paid, status, payment_status, items });
+    res.status(200).json({
+      paid, status, payment_status,
+      buyer,
+      customer_email: session.customer_details?.email || session.customer_email || null,
+      items,
+      total_cents: session.amount_total ?? null,
+      order_ref: session.client_reference_id || buyer.order_ref || null,
+      created: session.created,
+    });
   } catch (e) {
     res.status(400).json({ error: e.message || "verify failed" });
   }

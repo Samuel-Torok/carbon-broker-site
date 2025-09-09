@@ -5,6 +5,24 @@ import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
 import { startCheckout, destroyEmbeddedCheckout } from "../lib/payments";
 
+function deriveBuyer(items = []) {
+  const first = items.find(i => i?.meta) || {};
+  const m = first.meta || {};
+  return {
+    kind: m.type || (m.companyName ? "company" : "individual"),
+    companyName: m.companyName || m.company || "",
+    contactName: m.contactName || m.name || m.fullName || "",
+    contactEmail: m.contactEmail || m.email || "",
+    phone: m.phone || "",
+    address: m.address || m.street || "",
+    city: m.city || "",
+    country: m.country || "",
+    vat: m.vat || m.vatNumber || "",
+    notes: m.notes || "",
+  };
+}
+
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
@@ -16,8 +34,8 @@ export default function Checkout() {
   const pay = async () => {
     if (mounting || items.length === 0) return;
     try {
-      setMounting(true);
-      embeddedRef.current = await startCheckout(items, "#stripe-checkout", undefined);
+      const buyer = deriveBuyer(items);               // <<— NEW
+      embeddedRef.current = await startCheckout(items, "#stripe-checkout", buyer); // <<— changed
     } catch (e) {
       console.error(e);
       alert(e.message || "Could not start payment. Please try again.");
