@@ -8,3 +8,4 @@ server/data/orders/
 
 # runtime data
 server/data/market-stock.json
+.env.local

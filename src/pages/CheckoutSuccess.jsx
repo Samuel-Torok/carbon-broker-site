@@ -20,9 +20,7 @@ export default function CheckoutSuccess() {
     error: "",
   });
 
-  const API =
-    (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.replace(/\/$/, "")) ||
-    "http://localhost:4242";
+  const API_BASE = (import.meta.env.VITE_API_URL?.replace(/\/$/, "")) || "";
 
   useEffect(() => {
     if (!sessionId) {
@@ -35,7 +33,7 @@ export default function CheckoutSuccess() {
 
     async function verify() {
       try {
-        const r = await fetch(`${API}/api/verify?session_id=${encodeURIComponent(sessionId)}`);
+        const r = await fetch(`${API_BASE}/api/verify?session_id=${encodeURIComponent(sessionId)}`);
         const data = await r.json();
         if (!r.ok) throw new Error(data?.error || "Verify failed");
 
@@ -66,7 +64,7 @@ export default function CheckoutSuccess() {
 
     verify();
     return () => clearTimeout(timer);
-  }, [sessionId, API, clear]);
+  }, [sessionId, API_BASE, clear]);
 
   const copy = lang === "fr"
     ? {

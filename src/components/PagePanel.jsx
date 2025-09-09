@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import BackHome from "./BackHome.jsx";
+
+const SALES_MODE = import.meta.env.VITE_SALES_MODE ?? "demo"; // 'demo' | 'live'
 
 export default function PagePanel({
   children,
@@ -9,6 +11,9 @@ export default function PagePanel({
   badge,
   maxWidth = "max-w-5xl",
 }) {
+  // ✅ hooks must be inside the component
+  const [hideBanner, setHideBanner] = useState(false);
+
   return (
     <div className="relative isolate flex-1 flex min-h-0">
       {/* fixed ocean background */}
@@ -26,6 +31,20 @@ export default function PagePanel({
             </div>
 
             <div className="pt-14 md:pt-16">
+              {SALES_MODE !== "live" && !hideBanner && (
+                <div className="mb-4 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50/90 px-4 py-3 text-amber-900">
+                  <span className="font-semibold mr-1">Pre-launch demo</span>
+                  <span className="text-sm">Payments are disabled. No real orders are fulfilled.</span>
+                  <button
+                    onClick={() => setHideBanner(true)}
+                    className="ml-auto -my-1 -mr-2 px-2 text-amber-900/70 hover:text-amber-900"
+                    aria-label="Dismiss"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
               {(title || subtitle) && (
                 <header className="mb-4 md:mb-6">
                   <div className="flex items-center gap-2 text-emerald-400">
