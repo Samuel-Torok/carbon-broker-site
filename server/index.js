@@ -413,7 +413,8 @@ const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`API on :${PORT}`));
 
 
-app.options("/api/chat", (req, res) => { for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v); res.status(204).end(); });
+app.options("/server/*", (_,res)=>res.sendStatus(204));
+
 
 app.post("/api/chat", async (req, res) => {
   for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v);
@@ -482,6 +483,6 @@ app.post("/api/admin/orders/:id/resend", authAdmin, async (req, res) => {
 
 
 
-app.use("/api", contactRoutes);
+app.use("/server", contactRoutes);
 
 

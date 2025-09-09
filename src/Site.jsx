@@ -50,7 +50,7 @@ export default function Site() {
     if (!cConsent) { setCErr(t("home.contactModal.needConsent","Please accept the privacy note.")); return; }
     setCBusy(true); setCErr("");
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch(`${API_BASE}/server/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

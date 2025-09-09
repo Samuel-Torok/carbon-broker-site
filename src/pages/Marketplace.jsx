@@ -73,7 +73,7 @@ export default function Marketplace() {
     if (!validEq || !enquireFor) return;
     try {
       setSendingEnquiry(true);
-      await fetch("/api/contact", {
+      await fetch("/server/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
