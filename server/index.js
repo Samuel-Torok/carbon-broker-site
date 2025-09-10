@@ -31,7 +31,7 @@ const CORS = {
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"] }));
 
 app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
 
@@ -413,8 +413,7 @@ const PORT = process.env.PORT || 4242;
 app.listen(PORT, () => console.log(`API on :${PORT}`));
 
 
-app.options("/server/*", (_,res)=>res.sendStatus(204));
-
+app.options("/api/chat", (req, res) => { for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v); res.status(204).end(); });
 
 app.post("/api/chat", async (req, res) => {
   for (const [k,v] of Object.entries(CORS)) res.setHeader(k,v);
@@ -483,15 +482,6 @@ app.post("/api/admin/orders/:id/resend", authAdmin, async (req, res) => {
 
 
 
-app.use("/server", contactRoutes);
+app.use("/api", contactRoutes);
 
-
-// ⬇️ ADD THIS near the bottom (export the app for Vercel)
-export default app;
-
-// (optional) local dev only — keep this AFTER the export and behind the guard
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 4242;
-  app.listen(PORT, () => console.log("API on :" + PORT));
-}
 
