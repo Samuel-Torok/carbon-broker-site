@@ -31,6 +31,13 @@ export default async function handler(req, res) {
     const need    = String(body.need || "").trim();                   // free text or "sample:<id>"
     const message = String(body.message || "").trim();
     const locale  = String(body.locale || "en").toLowerCase();
+    // NEW: meeting-specific optional fields
+    const company  = String(body.company || body.companyName || "").trim();
+    const phone    = String(body.phone || "").trim();
+    const mode     = String(body.mode || "").toLowerCase();          // "", "video", "in-person", "either"
+    const platform = String(body.platform || "").trim();             // "Teams" | "Zoom" | "Google Meet" | ...
+    const slots    = Array.isArray(body.slots) ? body.slots.filter(Boolean).slice(0,3) : [];
+ 
 
     // basic validation
     if (!name || !/\S+@\S+\.\S+/.test(email)) {
@@ -54,6 +61,11 @@ export default async function handler(req, res) {
       ? "Nous avons bien reçu votre demande. Nous revenons vers vous au plus vite par e-mail."
       : "We’ve received your request. We’ll get back to you by email as soon as possible.";
 
+    // NEW: render proposed time slots rows (if any)
+    const slotsRows = slots
+        .map((s,i)=>`<tr><td style="padding:6px 10px">Slot ${i+1}</td><td style="padding:6px 10px">${escapeHtml(s)}</td></tr>`)
+        .join("");
+
     // user auto-reply
     const userHtml = `
       <div style="font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:#0b3b31">
@@ -63,6 +75,10 @@ export default async function handler(req, res) {
         <table style="border-collapse:collapse;background:#f6fff9;border-radius:8px">
           <tbody>
             <tr><td style="padding:6px 10px">Category</td><td style="padding:6px 10px"><b>${escapeHtml(who || "contact")}</b></td></tr>
+            ${company ? `<tr><td style="padding:6px 10px">Company</td><td style="padding:6px 10px">${escapeHtml(company)}</td></tr>` : ""}
+            ${phone ? `<tr><td style="padding:6px 10px">Phone</td><td style="padding:6px 10px">${escapeHtml(phone)}</td></tr>` : ""}
+            ${mode ? `<tr><td style="padding:6px 10px">Meeting</td><td style="padding:6px 10px">${escapeHtml(mode)}${platform ? " • "+escapeHtml(platform) : ""}</td></tr>` : ""}
+            ${slotsRows}
             ${need ? `<tr><td style="padding:6px 10px">Topic</td><td style="padding:6px 10px">${escapeHtml(need)}</td></tr>` : ""}
             ${message ? `<tr><td style="padding:6px 10px;vertical-align:top">Message</td><td style="padding:6px 10px;white-space:pre-wrap">${escapeHtml(message)}</td></tr>` : ""}
           </tbody>

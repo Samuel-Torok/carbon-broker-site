@@ -327,7 +327,26 @@
     "back": "Back to packages"
   },
 
-  
+
+  "meet": {
+    "title":"Request a meeting",
+    "name":"Your name",
+    "email":"Email",
+    "company":"Company",
+    "phone":"Phone (optional)",
+    "video":"Video",
+    "inPerson":"In person",
+    "either":"Either",
+    "platform":"Preferred platform",
+    "slots":"Propose up to 3 dates & times (optional)",
+    "addSlot":"Add another slot",
+    "msg":"Message (optional)",
+    "cancel":"Cancel",
+    "send":"Send request",
+    "sending":"Sending…",
+    "ok":"Thanks — we’ve received your request!"
+  },
+
 
   "cart": {
     "title": "Your cart",

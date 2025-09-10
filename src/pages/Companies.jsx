@@ -6,6 +6,7 @@ import PagePanel from "../components/PagePanel.jsx";
 import { useI18n } from "../i18n";
 import { useCart } from "../lib/cart";
 import PRICING from "../../shared/pricing.js";
+import MeetingRequestModal from "../components/MeetingRequestModal.jsx";
 
 const PRICE_PER_TON = PRICING.companies.perTonne;
 
@@ -44,6 +45,7 @@ export default function Companies() {
   const [configHelp, setConfigHelp] = useState(false);
   const [csrHelp, setCsrHelp] = useState(false); // keep, but we'll change its usage
   const [companyModal, setCompanyModal] = useState(false);
+  const [meetingOpen, setMeetingOpen] = useState(false);
 
   const basePrice = useMemo(() => size * (PRICE_PER_TON[quality] ?? 12), [size, quality]);
   const total = basePrice + csr.price;
@@ -254,9 +256,12 @@ export default function Companies() {
             {t("packages.proceed")}
           </button>
 
-          <Link to="/contact" className="block w-full rounded-xl bg-white/5 px-6 py-3 text-center font-medium text-white ring-1 ring-white/10 hover:bg-white/10">
+          <button
+            onClick={() => setMeetingOpen(true)}
+            className="w-full rounded-xl bg-white/5 px-6 py-3 text-center font-medium text-white ring-1 ring-white/10 hover:bg-white/10"
+          >  
             {t("order.buttons.requestMeeting")}
-          </Link>
+          </button>
         </div>
       </div>
       {companyModal && (
@@ -285,6 +290,12 @@ export default function Companies() {
           }}
         />
       )}
+
+      <MeetingRequestModal
+        open={meetingOpen}
+        onClose={() => setMeetingOpen(false)}
+        defaultCompany=""
+      />
 
     </PagePanel>
   );

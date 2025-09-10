@@ -401,6 +401,25 @@
     "message": "Message personnel (optionnel)"
   },
 
+  "meet": {
+    "title":"Demander un rendez-vous",
+    "name":"Votre nom",
+    "email":"E-mail",
+    "company":"Entreprise",
+    "phone":"Téléphone (optionnel)",
+    "video":"Visio",
+    "inPerson":"En présentiel",
+    "either":"Indifférent",
+    "platform":"Plateforme préférée",
+    "slots":"Proposez jusqu’à 3 créneaux (optionnel)",
+    "addSlot":"Ajouter un créneau",
+    "msg":"Message (optionnel)",
+    "cancel":"Annuler",
+    "send":"Envoyer la demande",
+    "sending":"Envoi…",
+    "ok":"Merci — nous avons bien reçu votre demande !"
+  },
+
   "lb": {
     "title": "Classement public",
     "sub": "Le classement est pondéré par la qualité des crédits (Standard ×1, Premium ×1,25, Elite ×1,5).",
