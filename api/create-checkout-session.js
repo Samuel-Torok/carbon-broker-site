@@ -31,16 +31,31 @@ function flattenBuyer(buyer = {}, prefix = "", out = {}) {
 function deriveLeaderboardMeta(items = []) {
   const it = items.find(x => x?.meta?.leaderboard || x?.meta?.leaderboardOptIn);
   if (!it) return null;
+
   const type  = (it?.meta?.type || it?.type || "").toLowerCase();
-  const mode  = (it?.meta?.mode || "").toLowerCase(); // "self" | "gift"
   const group = type === "company" ? "company" : "individual";
-  const name  = mode === "gift" ? (it.meta?.recName  || "") : (it.meta?.meName  || "");
+  const mode  = (it?.meta?.mode || "").toLowerCase(); // "self" | "gift"
+
+  // legal/company name from your cart meta (with sensible fallbacks)
+  const companyName =
+    it?.meta?.companyLegalName ||
+    it?.meta?.companyName ||
+    it?.companyName ||
+    it?.meta?.company ||
+    "";
+
+  const name  = group === "company"
+    ? (companyName || "Company")
+    : (mode === "gift" ? (it.meta?.recName  || "") : (it.meta?.meName || ""));
+
   const email = mode === "gift" ? (it.meta?.recEmail || "") : (it.meta?.meEmail || "");
   const qty   = it.size ?? it.meta?.qty ?? 0; // tonnes
   const qual  = (it.qualityKey || it.meta?.quality || "standard").toLowerCase();
   const consent = Boolean(it?.meta?.leaderboard || it?.meta?.leaderboardOptIn);
-  return { group, name, email, qty, qual, consent };
+
+  return { group, name, email, qty, qual, consent, companyName };
 }
+
 
 
 export default async function handler(req, res) {
@@ -86,6 +101,7 @@ export default async function handler(req, res) {
         ...flattenBuyer(buyer),
         leader_group:   lb.group   || "",
         leader_name:    lb.name    || "",
+        leader_company_name: lb.companyName || "", // <-- NEW, used for companies
         leader_email:   lb.email   || "",
         leader_qty:     String(lb.qty ?? 0),
         leader_quality: lb.qual    || "standard",

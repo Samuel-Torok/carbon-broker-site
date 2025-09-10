@@ -31,7 +31,10 @@ export default async function handler(req, res) {
           .trim()
           .toLowerCase();
         const key = s.customer || (emailKey ? `email:${emailKey}` : s.id);
-        const name = (m.leader_name && m.leader_name.trim()) || "Anonymous";
+        const name =
+          g === "company"
+            ? (m.leader_company_name || m.companyname || m.company || "Company")
+            : ((m.leader_name && m.leader_name.trim()) || "Anonymous");
 
         const curr = by.get(key) || { name, qty: 0, score: 0 };
         if (!curr.name && name) curr.name = name;
