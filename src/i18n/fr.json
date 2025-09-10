@@ -406,6 +406,8 @@
     "sub": "Le classement est pondéré par la qualité des crédits (Standard ×1, Premium ×1,25, Elite ×1,5).",
     "tab": { "ind": "Particuliers", "comp": "Entreprises" },
     "company": "Entreprise",
+    "name": "Nom",
+    "weighted": "Score pondéré",
     "pitch": "Bienvenue sur notre classement public — découvrez qui mène l’action pour le climat. Cumulez vos compensations et débloquez des récompenses ponctuelles.",
     "prizes": "Voir les lots actuels",
     "km": "≈ km en voiture",
