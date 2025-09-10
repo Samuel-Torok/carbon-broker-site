@@ -8,7 +8,7 @@ const CORS = {
 };
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const SENDER = process.env.SENDER_EMAIL;           // e.g. "LuxOffset <hello@luxoffset.com>"
+const SENDER = process.env.CONTACT_SENDER_EMAIL || process.env.SENDER_EMAIL;
 const NOTIFY = process.env.NOTIFY_EMAIL || SENDER; // where you receive copies
 
 const escapeHtml = (s = "") =>
