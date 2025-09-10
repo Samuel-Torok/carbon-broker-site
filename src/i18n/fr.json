@@ -405,7 +405,19 @@
     "title": "Classement public",
     "sub": "Le classement est pondéré par la qualité des crédits (Standard ×1, Premium ×1,25, Elite ×1,5).",
     "tab": { "ind": "Particuliers", "comp": "Entreprises" },
-    "company": "Entreprise"
+    "company": "Entreprise",
+    "pitch": "Bienvenue sur notre classement public — découvrez qui mène l’action pour le climat. Cumulez vos compensations et débloquez des récompenses ponctuelles.",
+    "prizes": "Voir les lots actuels",
+    "km": "≈ km en voiture",
+    "disclaimer1": "Merci de jouer le jeu. Les achats sur la place de marché ne sont pas inclus dans ce classement.",
+    "disclaimer2": "Score pondéré = tonnes × coefficient de qualité (Standard ×1,0, Premium ×1,25, Elite ×1,5).",
+    "disclaimer3": "L’équivalence km-voiture se base sur ~120 g CO₂/km (voiture particulière)."
+  },
+
+  "prizes": {
+    "title": "Lots et récompenses",
+    "subtitle": "Avantages pour les meilleur·e·s contributeurs·trices",
+    "none": "Aucun lot spécial pour le moment. Restez à l’écoute !"
   },
 
   "packages": {

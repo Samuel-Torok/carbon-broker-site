@@ -195,7 +195,20 @@
     "anon": "Anonymous",
     "note": "Quality coefficients: Standard ×1.0, Premium ×1.25, Elite ×1.5.",
     "tab": { "ind": "Individuals", "comp": "Companies" },
-    "company": "Company"
+    "company": "Company",
+    "pitch": "Welcome to our public leaderboard—see who’s leading on climate action. Stack your offsets and unlock occasional rewards.",
+    "prizes": "See current prizes",
+    "km": "≈ Car km",
+    "disclaimer1": "Please compete fairly. Marketplace purchases are not included in this leaderboard.",
+    "disclaimer2": "Weighted score = tonnes × quality coefficient (Standard ×1.0, Premium ×1.25, Elite ×1.5).",
+    "disclaimer3": "Car-km equivalence uses ~120 g CO₂/km (typical passenger car)."
+  },
+
+
+  "prizes": {
+    "title": "Prizes & Rewards",
+    "subtitle": "Perks for top contributors",
+    "none": "No special prizes available at the moment. Stay tuned!"
   },
 
 
