@@ -14,7 +14,10 @@ import { MARKET_STOCK } from "../shared/marketplaceData.js";
 import PRICING, { normalizeQuality, eurToCents } from "../shared/pricing.js";
 import { Resend } from "resend"; // ⬅️ add
 
+
 dotenv.config();
+
+const app = express();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ORDERS_DIR = path.join(__dirname, "data", "orders");
@@ -29,14 +32,18 @@ const CORS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-const app = express();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
+
+
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost"] }));
 
 app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
 
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 

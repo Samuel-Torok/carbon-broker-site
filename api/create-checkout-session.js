@@ -27,6 +27,22 @@ function flattenBuyer(buyer = {}, prefix = "", out = {}) {
   return out;
 }
 
+// helper
+function deriveLeaderboardMeta(items = []) {
+  const it = items.find(x => x?.meta?.leaderboard || x?.meta?.leaderboardOptIn);
+  if (!it) return null;
+  const type  = (it?.meta?.type || it?.type || "").toLowerCase();
+  const mode  = (it?.meta?.mode || "").toLowerCase(); // "self" | "gift"
+  const group = type === "company" ? "company" : "individual";
+  const name  = mode === "gift" ? (it.meta?.recName  || "") : (it.meta?.meName  || "");
+  const email = mode === "gift" ? (it.meta?.recEmail || "") : (it.meta?.meEmail || "");
+  const qty   = it.size ?? it.meta?.qty ?? 0; // tonnes
+  const qual  = (it.qualityKey || it.meta?.quality || "standard").toLowerCase();
+  const consent = Boolean(it?.meta?.leaderboard || it?.meta?.leaderboardOptIn);
+  return { group, name, email, qty, qual, consent };
+}
+
+
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
@@ -57,13 +73,24 @@ export default async function handler(req, res) {
     const origin = process.env.ORIGIN || `https://${req.headers.host}`;
     const ref = randomUUID();
 
+    const lb = deriveLeaderboardMeta(items) || {};
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded",
       line_items,
       customer_email: customer_email || undefined,
       client_reference_id: ref,
-      metadata: { order_ref: ref, ...flattenBuyer(buyer) },  // <<— stores details in Stripe
+       metadata: {
+        order_ref: ref,
+        ...flattenBuyer(buyer),
+        leader_group:   lb.group   || "",
+        leader_name:    lb.name    || "",
+        leader_email:   lb.email   || "",
+        leader_qty:     String(lb.qty ?? 0),
+        leader_quality: lb.qual    || "standard",
+        leader_consent: lb.consent ? "yes" : "no",
+      },
       return_url: `${return_url || `${origin}/checkout/return`}?session_id={CHECKOUT_SESSION_ID}`,
     });
 
