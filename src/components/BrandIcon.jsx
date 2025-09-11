@@ -13,7 +13,7 @@ export default function BrandIcon() {
         <span className="text-3xl font-extrabold leading-none
                          text-transparent bg-clip-text
                          bg-gradient-to-br from-indigo-400 to-emerald-400">
-          Z
+          x
         </span>
       </span>
     </Link>
