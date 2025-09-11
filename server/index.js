@@ -435,7 +435,7 @@ app.post("/api/chat", async (req, res) => {
       temperature: 0.2,
       messages: [
         { role: "system",
-          content: `You are Zephyr Carbon's concise, accurate website assistant. Always reply in ${language} unless the user asks otherwise. Keep answers short and factual.` },
+          content: `You are LuxOffset's concise, accurate website assistant. Always reply in ${language} unless the user asks otherwise. Keep answers short and factual.` },
         ...userMessages,
       ],
     });

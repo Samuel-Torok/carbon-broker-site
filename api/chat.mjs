@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         {
           role: "system",
           content:
-            `You are Zephyr Carbon's concise, accurate website assistant. ` +
+            `You are LuxOffset's concise, accurate website assistant. ` +
             `Always reply in ${language} unless the user explicitly asks otherwise. ` +
             `Keep answers short and factual.`
         },

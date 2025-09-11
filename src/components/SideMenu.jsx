@@ -51,8 +51,8 @@ export default function SideMenu() {
       >
         <div className="flex items-center justify-between px-4 py-4">
           <Link to="/" onClick={() => setOpen(false)} className="font-semibold tracking-tight">
-            <span className="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">Zephyr</span>
-            <span className="ml-1 text-slate-300">Carbon</span>
+            <span className="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">LuxOffset</span>
+            
           </Link>
           <button
             aria-label="Close menu"
@@ -114,7 +114,7 @@ export default function SideMenu() {
 
         <div className="mt-auto border-t border-white/10 px-4 py-3 text-xs text-slate-400">
           <div className="flex items-start justify-between">
-            <span>© {year} Zephyr Carbon</span>
+            <span>© {year} LuxOffset</span>
 
             {lang === "fr" ? (
               // FR: stack for clean layout

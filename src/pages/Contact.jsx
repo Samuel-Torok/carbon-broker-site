@@ -27,11 +27,11 @@ export default function Contact() {
             </div>
           </a>
 
-          <a href="https://instagram.com/zephyrcarbon" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl ring-1 ring-white/10 bg-white/5 hover:bg-white/10 px-4 py-3">
+          <a href="https://instagram.com/luxoffset" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl ring-1 ring-white/10 bg-white/5 hover:bg-white/10 px-4 py-3">
             <Instagram className="h-5 w-5 text-emerald-400" />
             <div>
               <div className="font-medium">{t("contact.instagram")}</div>
-              <div className="text-sm opacity-80">@zephyrcarbon</div>
+              <div className="text-sm opacity-80">@LuxOffset</div>
             </div>
           </a>
         </div>
