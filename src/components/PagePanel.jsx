@@ -24,13 +24,13 @@ export default function PagePanel({
       {/* full-height centered block */}
       <div className={`relative z-10 mx-auto w-full ${maxWidth} flex min-h-0`}>
         <div className="flex-1 min-h-0">
-          <div className="relative h-full bg-slate-950/80 ring-1 ring-white/10 backdrop-blur-sm px-6 md:px-10 text-slate-100">
+          <div className="relative h-full bg-slate-950/80 ring-1 ring-white/10 backdrop-blur-sm px-3 sm:px-6 md:px-10 text-slate-100">
             {/* Back to home */}
-            <div className="absolute top-4 left-6">
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-6">
               <BackHome />
             </div>
 
-            <div className="pt-14 md:pt-16">
+            <div className="pt-12 sm:pt-14 md:pt-16">
               {SALES_MODE !== "live" && !hideBanner && (
                 <div className="mb-4 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50/90 px-4 py-3 text-amber-900">
                   <span className="font-semibold mr-1">Pre-launch demo</span>
@@ -56,7 +56,7 @@ export default function PagePanel({
                     ) : null}
                   </div>
                   {title && (
-                    <h1 className="mt-1 text-2xl md:text-3xl font-semibold text-emerald-300">
+                    <h1 className="mt-1 text-2xl md:text-3xl font-semibold text-emerald-300 break-words">
                       {title}
                     </h1>
                   )}

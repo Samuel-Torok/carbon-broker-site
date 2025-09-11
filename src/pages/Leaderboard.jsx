@@ -123,7 +123,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Tabs */}
-      <div className="mt-4 mb-5 inline-flex rounded-xl ring-1 ring-white/15 overflow-hidden">
+      <div className="mt-4 mb-5 inline-flex flex-col sm:flex-row gap-2 sm:gap-0 rounded-xl ring-1 ring-white/15 overflow-hidden w-full sm:w-auto">
         <button
           onClick={() => setView("individual")}
           className={`px-3 py-1.5 text-sm ${view === "individual" ? "bg-emerald-500 text-emerald-950" : "bg-white/5 text-white"}`}
@@ -166,39 +166,39 @@ export default function Leaderboard() {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-2xl ring-1 ring-white/10">
-        <table className="min-w-full text-sm">
+        <table className="min-w-full text-xs sm:text-sm">
           <thead className="bg-white/5 text-left">
             <tr>
-              <th className="px-4 py-2">#</th>
-              <th className="px-4 py-2">{view === "company" ? t("lb.company", "Company") : t("lb.name", "Name")}</th>
-              <th className="px-4 py-2">{t("lb.total", "Total tCO₂e")}</th>
-              <th className="px-4 py-2">{t("lb.km", "≈ Car km")}</th>
-              <th className="px-4 py-2">{t("lb.weighted", "Weighted score")}</th>
+              <th className="px-3 sm:px-4 py-2">#</th>
+              <th className="px-3 sm:px-4 py-2">{view === "company" ? t("lb.company", "Company") : t("lb.name", "Name")}</th>
+              <th className="px-3 sm:px-4 py-2">{t("lb.total", "Total tCO₂e")}</th>
+              <th className="px-3 sm:px-4 py-2">{t("lb.km", "≈ Car km")}</th>
+              <th className="px-3 sm:px-4 py-2">{t("lb.weighted", "Weighted score")}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-white/70">
+                <td colSpan={5} className="px-3 sm:px-4 py-6 text-center text-white/70">
                   {t("lb.loading", "Loading...")}
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-white/70">
+                <td colSpan={5} className="px-3 sm:px-4 py-6 text-center text-white/70">
                   {t("lb.empty", "No entries yet—be the first!")}
                 </td>
               </tr>
             ) : (
               rows.map((r, i) => (
                 <tr key={i} className="odd:bg-white/0 even:bg-white/[.03]">
-                  <td className="px-4 py-2">
+                  <td className="px-3 sm:px-4 py-2">
                     <span className={rankClass(i + 1)}>{i + 1}</span>
                   </td>
-                  <td className="px-4 py-2">{r.name || t("lb.anon", "Anonymous")}</td>
-                  <td className="px-4 py-2">{(r.qty ?? 0).toLocaleString()}</td>
-                  <td className="px-4 py-2">{kmText(r.qty)}</td>
-                  <td className="px-4 py-2">{Number(r.score ?? 0).toFixed(2)}</td>
+                  <td className="px-3 sm:px-4 py-2">{r.name || t("lb.anon", "Anonymous")}</td>
+                  <td className="px-3 sm:px-4 py-2">{(r.qty ?? 0).toLocaleString()}</td>
+                  <td className="px-3 sm:px-4 py-2">{kmText(r.qty)}</td>
+                  <td className="px-3 sm:px-4 py-2">{Number(r.score ?? 0).toFixed(2)}</td>
                 </tr>
               ))
             )}
@@ -207,7 +207,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Disclaimers */}
-      <div className="mt-4 text-xs text-white/60 space-y-1">
+      <div className="mt-4 text-[11px] sm:text-xs text-white/60 space-y-1">
         <p>
           {t(
             "lb.disclaimer1",
