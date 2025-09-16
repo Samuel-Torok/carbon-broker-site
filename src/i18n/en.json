@@ -350,6 +350,7 @@
     "about": "About",
     "offers": "What you can buy",
     "how": {
+      "title": "How it works",
       "step1": "Choose a bundled item (e.g., Carbon Coffee).",
       "step2": "We retire the matching micro-offset on your behalf.",
       "step3": "Get a digital certificate via QR or email."
@@ -357,6 +358,7 @@
     "sustainability": "Sustainability",
     "visit": "Visit",
     "perks": {
+      "title": "Perks",
       "item1": "Visible climate action at point of sale",
       "item2": "Verified retirement and certificate links",
       "item3": "Co-branding and joint marketing",

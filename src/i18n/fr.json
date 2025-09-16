@@ -425,6 +425,7 @@
     "about": "À propos",
     "offers": "Ce que vous pouvez acheter",
     "how": {
+      "title": "Comment ça marche",
       "step1": "Choisissez un article avec compensation (ex. Carbon Coffee).",
       "step2": "Nous retirons la micro-compensation correspondante pour vous.",
       "step3": "Recevez un certificat numérique par QR ou e-mail."
@@ -432,6 +433,7 @@
     "sustainability": "Durabilité",
     "visit": "Nous rendre visite",
     "perks": {
+      "title": "Avantages",
       "item1": "Action climatique visible au point de vente",
       "item2": "Retraits vérifiés et certificats traçables",
       "item3": "Co-branding et marketing commun",
