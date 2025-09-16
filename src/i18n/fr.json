@@ -17,7 +17,8 @@
     "imprint": "Mentions légales",
     "csr": "RSE & VCM",
     "marketplace": "Marché",
-    "leaderboard": "Classement"
+    "leaderboard": "Classement",
+    "partners": "Commerces partenaires"
   },
 
   "home": {
@@ -28,6 +29,7 @@
     "ctaSecondary": "Comment ça marche",
     "ctaMarketplace": "Voir le marché",
     "ctaContact": "Nous contacter",
+    "ctaPartners": "Partenaires locaux",
     "contactModal": {
       "title": "Dites-nous votre besoin",
       "close": "Fermer",
@@ -401,40 +403,44 @@
     "message": "Message personnel (optionnel)"
   },
 
-  "nav.partners": "Commerces partenaires",
-  "home.ctaPartners": "Partenaires locaux",
 
-  "partners.title": "Trouvez un partenaire près de chez vous",
-  "partners.subtitle": "Découvrez les commerces qui collaborent avec LuxOffset. Activez la position pour mettre en évidence les magasins à proximité.",
-  "partners.toggle": "Activer ma position",
-  "partners.youAreHere": "Vous êtes ici",
-  "partners.nearby": "À proximité",
-  "partners.viewDetails": "Voir les détails",
-  "partners.cta.title": "Vous souhaitez être partenaire ?",
-  "partners.cta.desc": "Nous collaborons avec des cafés, boulangeries et marques locales pour intégrer des micro-compensations dans les achats du quotidien.",
-  "partners.cta.btn": "Devenir partenaire",
 
-  "partner.back": "Retour aux partenaires",
-  "partner.notFound": "Magasin introuvable",
-  "partner.address": "Adresse",
-  "partner.about": "À propos",
-  "partner.offers": "Ce que vous pouvez acheter",
-  "partner.how": "Comment ça marche",
-  "partner.sustainability": "Durabilité",
-  "partner.visit": "Nous rendre visite",
-  "partner.perks": "Avantages",
-  "partner.hours": "Horaires",
-  "partner.website": "Site web",
-  "partner.phone": "Téléphone",
-
-  "partner.how.step1": "Choisissez un article avec compensation (ex. Carbon Coffee).",
-  "partner.how.step2": "Nous retirons la micro-compensation correspondante pour vous.",
-  "partner.how.step3": "Recevez un certificat numérique par QR ou e-mail.",
-
-  "partner.perks.item1": "Action climatique visible au point de vente",
-  "partner.perks.item2": "Retraits vérifiés et certificats traçables",
-  "partner.perks.item3": "Co-branding et marketing commun",
-  "partner.perks.item4": "Synthèses d’impact mensuelles pour votre équipe",
+  "partners": {
+    "title": "Trouvez un partenaire près de chez vous",
+    "subtitle": "Découvrez les commerces qui collaborent avec LuxOffset. Activez la position pour mettre en évidence les magasins à proximité.",
+    "toggle": "Activer ma position",
+    "youAreHere": "Vous êtes ici",
+    "nearby": "À proximité",
+    "viewDetails": "Voir les détails",
+    "cta": {
+      "title": "Vous souhaitez être partenaire ?",
+      "desc": "Nous collaborons avec des cafés, boulangeries et marques locales pour intégrer des micro-compensations dans les achats du quotidien.",
+      "btn": "Devenir partenaire"
+    }
+  },
+  "partner": {
+    "back": "Retour aux partenaires",
+    "notFound": "Magasin introuvable",
+    "address": "Adresse",
+    "about": "À propos",
+    "offers": "Ce que vous pouvez acheter",
+    "how": {
+      "step1": "Choisissez un article avec compensation (ex. Carbon Coffee).",
+      "step2": "Nous retirons la micro-compensation correspondante pour vous.",
+      "step3": "Recevez un certificat numérique par QR ou e-mail."
+    },
+    "sustainability": "Durabilité",
+    "visit": "Nous rendre visite",
+    "perks": {
+      "item1": "Action climatique visible au point de vente",
+      "item2": "Retraits vérifiés et certificats traçables",
+      "item3": "Co-branding et marketing commun",
+      "item4": "Synthèses d’impact mensuelles pour votre équipe"
+    },
+    "hours": "Horaires",
+    "website": "Site web",
+    "phone": "Téléphone"
+  },
 
 
   "meet": {
