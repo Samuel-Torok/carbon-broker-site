@@ -201,6 +201,15 @@ export default function Site() {
                       </span>
                     </Link>
 
+                    <Link to="/partners" className="btn-outline-gradient hover:opacity-90">
+                      <span className="pill">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400 font-medium">
+                          {t("home.ctaPartners","Local partners")}
+                        </span>
+                      </span>
+                    </Link>
+
+
                   </div>
 
 
