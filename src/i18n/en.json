@@ -327,6 +327,41 @@
     "back": "Back to packages"
   },
 
+  "nav.partners": "Partner stores",
+  "home.ctaPartners": "Local partners",
+
+  "partners.title": "Find a partner near you",
+  "partners.subtitle": "See local stores collaborating with LuxOffset. Turn on location to highlight nearby places.",
+  "partners.toggle": "Turn on my location",
+  "partners.youAreHere": "You are here",
+  "partners.nearby": "Nearby",
+  "partners.viewDetails": "View details",
+  "partners.cta.title": "Want your store featured?",
+  "partners.cta.desc": "We collaborate with cafés, bakeries and local brands to bundle micro-offsets into everyday purchases.",
+  "partners.cta.btn": "Partner with us",
+
+  "partner.back": "Back to partners",
+  "partner.notFound": "Store not found",
+  "partner.address": "Address",
+  "partner.about": "About",
+  "partner.offers": "What you can buy",
+  "partner.how": "How it works",
+  "partner.sustainability": "Sustainability",
+  "partner.visit": "Visit",
+  "partner.perks": "Perks",
+  "partner.hours": "Opening hours",
+  "partner.website": "Website",
+  "partner.phone": "Phone",
+
+  "partner.how.step1": "Choose a bundled item (e.g., Carbon Coffee).",
+  "partner.how.step2": "We retire the matching micro-offset on your behalf.",
+  "partner.how.step3": "Get a digital certificate via QR or email.",
+
+  "partner.perks.item1": "Visible climate action at point of sale",
+  "partner.perks.item2": "Verified retirement and certificate links",
+  "partner.perks.item3": "Co-branding and joint marketing",
+  "partner.perks.item4": "Monthly impact summaries for your team",
+
 
   "meet": {
     "title":"Request a meeting",
